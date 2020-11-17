@@ -1,0 +1,78 @@
+---
+version: 2.1
+
+executors:
+  golang_executor:
+    docker:
+      - image: circleci/golang:1.14
+
+commands:
+  prepare_golang:
+    description: "checkout, install all packages and handle cache"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v4-{{ checksum "go.sum" }}
+      - run:
+          name: Pull and build dependencies for the project
+          command: go get
+      - save_cache:
+          key: go-mod-v4-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
+
+jobs:
+  styleCheck:
+    executor: golang_executor
+    steps:
+      - prepare_golang
+      - run:
+          name: Install linting tools
+          command: make lint-tools
+      - run:
+          name: Check lints
+          command: make lint-ci
+
+  build:
+    executor: golang_executor
+    steps:
+      - prepare_golang
+      - run:
+          name: Build
+          command: make build
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - ./build
+
+  test:
+    executor: golang_executor
+    steps:
+      - prepare_golang
+      - run:
+          name: Unit tests
+          command: make test
+
+workflows:
+  version: 2
+  default:
+    jobs:
+      - styleCheck:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              only: /.*/
+      - build:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              only: /.*/
+      - test:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              only: /.*/
