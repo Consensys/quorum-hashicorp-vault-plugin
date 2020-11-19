@@ -41,12 +41,12 @@ func Example400Response() framework.Response {
 	}
 }
 
-func Example422Response() framework.Response {
+func Example404Response() framework.Response {
 	return framework.Response{
-		Description: "Unprocessable entity",
+		Description: "Not found",
 		Example: &logical.Response{
 			Data: map[string]interface{}{
-				"error": "error message unprocessable entity",
+				"error": "error message resource not found",
 			},
 		},
 	}

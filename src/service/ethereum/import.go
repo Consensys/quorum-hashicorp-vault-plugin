@@ -20,7 +20,6 @@ func (c *controller) NewImportOperation() *framework.PathOperation {
 			{
 				Description: "Imports an account on the tenant0 namespace",
 				Data: map[string]interface{}{
-					namespaceLabel:  exampleAccount.Namespace,
 					privateKeyLabel: exampleAccount.PrivateKey,
 				},
 				Response: successExample,
@@ -29,7 +28,6 @@ func (c *controller) NewImportOperation() *framework.PathOperation {
 		Responses: map[int][]framework.Response{
 			200: {*successExample},
 			400: {utils.Example400Response()},
-			422: {utils.Example422Response()},
 			500: {utils.Example500Response()},
 		},
 	}
@@ -38,7 +36,7 @@ func (c *controller) NewImportOperation() *framework.PathOperation {
 func (c *controller) importHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
 		privateKeyString := data.Get("privateKey").(string)
-		namespace := data.Get("namespace").(string)
+		namespace := getNamespace(req)
 
 		if privateKeyString == "" {
 			return logical.ErrorResponse("privateKey must be provided"), nil

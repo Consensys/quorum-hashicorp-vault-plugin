@@ -20,6 +20,8 @@ import (
 type ethereumCtrlTestSuite struct {
 	suite.Suite
 	createAccountUC *mocks.MockCreateAccountUseCase
+	getAccountUC    *mocks.MockGetAccountUseCase
+	listAccountsUC  *mocks.MockListAccountsUseCase
 	storage         *mocks2.MockStorage
 	ctx             context.Context
 	controller      *controller
@@ -27,6 +29,14 @@ type ethereumCtrlTestSuite struct {
 
 func (s *ethereumCtrlTestSuite) CreateAccount() ethereum.CreateAccountUseCase {
 	return s.createAccountUC
+}
+
+func (s *ethereumCtrlTestSuite) GetAccount() ethereum.GetAccountUseCase {
+	return s.getAccountUC
+}
+
+func (s *ethereumCtrlTestSuite) ListAccounts() ethereum.ListAccountsUseCase {
+	return s.listAccountsUC
 }
 
 func (s *ethereumCtrlTestSuite) SignPayload() ethereum.SignUseCase {
@@ -57,11 +67,15 @@ func (s *ethereumCtrlTestSuite) SetupTest() {
 	defer ctrl.Finish()
 
 	s.createAccountUC = mocks.NewMockCreateAccountUseCase(ctrl)
+	s.getAccountUC = mocks.NewMockGetAccountUseCase(ctrl)
+	s.listAccountsUC = mocks.NewMockListAccountsUseCase(ctrl)
 	s.controller = NewController(s, hclog.Default())
 	s.storage = mocks2.NewMockStorage(ctrl)
 	s.ctx = context.Background()
 
 	s.createAccountUC.EXPECT().WithStorage(s.storage).Return(s.createAccountUC).AnyTimes()
+	s.getAccountUC.EXPECT().WithStorage(s.storage).Return(s.getAccountUC).AnyTimes()
+	s.listAccountsUC.EXPECT().WithStorage(s.storage).Return(s.listAccountsUC).AnyTimes()
 }
 
 func (s *ethereumCtrlTestSuite) TestEthereumController_Create() {
@@ -79,10 +93,9 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Create() {
 		assert.NotEmpty(t, properties.Description)
 		assert.NotEmpty(t, properties.Summary)
 		assert.NotEmpty(t, properties.Examples[0].Description)
-		assert.NotEmpty(t, properties.Examples[0].Data)
+		assert.Empty(t, properties.Examples[0].Data)
 		assert.NotEmpty(t, properties.Examples[0].Response)
 		assert.NotEmpty(t, properties.Responses[200])
-		assert.NotEmpty(t, properties.Responses[400])
 		assert.NotEmpty(t, properties.Responses[500])
 	})
 
@@ -90,19 +103,14 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Create() {
 		account := testutils.FakeETHAccount()
 		request := &logical.Request{
 			Storage: s.storage,
-		}
-		data := &framework.FieldData{
-			Raw: map[string]interface{}{
-				namespaceLabel: account.Namespace,
-			},
-			Schema: map[string]*framework.FieldSchema{
-				namespaceLabel: namespaceFieldSchema,
+			Headers: map[string][]string{
+				namespaceHeader: {account.Namespace},
 			},
 		}
 
 		s.createAccountUC.EXPECT().Execute(gomock.Any(), account.Namespace, "").Return(account, nil)
 
-		response, err := createOperation.Handler()(s.ctx, request, data)
+		response, err := createOperation.Handler()(s.ctx, request, &framework.FieldData{})
 
 		assert.NoError(t, err)
 		assert.Equal(t, account.Address, response.Data["address"])
@@ -115,19 +123,11 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Create() {
 		request := &logical.Request{
 			Storage: s.storage,
 		}
-		data := &framework.FieldData{
-			Raw: map[string]interface{}{
-				namespaceLabel: "myNamespace",
-			},
-			Schema: map[string]*framework.FieldSchema{
-				namespaceLabel: namespaceFieldSchema,
-			},
-		}
 		expectedErr := fmt.Errorf("error")
 
-		s.createAccountUC.EXPECT().Execute(gomock.Any(), "myNamespace", "").Return(nil, expectedErr)
+		s.createAccountUC.EXPECT().Execute(gomock.Any(), "", "").Return(nil, expectedErr)
 
-		response, err := createOperation.Handler()(s.ctx, request, data)
+		response, err := createOperation.Handler()(s.ctx, request, &framework.FieldData{})
 
 		assert.Empty(t, response)
 		assert.Equal(t, expectedErr, err)
@@ -153,7 +153,6 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Import() {
 		assert.NotEmpty(t, properties.Examples[0].Response)
 		assert.NotEmpty(t, properties.Responses[200])
 		assert.NotEmpty(t, properties.Responses[400])
-		assert.NotEmpty(t, properties.Responses[422])
 		assert.NotEmpty(t, properties.Responses[500])
 	})
 
@@ -162,14 +161,15 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Import() {
 		privKey := "fa88c4a5912f80503d6b5503880d0745f4b88a1ff90ce8f64cdd8f32cc3bc249"
 		request := &logical.Request{
 			Storage: s.storage,
+			Headers: map[string][]string{
+				namespaceHeader: {account.Namespace},
+			},
 		}
 		data := &framework.FieldData{
 			Raw: map[string]interface{}{
-				namespaceLabel:  account.Namespace,
 				privateKeyLabel: privKey,
 			},
 			Schema: map[string]*framework.FieldSchema{
-				namespaceLabel: namespaceFieldSchema,
 				privateKeyLabel: {
 					Type:        framework.TypeString,
 					Description: "Private key in hexadecimal format",
@@ -196,11 +196,9 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Import() {
 		}
 		data := &framework.FieldData{
 			Raw: map[string]interface{}{
-				namespaceLabel:  "myNamespace",
 				privateKeyLabel: privKey,
 			},
 			Schema: map[string]*framework.FieldSchema{
-				namespaceLabel: namespaceFieldSchema,
 				privateKeyLabel: {
 					Type:        framework.TypeString,
 					Description: "Private key in hexadecimal format",
@@ -210,9 +208,137 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Import() {
 		}
 		expectedErr := fmt.Errorf("error")
 
-		s.createAccountUC.EXPECT().Execute(gomock.Any(), "myNamespace", privKey).Return(nil, expectedErr)
+		s.createAccountUC.EXPECT().Execute(gomock.Any(), "", privKey).Return(nil, expectedErr)
 
 		response, err := importOperation.Handler()(s.ctx, request, data)
+
+		assert.Empty(t, response)
+		assert.Equal(t, expectedErr, err)
+	})
+}
+
+func (s *ethereumCtrlTestSuite) TestEthereumController_Get() {
+	path := s.controller.Paths()[2]
+	getOperation := path.Operations[logical.ReadOperation]
+
+	s.T().Run("should define the correct path", func(t *testing.T) {
+		assert.Equal(t, fmt.Sprintf("ethereum/accounts/%s", framework.GenericNameRegex("address")), path.Pattern)
+		assert.NotEmpty(t, getOperation)
+	})
+
+	s.T().Run("should define correct properties", func(t *testing.T) {
+		properties := getOperation.Properties()
+
+		assert.NotEmpty(t, properties.Description)
+		assert.NotEmpty(t, properties.Summary)
+		assert.NotEmpty(t, properties.Examples[0].Description)
+		assert.NotEmpty(t, properties.Examples[0].Data)
+		assert.NotEmpty(t, properties.Examples[0].Response)
+		assert.NotEmpty(t, properties.Responses[200])
+		assert.NotEmpty(t, properties.Responses[400])
+		assert.NotEmpty(t, properties.Responses[500])
+	})
+
+	s.T().Run("handler should execute the correct use case", func(t *testing.T) {
+		account := testutils.FakeETHAccount()
+		request := &logical.Request{
+			Storage: s.storage,
+			Headers: map[string][]string{
+				namespaceHeader: {account.Namespace},
+			},
+		}
+		data := &framework.FieldData{
+			Raw: map[string]interface{}{
+				addressLabel: account.Address,
+			},
+			Schema: map[string]*framework.FieldSchema{
+				addressLabel: addressFieldSchema,
+			},
+		}
+
+		s.getAccountUC.EXPECT().Execute(gomock.Any(), account.Address, account.Namespace).Return(account, nil)
+
+		response, err := getOperation.Handler()(s.ctx, request, data)
+
+		assert.NoError(t, err)
+		assert.Equal(t, account.Address, response.Data["address"])
+		assert.Equal(t, account.PublicKey, response.Data["publicKey"])
+		assert.Equal(t, account.CompressedPublicKey, response.Data["compressedPublicKey"])
+		assert.Equal(t, account.Namespace, response.Data["namespace"])
+	})
+
+	s.T().Run("should return same error if use case fails", func(t *testing.T) {
+		request := &logical.Request{
+			Storage: s.storage,
+		}
+		data := &framework.FieldData{
+			Raw: map[string]interface{}{
+				addressLabel: "myAddress",
+			},
+			Schema: map[string]*framework.FieldSchema{
+				addressLabel: addressFieldSchema,
+			},
+		}
+		expectedErr := fmt.Errorf("error")
+
+		s.getAccountUC.EXPECT().Execute(gomock.Any(), "myAddress", "").Return(nil, expectedErr)
+
+		response, err := getOperation.Handler()(s.ctx, request, data)
+
+		assert.Empty(t, response)
+		assert.Equal(t, expectedErr, err)
+	})
+}
+
+func (s *ethereumCtrlTestSuite) TestEthereumController_List() {
+	path := s.controller.Paths()[0]
+	listOperation := path.Operations[logical.ListOperation]
+
+	s.T().Run("should define the correct path", func(t *testing.T) {
+		assert.Equal(t, "ethereum/accounts", path.Pattern)
+		assert.NotEmpty(t, listOperation)
+	})
+
+	s.T().Run("should define correct properties", func(t *testing.T) {
+		properties := listOperation.Properties()
+
+		assert.NotEmpty(t, properties.Description)
+		assert.NotEmpty(t, properties.Summary)
+		assert.NotEmpty(t, properties.Examples[0].Description)
+		assert.NotEmpty(t, properties.Examples[0].Response)
+		assert.NotEmpty(t, properties.Responses[200])
+		assert.NotEmpty(t, properties.Responses[500])
+	})
+
+	s.T().Run("handler should execute the correct use case", func(t *testing.T) {
+		account := testutils.FakeETHAccount()
+		expectedList := []string{account.Address}
+		request := &logical.Request{
+			Storage: s.storage,
+			Headers: map[string][]string{
+				namespaceHeader: {account.Namespace},
+			},
+		}
+		data := &framework.FieldData{}
+
+		s.listAccountsUC.EXPECT().Execute(gomock.Any(), account.Namespace).Return(expectedList, nil)
+
+		response, err := listOperation.Handler()(s.ctx, request, data)
+
+		assert.NoError(t, err)
+		assert.Equal(t, expectedList, response.Data["keys"])
+	})
+
+	s.T().Run("should return same error if use case fails", func(t *testing.T) {
+		request := &logical.Request{
+			Storage: s.storage,
+		}
+		data := &framework.FieldData{}
+		expectedErr := fmt.Errorf("error")
+
+		s.listAccountsUC.EXPECT().Execute(gomock.Any(), "").Return(nil, expectedErr)
+
+		response, err := listOperation.Handler()(s.ctx, request, data)
 
 		assert.Empty(t, response)
 		assert.Equal(t, expectedErr, err)

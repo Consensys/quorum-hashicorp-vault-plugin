@@ -18,6 +18,8 @@ Ethereum Use Cases
 */
 type UseCases interface {
 	CreateAccount() CreateAccountUseCase
+	GetAccount() GetAccountUseCase
+	ListAccounts() ListAccountsUseCase
 	SignPayload() SignUseCase
 	SignTransaction() SignTransactionUseCase
 	SignQuorumPrivateTransaction() SignQuorumPrivateTransactionUseCase
@@ -27,6 +29,16 @@ type UseCases interface {
 type CreateAccountUseCase interface {
 	Execute(ctx context.Context, namespace, importedPrivKey string) (*entities.ETHAccount, error)
 	WithStorage(storage logical.Storage) CreateAccountUseCase
+}
+
+type GetAccountUseCase interface {
+	Execute(ctx context.Context, address, namespace string) (*entities.ETHAccount, error)
+	WithStorage(storage logical.Storage) GetAccountUseCase
+}
+
+type ListAccountsUseCase interface {
+	Execute(ctx context.Context, namespace string) ([]string, error)
+	WithStorage(storage logical.Storage) ListAccountsUseCase
 }
 
 type SignUseCase interface {
