@@ -1,4 +1,4 @@
-package ethereum
+package usecases
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/ethereum/entities"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 )
 
 //go:generate mockgen -source=use-cases.go -destination=mocks/use-cases.go -package=mocks

@@ -1,7 +1,7 @@
 package testutils
 
 import (
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/ethereum/entities"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 	"github.com/ethereum/go-ethereum/common"
 	"math/rand"
 )

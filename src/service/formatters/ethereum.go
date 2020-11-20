@@ -1,7 +1,7 @@
 package formatters
 
 import (
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/ethereum/entities"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 	"github.com/hashicorp/vault/sdk/logical"
 )
 
@@ -12,6 +12,14 @@ func FormatAccountResponse(account *entities.ETHAccount) *logical.Response {
 			"publicKey":           account.PublicKey,
 			"compressedPublicKey": account.CompressedPublicKey,
 			"namespace":           account.Namespace,
+		},
+	}
+}
+
+func FormatSignatureResponse(signature string) *logical.Response {
+	return &logical.Response{
+		Data: map[string]interface{}{
+			"signature": signature,
 		},
 	}
 }

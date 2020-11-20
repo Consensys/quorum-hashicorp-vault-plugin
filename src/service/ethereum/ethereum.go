@@ -2,18 +2,18 @@ package ethereum
 
 import (
 	"fmt"
-	ethereum "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/ethereum/use-cases"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
 )
 
 type controller struct {
-	useCases ethereum.UseCases
+	useCases usecases.UseCases
 	logger   hclog.Logger
 }
 
-func NewController(useCases ethereum.UseCases, logger hclog.Logger) *controller {
+func NewController(useCases usecases.UseCases, logger hclog.Logger) *controller {
 	return &controller{
 		useCases: useCases,
 		logger:   logger,
@@ -27,6 +27,7 @@ func (c *controller) Paths() []*framework.Path {
 			c.pathAccounts(),
 			c.pathImportAccount(),
 			c.pathAccount(),
+			c.pathSignPayload(),
 		},
 	)
 }
@@ -73,6 +74,25 @@ func (c *controller) pathImportAccount() *framework.Path {
 			logical.UpdateOperation: c.NewImportOperation(),
 		},
 		HelpSynopsis: "Imports an Ethereum account",
+	}
+}
+
+func (c *controller) pathSignPayload() *framework.Path {
+	return &framework.Path{
+		Pattern: fmt.Sprintf("ethereum/accounts/%s/sign", framework.GenericNameRegex("address")),
+		Fields: map[string]*framework.FieldSchema{
+			addressLabel: addressFieldSchema,
+			dataLabel: {
+				Type:        framework.TypeString,
+				Description: "data to sign",
+				Required:    true,
+			},
+		},
+		Operations: map[logical.Operation]framework.OperationHandler{
+			logical.CreateOperation: c.NewSignPayloadOperation(),
+			logical.UpdateOperation: c.NewSignPayloadOperation(),
+		},
+		HelpSynopsis: "Signs an arbitrary message using an existing Ethereum account",
 	}
 }
 

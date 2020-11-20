@@ -5,6 +5,7 @@ import "github.com/hashicorp/vault/sdk/framework"
 const (
 	privateKeyLabel = "privateKey"
 	addressLabel    = "address"
+	dataLabel       = "data"
 
 	namespaceHeader = "X-Vault-Namespace"
 )

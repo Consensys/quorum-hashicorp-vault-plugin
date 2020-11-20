@@ -2,9 +2,9 @@ package src
 
 import (
 	"context"
-	builder "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/ethereum"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/ethereum"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/builder"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
 )

@@ -6,8 +6,8 @@ package mocks
 
 import (
 	context "context"
-	entities "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/ethereum/entities"
-	ethereum "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/ethereum/use-cases"
+	entities "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
+	use_cases "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
 	types "github.com/consensys/quorum/core/types"
 	types0 "github.com/ethereum/go-ethereum/core/types"
 	gomock "github.com/golang/mock/gomock"
@@ -39,10 +39,10 @@ func (m *MockUseCases) EXPECT() *MockUseCasesMockRecorder {
 }
 
 // CreateAccount mocks base method
-func (m *MockUseCases) CreateAccount() ethereum.CreateAccountUseCase {
+func (m *MockUseCases) CreateAccount() use_cases.CreateAccountUseCase {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateAccount")
-	ret0, _ := ret[0].(ethereum.CreateAccountUseCase)
+	ret0, _ := ret[0].(use_cases.CreateAccountUseCase)
 	return ret0
 }
 
@@ -53,10 +53,10 @@ func (mr *MockUseCasesMockRecorder) CreateAccount() *gomock.Call {
 }
 
 // GetAccount mocks base method
-func (m *MockUseCases) GetAccount() ethereum.GetAccountUseCase {
+func (m *MockUseCases) GetAccount() use_cases.GetAccountUseCase {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAccount")
-	ret0, _ := ret[0].(ethereum.GetAccountUseCase)
+	ret0, _ := ret[0].(use_cases.GetAccountUseCase)
 	return ret0
 }
 
@@ -67,10 +67,10 @@ func (mr *MockUseCasesMockRecorder) GetAccount() *gomock.Call {
 }
 
 // ListAccounts mocks base method
-func (m *MockUseCases) ListAccounts() ethereum.ListAccountsUseCase {
+func (m *MockUseCases) ListAccounts() use_cases.ListAccountsUseCase {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListAccounts")
-	ret0, _ := ret[0].(ethereum.ListAccountsUseCase)
+	ret0, _ := ret[0].(use_cases.ListAccountsUseCase)
 	return ret0
 }
 
@@ -81,10 +81,10 @@ func (mr *MockUseCasesMockRecorder) ListAccounts() *gomock.Call {
 }
 
 // SignPayload mocks base method
-func (m *MockUseCases) SignPayload() ethereum.SignUseCase {
+func (m *MockUseCases) SignPayload() use_cases.SignUseCase {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SignPayload")
-	ret0, _ := ret[0].(ethereum.SignUseCase)
+	ret0, _ := ret[0].(use_cases.SignUseCase)
 	return ret0
 }
 
@@ -95,10 +95,10 @@ func (mr *MockUseCasesMockRecorder) SignPayload() *gomock.Call {
 }
 
 // SignTransaction mocks base method
-func (m *MockUseCases) SignTransaction() ethereum.SignTransactionUseCase {
+func (m *MockUseCases) SignTransaction() use_cases.SignTransactionUseCase {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SignTransaction")
-	ret0, _ := ret[0].(ethereum.SignTransactionUseCase)
+	ret0, _ := ret[0].(use_cases.SignTransactionUseCase)
 	return ret0
 }
 
@@ -109,10 +109,10 @@ func (mr *MockUseCasesMockRecorder) SignTransaction() *gomock.Call {
 }
 
 // SignQuorumPrivateTransaction mocks base method
-func (m *MockUseCases) SignQuorumPrivateTransaction() ethereum.SignQuorumPrivateTransactionUseCase {
+func (m *MockUseCases) SignQuorumPrivateTransaction() use_cases.SignQuorumPrivateTransactionUseCase {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SignQuorumPrivateTransaction")
-	ret0, _ := ret[0].(ethereum.SignQuorumPrivateTransactionUseCase)
+	ret0, _ := ret[0].(use_cases.SignQuorumPrivateTransactionUseCase)
 	return ret0
 }
 
@@ -123,10 +123,10 @@ func (mr *MockUseCasesMockRecorder) SignQuorumPrivateTransaction() *gomock.Call 
 }
 
 // SignEEATransaction mocks base method
-func (m *MockUseCases) SignEEATransaction() ethereum.SignEEATransactionUseCase {
+func (m *MockUseCases) SignEEATransaction() use_cases.SignEEATransactionUseCase {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SignEEATransaction")
-	ret0, _ := ret[0].(ethereum.SignEEATransactionUseCase)
+	ret0, _ := ret[0].(use_cases.SignEEATransactionUseCase)
 	return ret0
 }
 
@@ -175,10 +175,10 @@ func (mr *MockCreateAccountUseCaseMockRecorder) Execute(ctx, namespace, imported
 }
 
 // WithStorage mocks base method
-func (m *MockCreateAccountUseCase) WithStorage(storage logical.Storage) ethereum.CreateAccountUseCase {
+func (m *MockCreateAccountUseCase) WithStorage(storage logical.Storage) use_cases.CreateAccountUseCase {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WithStorage", storage)
-	ret0, _ := ret[0].(ethereum.CreateAccountUseCase)
+	ret0, _ := ret[0].(use_cases.CreateAccountUseCase)
 	return ret0
 }
 
@@ -227,10 +227,10 @@ func (mr *MockGetAccountUseCaseMockRecorder) Execute(ctx, address, namespace int
 }
 
 // WithStorage mocks base method
-func (m *MockGetAccountUseCase) WithStorage(storage logical.Storage) ethereum.GetAccountUseCase {
+func (m *MockGetAccountUseCase) WithStorage(storage logical.Storage) use_cases.GetAccountUseCase {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WithStorage", storage)
-	ret0, _ := ret[0].(ethereum.GetAccountUseCase)
+	ret0, _ := ret[0].(use_cases.GetAccountUseCase)
 	return ret0
 }
 
@@ -279,10 +279,10 @@ func (mr *MockListAccountsUseCaseMockRecorder) Execute(ctx, namespace interface{
 }
 
 // WithStorage mocks base method
-func (m *MockListAccountsUseCase) WithStorage(storage logical.Storage) ethereum.ListAccountsUseCase {
+func (m *MockListAccountsUseCase) WithStorage(storage logical.Storage) use_cases.ListAccountsUseCase {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WithStorage", storage)
-	ret0, _ := ret[0].(ethereum.ListAccountsUseCase)
+	ret0, _ := ret[0].(use_cases.ListAccountsUseCase)
 	return ret0
 }
 
@@ -331,10 +331,10 @@ func (mr *MockSignUseCaseMockRecorder) Execute(ctx, address, namespace, data int
 }
 
 // WithStorage mocks base method
-func (m *MockSignUseCase) WithStorage(storage logical.Storage) ethereum.SignUseCase {
+func (m *MockSignUseCase) WithStorage(storage logical.Storage) use_cases.SignUseCase {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WithStorage", storage)
-	ret0, _ := ret[0].(ethereum.SignUseCase)
+	ret0, _ := ret[0].(use_cases.SignUseCase)
 	return ret0
 }
 
@@ -383,10 +383,10 @@ func (mr *MockSignTransactionUseCaseMockRecorder) Execute(ctx, address, namespac
 }
 
 // WithStorage mocks base method
-func (m *MockSignTransactionUseCase) WithStorage(storage logical.Storage) ethereum.SignTransactionUseCase {
+func (m *MockSignTransactionUseCase) WithStorage(storage logical.Storage) use_cases.SignTransactionUseCase {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WithStorage", storage)
-	ret0, _ := ret[0].(ethereum.SignTransactionUseCase)
+	ret0, _ := ret[0].(use_cases.SignTransactionUseCase)
 	return ret0
 }
 
@@ -435,10 +435,10 @@ func (mr *MockSignQuorumPrivateTransactionUseCaseMockRecorder) Execute(ctx, addr
 }
 
 // WithStorage mocks base method
-func (m *MockSignQuorumPrivateTransactionUseCase) WithStorage(storage logical.Storage) ethereum.SignQuorumPrivateTransactionUseCase {
+func (m *MockSignQuorumPrivateTransactionUseCase) WithStorage(storage logical.Storage) use_cases.SignQuorumPrivateTransactionUseCase {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WithStorage", storage)
-	ret0, _ := ret[0].(ethereum.SignQuorumPrivateTransactionUseCase)
+	ret0, _ := ret[0].(use_cases.SignQuorumPrivateTransactionUseCase)
 	return ret0
 }
 
@@ -487,10 +487,10 @@ func (mr *MockSignEEATransactionUseCaseMockRecorder) Execute(ctx, address, names
 }
 
 // WithStorage mocks base method
-func (m *MockSignEEATransactionUseCase) WithStorage(storage logical.Storage) ethereum.SignEEATransactionUseCase {
+func (m *MockSignEEATransactionUseCase) WithStorage(storage logical.Storage) use_cases.SignEEATransactionUseCase {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WithStorage", storage)
-	ret0, _ := ret[0].(ethereum.SignEEATransactionUseCase)
+	ret0, _ := ret[0].(use_cases.SignEEATransactionUseCase)
 	return ret0
 }
 

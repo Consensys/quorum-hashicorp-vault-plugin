@@ -2,9 +2,10 @@ package ethereum
 
 import (
 	"context"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/ethereum/entities"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/ethereum/use-cases/utils"
 	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases/ethereum/utils"
 	"github.com/hashicorp/vault/sdk/logical"
 )
 
@@ -14,11 +15,11 @@ type getAccountUseCase struct {
 }
 
 // NewGetAccountUseCase creates a new GetAccountUseCase
-func NewGetAccountUseCase() GetAccountUseCase {
+func NewGetAccountUseCase() usecases.GetAccountUseCase {
 	return &getAccountUseCase{}
 }
 
-func (uc getAccountUseCase) WithStorage(storage logical.Storage) GetAccountUseCase {
+func (uc getAccountUseCase) WithStorage(storage logical.Storage) usecases.GetAccountUseCase {
 	uc.storage = storage
 	return &uc
 }
@@ -43,6 +44,6 @@ func (uc *getAccountUseCase) Execute(ctx context.Context, address, namespace str
 		return nil, err
 	}
 
-	logger.Info("Ethereum account found successfully")
+	logger.Debug("Ethereum account found successfully")
 	return account, nil
 }

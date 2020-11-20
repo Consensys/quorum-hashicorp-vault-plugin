@@ -3,9 +3,9 @@ package ethereum
 import (
 	"context"
 	"fmt"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/ethereum/testutils"
-	mocks2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/testutils/mocks"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/testutils/mocks"
 	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/testutils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/hashicorp/go-hclog"
 	"testing"
@@ -18,7 +18,7 @@ func TestCreateAccount_Execute(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockStorage := mocks2.NewMockStorage(ctrl)
+	mockStorage := mocks.NewMockStorage(ctrl)
 	ctx := apputils.WithLogger(context.Background(), hclog.New(&hclog.LoggerOptions{}))
 
 	usecase := NewCreateAccountUseCase().WithStorage(mockStorage)
