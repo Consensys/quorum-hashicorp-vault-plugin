@@ -2,6 +2,7 @@ package ethereum
 
 import (
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/testutils"
 	"github.com/golang/mock/gomock"
 	"github.com/hashicorp/vault/sdk/framework"
@@ -38,15 +39,15 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Import() {
 		request := &logical.Request{
 			Storage: s.storage,
 			Headers: map[string][]string{
-				namespaceHeader: {account.Namespace},
+				formatters.NamespaceHeader: {account.Namespace},
 			},
 		}
 		data := &framework.FieldData{
 			Raw: map[string]interface{}{
-				privateKeyLabel: privKey,
+				formatters.PrivateKeyLabel: privKey,
 			},
 			Schema: map[string]*framework.FieldSchema{
-				privateKeyLabel: {
+				formatters.PrivateKeyLabel: {
 					Type:        framework.TypeString,
 					Description: "Private key in hexadecimal format",
 					Required:    true,
@@ -72,10 +73,10 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Import() {
 		}
 		data := &framework.FieldData{
 			Raw: map[string]interface{}{
-				privateKeyLabel: privKey,
+				formatters.PrivateKeyLabel: privKey,
 			},
 			Schema: map[string]*framework.FieldSchema{
-				privateKeyLabel: {
+				formatters.PrivateKeyLabel: {
 					Type:        framework.TypeString,
 					Description: "Private key in hexadecimal format",
 					Required:    true,

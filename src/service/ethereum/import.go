@@ -20,7 +20,7 @@ func (c *controller) NewImportOperation() *framework.PathOperation {
 			{
 				Description: "Imports an account on the tenant0 namespace",
 				Data: map[string]interface{}{
-					privateKeyLabel: exampleAccount.PrivateKey,
+					formatters.PrivateKeyLabel: exampleAccount.PrivateKey,
 				},
 				Response: successExample,
 			},

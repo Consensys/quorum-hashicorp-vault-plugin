@@ -21,7 +21,7 @@ func (c *controller) NewGetOperation() *framework.PathOperation {
 			{
 				Description: "Gets an account on the tenant0 namespace",
 				Data: map[string]interface{}{
-					addressLabel: exampleAccount.Address,
+					formatters.AddressLabel: exampleAccount.Address,
 				},
 				Response: successExample,
 			},
@@ -37,7 +37,7 @@ func (c *controller) NewGetOperation() *framework.PathOperation {
 
 func (c *controller) getHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
-		address := data.Get(addressLabel).(string)
+		address := data.Get(formatters.AddressLabel).(string)
 		namespace := getNamespace(req)
 
 		ctx = utils.WithLogger(ctx, c.logger)

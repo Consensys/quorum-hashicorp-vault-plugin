@@ -15,6 +15,11 @@ commands:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
       - run:
+          name: Set Git URL rewrite
+          command: |
+            git config --global --add url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".insteadOf "git@gitlab.com:"
+            git config --global --add url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/".insteadOf "https://gitlab.com/"
+      - run:
           name: Pull and build dependencies for the project
           command: go get
       - save_cache:

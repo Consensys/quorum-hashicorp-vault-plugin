@@ -14,13 +14,16 @@ import (
 
 type ethereumCtrlTestSuite struct {
 	suite.Suite
-	createAccountUC *mocks.MockCreateAccountUseCase
-	getAccountUC    *mocks.MockGetAccountUseCase
-	listAccountsUC  *mocks.MockListAccountsUseCase
-	signPayloadUC   *mocks.MockSignUseCase
-	storage         *mocks2.MockStorage
-	ctx             context.Context
-	controller      *controller
+	createAccountUC                *mocks.MockCreateAccountUseCase
+	getAccountUC                   *mocks.MockGetAccountUseCase
+	listAccountsUC                 *mocks.MockListAccountsUseCase
+	signPayloadUC                  *mocks.MockSignUseCase
+	signTransactionUC              *mocks.MockSignTransactionUseCase
+	signQuorumPrivateTransactionUC *mocks.MockSignQuorumPrivateTransactionUseCase
+	signEEATransactionUC           *mocks.MockSignEEATransactionUseCase
+	storage                        *mocks2.MockStorage
+	ctx                            context.Context
+	controller                     *controller
 }
 
 func (s *ethereumCtrlTestSuite) CreateAccount() usecases.CreateAccountUseCase {
@@ -40,15 +43,15 @@ func (s *ethereumCtrlTestSuite) SignPayload() usecases.SignUseCase {
 }
 
 func (s *ethereumCtrlTestSuite) SignTransaction() usecases.SignTransactionUseCase {
-	return nil
+	return s.signTransactionUC
 }
 
 func (s *ethereumCtrlTestSuite) SignQuorumPrivateTransaction() usecases.SignQuorumPrivateTransactionUseCase {
-	return nil
+	return s.signQuorumPrivateTransactionUC
 }
 
 func (s *ethereumCtrlTestSuite) SignEEATransaction() usecases.SignEEATransactionUseCase {
-	return nil
+	return s.signEEATransactionUC
 }
 
 var _ usecases.UseCases = &ethereumCtrlTestSuite{}
@@ -66,6 +69,9 @@ func (s *ethereumCtrlTestSuite) SetupTest() {
 	s.getAccountUC = mocks.NewMockGetAccountUseCase(ctrl)
 	s.listAccountsUC = mocks.NewMockListAccountsUseCase(ctrl)
 	s.signPayloadUC = mocks.NewMockSignUseCase(ctrl)
+	s.signTransactionUC = mocks.NewMockSignTransactionUseCase(ctrl)
+	s.signQuorumPrivateTransactionUC = mocks.NewMockSignQuorumPrivateTransactionUseCase(ctrl)
+	s.signEEATransactionUC = mocks.NewMockSignEEATransactionUseCase(ctrl)
 	s.controller = NewController(s, hclog.Default())
 	s.storage = mocks2.NewMockStorage(ctrl)
 	s.ctx = context.Background()
@@ -74,4 +80,7 @@ func (s *ethereumCtrlTestSuite) SetupTest() {
 	s.getAccountUC.EXPECT().WithStorage(s.storage).Return(s.getAccountUC).AnyTimes()
 	s.listAccountsUC.EXPECT().WithStorage(s.storage).Return(s.listAccountsUC).AnyTimes()
 	s.signPayloadUC.EXPECT().WithStorage(s.storage).Return(s.signPayloadUC).AnyTimes()
+	s.signTransactionUC.EXPECT().WithStorage(s.storage).Return(s.signTransactionUC).AnyTimes()
+	s.signQuorumPrivateTransactionUC.EXPECT().WithStorage(s.storage).Return(s.signQuorumPrivateTransactionUC).AnyTimes()
+	s.signEEATransactionUC.EXPECT().WithStorage(s.storage).Return(s.signEEATransactionUC).AnyTimes()
 }

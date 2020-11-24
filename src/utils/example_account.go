@@ -58,3 +58,12 @@ func Example200Response() *framework.Response {
 		Example:     formatters.FormatAccountResponse(ExampleETHAccount()),
 	}
 }
+
+func Example200ResponseSignature() *framework.Response {
+	exampleSignature := "0x8b9679a75861e72fa6968dd5add3bf96e2747f0f124a2e728980f91e1958367e19c2486a40fdc65861824f247603bc18255fa497ca0b8b0a394aa7a6740fdc4601"
+
+	return &framework.Response{
+		Description: "Success",
+		Example:     formatters.FormatSignatureResponse(exampleSignature),
+	}
+}

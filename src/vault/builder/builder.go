@@ -18,10 +18,13 @@ type useCases struct {
 func NewEthereumUseCases() usecases.UseCases {
 	getAccount := ethereum.NewGetAccountUseCase()
 	return &useCases{
-		createAccount: ethereum.NewCreateAccountUseCase(),
-		getAccount:    getAccount,
-		listAccounts:  ethereum.NewListAccountsUseCase(),
-		sign:          ethereum.NewSignUseCase(getAccount),
+		createAccount:       ethereum.NewCreateAccountUseCase(),
+		getAccount:          getAccount,
+		listAccounts:        ethereum.NewListAccountsUseCase(),
+		sign:                ethereum.NewSignUseCase(getAccount),
+		signTx:              ethereum.NewSignTransactionUseCase(getAccount),
+		signQuorumPrivateTx: ethereum.NewSignQuorumPrivateTransactionUseCase(getAccount),
+		signEEATx:           ethereum.NewSignEEATransactionUseCase(getAccount),
 	}
 }
 

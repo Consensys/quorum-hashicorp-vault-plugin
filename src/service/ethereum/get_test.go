@@ -2,6 +2,7 @@ package ethereum
 
 import (
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/testutils"
 	"github.com/golang/mock/gomock"
 	"github.com/hashicorp/vault/sdk/framework"
@@ -37,15 +38,15 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Get() {
 		request := &logical.Request{
 			Storage: s.storage,
 			Headers: map[string][]string{
-				namespaceHeader: {account.Namespace},
+				formatters.NamespaceHeader: {account.Namespace},
 			},
 		}
 		data := &framework.FieldData{
 			Raw: map[string]interface{}{
-				addressLabel: account.Address,
+				formatters.AddressLabel: account.Address,
 			},
 			Schema: map[string]*framework.FieldSchema{
-				addressLabel: addressFieldSchema,
+				formatters.AddressLabel: formatters.AddressFieldSchema,
 			},
 		}
 
@@ -66,10 +67,10 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Get() {
 		}
 		data := &framework.FieldData{
 			Raw: map[string]interface{}{
-				addressLabel: "myAddress",
+				formatters.AddressLabel: "myAddress",
 			},
 			Schema: map[string]*framework.FieldSchema{
-				addressLabel: addressFieldSchema,
+				formatters.AddressLabel: formatters.AddressFieldSchema,
 			},
 		}
 		expectedErr := fmt.Errorf("error")

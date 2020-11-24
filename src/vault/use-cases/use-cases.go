@@ -3,6 +3,7 @@ package usecases
 import (
 	"context"
 	"github.com/hashicorp/vault/sdk/logical"
+	entities2 "gitlab.com/ConsenSys/client/fr/core-stack/orchestrate.git/v2/pkg/types/entities"
 
 	quorumtypes "github.com/consensys/quorum/core/types"
 
@@ -61,7 +62,7 @@ type SignEEATransactionUseCase interface {
 		ctx context.Context,
 		address, namespace string, chainID string,
 		tx *ethtypes.Transaction,
-		privateArgs *entities.PrivateETHTransactionParams,
+		privateArgs *entities2.PrivateETHTransactionParams,
 	) (string, error)
 	WithStorage(storage logical.Storage) SignEEATransactionUseCase
 }
