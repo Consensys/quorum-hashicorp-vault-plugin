@@ -45,12 +45,13 @@ jobs:
       - prepare_golang
       - run:
           name: Build
-          command: make build
+          command: |
+            make build
+            sha256sum -b build/bin/orchestrate-hashicorp-vault-plugin > build/bin/SHA256SUM
       - persist_to_workspace:
-          root: ~/project
+          root: ~/project/build/bin
           paths:
-            - ./build
-
+            - ./
   test:
     executor: golang_executor
     steps:
@@ -58,6 +59,18 @@ jobs:
       - run:
           name: Unit tests
           command: make test
+
+  publish-github-release:
+    executor: golang_executor
+    steps:
+      - attach_workspace:
+          at: ./artifacts
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            go get github.com/tcnksm/ghr
+            VERSION="${CIRCLE_TAG}"
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
 
 workflows:
   version: 2
@@ -81,3 +94,12 @@ workflows:
               only: /^v.*/
             branches:
               only: /.*/
+      - publish-github-release:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      
