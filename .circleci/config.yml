@@ -47,7 +47,7 @@ jobs:
           name: Build
           command: |
             CGO_ENABLED=0 GOOS=linux go build -a -v -o build/bin/orchestrate-hashicorp-vault-plugin
-            sha256sum -b build/bin/orchestrate-hashicorp-vault-plugin > build/bin/SHA256SUM
+            sha256sum -b build/bin/orchestrate-hashicorp-vault-plugin | cut -d' ' -f1 > build/bin/SHA256SUM
       - persist_to_workspace:
           root: ~/project/build/bin
           paths:
