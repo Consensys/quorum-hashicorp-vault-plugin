@@ -59,7 +59,6 @@ func (c *controller) pathAccount() *framework.Path {
 		Operations: map[logical.Operation]framework.OperationHandler{
 			logical.ReadOperation: c.NewGetOperation(),
 		},
-		ExistenceCheck: c.ExistenceHandler,
 	}
 }
 

@@ -48,12 +48,16 @@ func TestGetAccount_Execute(t *testing.T) {
 		assert.Equal(t, expectedErr, err)
 	})
 
-	t.Run("should return nil if nothing is found", func(t *testing.T) {
+	t.Run("should return CodedError with status 404 if nothing is found", func(t *testing.T) {
 		mockStorage.EXPECT().Get(ctx, gomock.Any()).Return(nil, nil)
 
 		account, err := usecase.Execute(ctx, "0xaddress", "namespace")
 
 		assert.Nil(t, account)
-		assert.Nil(t, err)
+		assert.Error(t, err)
+
+		codedError, ok := err.(logical.HTTPCodedError)
+		assert.True(t, ok)
+		assert.Equal(t, 404, codedError.Code())
 	})
 }

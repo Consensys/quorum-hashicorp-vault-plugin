@@ -35,7 +35,7 @@ func (uc *getAccountUseCase) Execute(ctx context.Context, address, namespace str
 	}
 
 	if entry == nil {
-		return nil, nil
+		return nil, logical.CodedError(404, "ethereum account could not be found")
 	}
 
 	account := &entities.ETHAccount{}
