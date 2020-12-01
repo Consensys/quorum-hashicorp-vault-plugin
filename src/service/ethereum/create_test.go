@@ -16,7 +16,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Create() {
 	createOperation := path.Operations[logical.CreateOperation]
 
 	s.T().Run("should define the correct path", func(t *testing.T) {
-		assert.Equal(t, "ethereum/accounts", path.Pattern)
+		assert.Equal(t, "ethereum/accounts/?", path.Pattern)
 		assert.NotEmpty(t, createOperation)
 	})
 

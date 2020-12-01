@@ -16,7 +16,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_List() {
 	listOperation := path.Operations[logical.ListOperation]
 
 	s.T().Run("should define the correct path", func(t *testing.T) {
-		assert.Equal(t, "ethereum/accounts", path.Pattern)
+		assert.Equal(t, "ethereum/accounts/?", path.Pattern)
 		assert.NotEmpty(t, listOperation)
 	})
 
