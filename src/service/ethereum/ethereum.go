@@ -32,6 +32,7 @@ func (c *controller) Paths() []*framework.Path {
 			c.pathSignTransaction(),
 			c.pathSignQuorumPrivate(),
 			c.pathSignEEA(),
+			c.pathNamespaces(),
 		},
 	)
 }
@@ -39,12 +40,23 @@ func (c *controller) Paths() []*framework.Path {
 func (c *controller) pathAccounts() *framework.Path {
 	return &framework.Path{
 		Pattern:      "ethereum/accounts",
-		HelpSynopsis: "Creates a new Ethereum account",
+		HelpSynopsis: "Creates a new Ethereum account or list them",
 		Operations: map[logical.Operation]framework.OperationHandler{
 			logical.CreateOperation: c.NewCreateOperation(),
 			logical.UpdateOperation: c.NewCreateOperation(),
 			logical.ListOperation:   c.NewListOperation(),
 			logical.ReadOperation:   c.NewListOperation(),
+		},
+	}
+}
+
+func (c *controller) pathNamespaces() *framework.Path {
+	return &framework.Path{
+		Pattern:      "ethereum/namespaces",
+		HelpSynopsis: "Lists all ethereum namespaces",
+		Operations: map[logical.Operation]framework.OperationHandler{
+			logical.ListOperation: c.NewListNamespacesOperation(),
+			logical.ReadOperation: c.NewListNamespacesOperation(),
 		},
 	}
 }

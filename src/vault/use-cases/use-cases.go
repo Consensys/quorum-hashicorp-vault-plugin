@@ -21,6 +21,7 @@ type UseCases interface {
 	CreateAccount() CreateAccountUseCase
 	GetAccount() GetAccountUseCase
 	ListAccounts() ListAccountsUseCase
+	ListNamespaces() ListNamespacesUseCase
 	SignPayload() SignUseCase
 	SignTransaction() SignTransactionUseCase
 	SignQuorumPrivateTransaction() SignQuorumPrivateTransactionUseCase
@@ -65,4 +66,9 @@ type SignEEATransactionUseCase interface {
 		privateArgs *entities2.PrivateETHTransactionParams,
 	) (string, error)
 	WithStorage(storage logical.Storage) SignEEATransactionUseCase
+}
+
+type ListNamespacesUseCase interface {
+	Execute(ctx context.Context) ([]string, error)
+	WithStorage(storage logical.Storage) ListNamespacesUseCase
 }

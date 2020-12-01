@@ -81,6 +81,20 @@ func (mr *MockUseCasesMockRecorder) ListAccounts() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAccounts", reflect.TypeOf((*MockUseCases)(nil).ListAccounts))
 }
 
+// ListNamespaces mocks base method
+func (m *MockUseCases) ListNamespaces() usecases.ListNamespacesUseCase {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListNamespaces")
+	ret0, _ := ret[0].(usecases.ListNamespacesUseCase)
+	return ret0
+}
+
+// ListNamespaces indicates an expected call of ListNamespaces
+func (mr *MockUseCasesMockRecorder) ListNamespaces() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNamespaces", reflect.TypeOf((*MockUseCases)(nil).ListNamespaces))
+}
+
 // SignPayload mocks base method
 func (m *MockUseCases) SignPayload() usecases.SignUseCase {
 	m.ctrl.T.Helper()
@@ -499,4 +513,56 @@ func (m *MockSignEEATransactionUseCase) WithStorage(storage logical.Storage) use
 func (mr *MockSignEEATransactionUseCaseMockRecorder) WithStorage(storage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WithStorage", reflect.TypeOf((*MockSignEEATransactionUseCase)(nil).WithStorage), storage)
+}
+
+// MockListNamespacesUseCase is a mock of ListNamespacesUseCase interface
+type MockListNamespacesUseCase struct {
+	ctrl     *gomock.Controller
+	recorder *MockListNamespacesUseCaseMockRecorder
+}
+
+// MockListNamespacesUseCaseMockRecorder is the mock recorder for MockListNamespacesUseCase
+type MockListNamespacesUseCaseMockRecorder struct {
+	mock *MockListNamespacesUseCase
+}
+
+// NewMockListNamespacesUseCase creates a new mock instance
+func NewMockListNamespacesUseCase(ctrl *gomock.Controller) *MockListNamespacesUseCase {
+	mock := &MockListNamespacesUseCase{ctrl: ctrl}
+	mock.recorder = &MockListNamespacesUseCaseMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (m *MockListNamespacesUseCase) EXPECT() *MockListNamespacesUseCaseMockRecorder {
+	return m.recorder
+}
+
+// Execute mocks base method
+func (m *MockListNamespacesUseCase) Execute(ctx context.Context) ([]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Execute", ctx)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Execute indicates an expected call of Execute
+func (mr *MockListNamespacesUseCaseMockRecorder) Execute(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockListNamespacesUseCase)(nil).Execute), ctx)
+}
+
+// WithStorage mocks base method
+func (m *MockListNamespacesUseCase) WithStorage(storage logical.Storage) usecases.ListNamespacesUseCase {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "WithStorage", storage)
+	ret0, _ := ret[0].(usecases.ListNamespacesUseCase)
+	return ret0
+}
+
+// WithStorage indicates an expected call of WithStorage
+func (mr *MockListNamespacesUseCaseMockRecorder) WithStorage(storage interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WithStorage", reflect.TypeOf((*MockListNamespacesUseCase)(nil).WithStorage), storage)
 }

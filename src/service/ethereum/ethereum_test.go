@@ -17,6 +17,7 @@ type ethereumCtrlTestSuite struct {
 	createAccountUC                *mocks.MockCreateAccountUseCase
 	getAccountUC                   *mocks.MockGetAccountUseCase
 	listAccountsUC                 *mocks.MockListAccountsUseCase
+	listNamespacesUC               *mocks.MockListNamespacesUseCase
 	signPayloadUC                  *mocks.MockSignUseCase
 	signTransactionUC              *mocks.MockSignTransactionUseCase
 	signQuorumPrivateTransactionUC *mocks.MockSignQuorumPrivateTransactionUseCase
@@ -36,6 +37,10 @@ func (s *ethereumCtrlTestSuite) GetAccount() usecases.GetAccountUseCase {
 
 func (s *ethereumCtrlTestSuite) ListAccounts() usecases.ListAccountsUseCase {
 	return s.listAccountsUC
+}
+
+func (s *ethereumCtrlTestSuite) ListNamespaces() usecases.ListNamespacesUseCase {
+	return s.listNamespacesUC
 }
 
 func (s *ethereumCtrlTestSuite) SignPayload() usecases.SignUseCase {
@@ -68,6 +73,7 @@ func (s *ethereumCtrlTestSuite) SetupTest() {
 	s.createAccountUC = mocks.NewMockCreateAccountUseCase(ctrl)
 	s.getAccountUC = mocks.NewMockGetAccountUseCase(ctrl)
 	s.listAccountsUC = mocks.NewMockListAccountsUseCase(ctrl)
+	s.listNamespacesUC = mocks.NewMockListNamespacesUseCase(ctrl)
 	s.signPayloadUC = mocks.NewMockSignUseCase(ctrl)
 	s.signTransactionUC = mocks.NewMockSignTransactionUseCase(ctrl)
 	s.signQuorumPrivateTransactionUC = mocks.NewMockSignQuorumPrivateTransactionUseCase(ctrl)
@@ -79,6 +85,7 @@ func (s *ethereumCtrlTestSuite) SetupTest() {
 	s.createAccountUC.EXPECT().WithStorage(s.storage).Return(s.createAccountUC).AnyTimes()
 	s.getAccountUC.EXPECT().WithStorage(s.storage).Return(s.getAccountUC).AnyTimes()
 	s.listAccountsUC.EXPECT().WithStorage(s.storage).Return(s.listAccountsUC).AnyTimes()
+	s.listNamespacesUC.EXPECT().WithStorage(s.storage).Return(s.listNamespacesUC).AnyTimes()
 	s.signPayloadUC.EXPECT().WithStorage(s.storage).Return(s.signPayloadUC).AnyTimes()
 	s.signTransactionUC.EXPECT().WithStorage(s.storage).Return(s.signTransactionUC).AnyTimes()
 	s.signQuorumPrivateTransactionUC.EXPECT().WithStorage(s.storage).Return(s.signQuorumPrivateTransactionUC).AnyTimes()

@@ -7,40 +7,38 @@ import (
 	"github.com/hashicorp/vault/sdk/logical"
 )
 
-func (c *controller) NewListOperation() *framework.PathOperation {
+func (c *controller) NewListNamespacesOperation() *framework.PathOperation {
 	return &framework.PathOperation{
-		Callback:    c.listHandler(),
-		Summary:     "Gets a list of all Ethereum accounts",
-		Description: "Gets a list of all Ethereum accounts optionally filtered by namespace",
+		Callback:    c.listNamespacesHandler(),
+		Summary:     "Gets a list of all Ethereum namespaces",
+		Description: "Gets a list of all Ethereum namespaces",
 		Examples: []framework.RequestExample{
 			{
-				Description: "Gets all Ethereum accounts",
+				Description: "Gets all Ethereum namespaces",
 				Response: &framework.Response{
 					Description: "Success",
-					Example:     logical.ListResponse([]string{utils.ExampleETHAccount().Address}),
+					Example:     logical.ListResponse([]string{"ns1", "ns2"}),
 				},
 			},
 		},
 		Responses: map[int][]framework.Response{
 			200: {framework.Response{
 				Description: "Success",
-				Example:     logical.ListResponse([]string{utils.ExampleETHAccount().Address}),
+				Example:     logical.ListResponse([]string{"ns1", "ns2"}),
 			}},
 			500: {utils.Example500Response()},
 		},
 	}
 }
 
-func (c *controller) listHandler() framework.OperationFunc {
+func (c *controller) listNamespacesHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
-		namespace := getNamespace(req)
-
 		ctx = utils.WithLogger(ctx, c.logger)
-		accounts, err := c.useCases.ListAccounts().WithStorage(req.Storage).Execute(ctx, namespace)
+		namespaces, err := c.useCases.ListNamespaces().WithStorage(req.Storage).Execute(ctx)
 		if err != nil {
 			return nil, err
 		}
 
-		return logical.ListResponse(accounts), nil
+		return logical.ListResponse(namespaces), nil
 	}
 }

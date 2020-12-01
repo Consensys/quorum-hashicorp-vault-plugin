@@ -23,7 +23,7 @@ func (uc listAccountsUseCase) WithStorage(storage logical.Storage) usecases.List
 	return &uc
 }
 
-// Execute creates a new Ethereum account and stores it in the Vault
+// Execute gets a list of Ethereum accounts
 func (uc *listAccountsUseCase) Execute(ctx context.Context, namespace string) ([]string, error) {
 	logger := apputils.Logger(ctx).With("namespace", namespace)
 	logger.Debug("listing Ethereum accounts")

@@ -9,6 +9,7 @@ type useCases struct {
 	createAccount       usecases.CreateAccountUseCase
 	getAccount          usecases.GetAccountUseCase
 	listAccounts        usecases.ListAccountsUseCase
+	listNamespaces      usecases.ListNamespacesUseCase
 	sign                usecases.SignUseCase
 	signTx              usecases.SignTransactionUseCase
 	signQuorumPrivateTx usecases.SignQuorumPrivateTransactionUseCase
@@ -21,6 +22,7 @@ func NewEthereumUseCases() usecases.UseCases {
 		createAccount:       ethereum.NewCreateAccountUseCase(),
 		getAccount:          getAccount,
 		listAccounts:        ethereum.NewListAccountsUseCase(),
+		listNamespaces:      ethereum.NewListNamespacesUseCase(),
 		sign:                ethereum.NewSignUseCase(getAccount),
 		signTx:              ethereum.NewSignTransactionUseCase(getAccount),
 		signQuorumPrivateTx: ethereum.NewSignQuorumPrivateTransactionUseCase(getAccount),
@@ -38,6 +40,10 @@ func (ucs *useCases) GetAccount() usecases.GetAccountUseCase {
 
 func (ucs *useCases) ListAccounts() usecases.ListAccountsUseCase {
 	return ucs.listAccounts
+}
+
+func (ucs *useCases) ListNamespaces() usecases.ListNamespacesUseCase {
+	return ucs.listNamespaces
 }
 
 func (ucs *useCases) SignPayload() usecases.SignUseCase {
