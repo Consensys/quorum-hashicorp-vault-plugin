@@ -19,6 +19,16 @@ func ExampleETHAccount() *entities.ETHAccount {
 	}
 }
 
+func ExampleZksAccount() *entities.ZksAccount {
+	return &entities.ZksAccount{
+		Curve:      entities.ZksCurveBN256,
+		Algorithm:  entities.ZksAlgorithmEDDSA,
+		Namespace:  "tenant0",
+		PrivateKey: "0b0232595b77568d99364bede133839ccbcb40775967a7eacd15d355c96288b5",
+		PublicKey:  "0b0232595b77568d99364bede133839ccbcb40775967a7eacd15d355c96288b5",
+	}
+}
+
 func Example500Response() framework.Response {
 	return framework.Response{
 		Description: "Internal server error",
@@ -56,6 +66,13 @@ func Example200Response() *framework.Response {
 	return &framework.Response{
 		Description: "Success",
 		Example:     formatters.FormatAccountResponse(ExampleETHAccount()),
+	}
+}
+
+func Example200ZksResponse() *framework.Response {
+	return &framework.Response{
+		Description: "Success",
+		Example:     formatters.FormatZksAccountResponse(ExampleZksAccount()),
 	}
 }
 

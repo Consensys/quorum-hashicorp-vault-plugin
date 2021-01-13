@@ -3,16 +3,16 @@ package ethereum
 import (
 	"context"
 	"fmt"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/testutils/mocks"
+	"math/big"
+	"testing"
+
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
 	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/testutils"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils/mocks"
 	mocks2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases/mocks"
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/hashicorp/go-hclog"
 	testutils2 "gitlab.com/ConsenSys/client/fr/core-stack/orchestrate.git/v2/pkg/types/testutils"
-	"math/big"
-	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -24,7 +24,7 @@ func TestSignEEATransaction_Execute(t *testing.T) {
 
 	mockGetAccountUC := mocks2.NewMockGetAccountUseCase(ctrl)
 	mockStorage := mocks.NewMockStorage(ctrl)
-	ctx := apputils.WithLogger(context.Background(), hclog.New(&hclog.LoggerOptions{}))
+	ctx := log.Context(context.Background(), log.Default())
 	address := "0xaddress"
 	namespace := "namespace"
 	chainID := "1"
@@ -41,7 +41,7 @@ func TestSignEEATransaction_Execute(t *testing.T) {
 	usecase := NewSignEEATransactionUseCase(mockGetAccountUC).WithStorage(mockStorage)
 
 	t.Run("should execute use case successfully", func(t *testing.T) {
-		fakeAccount := testutils.FakeETHAccount()
+		fakeAccount := apputils.FakeETHAccount()
 		fakeAccount.PrivateKey = "5385714a2f6d69ca034f56a5268833216ffb8fba7229c39569bc4c5f42cde97c"
 		mockGetAccountUC.EXPECT().Execute(ctx, address, namespace).Return(fakeAccount, nil)
 		privateArgs := testutils2.FakePrivateETHTransactionParams()
@@ -66,7 +66,7 @@ func TestSignEEATransaction_Execute(t *testing.T) {
 
 	t.Run("should fail with CryptoOperationError if creation of ECDSA private key fails", func(t *testing.T) {
 		privateArgs := testutils2.FakePrivateETHTransactionParams()
-		fakeAccount := testutils.FakeETHAccount()
+		fakeAccount := apputils.FakeETHAccount()
 		fakeAccount.PrivateKey = "invalidPrivKey"
 		mockGetAccountUC.EXPECT().Execute(ctx, address, namespace).Return(fakeAccount, nil)
 

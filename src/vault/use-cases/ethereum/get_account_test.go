@@ -3,14 +3,14 @@ package ethereum
 import (
 	"context"
 	"fmt"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/testutils/mocks"
-	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/testutils"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases/ethereum/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/hashicorp/go-hclog"
-	"github.com/hashicorp/vault/sdk/logical"
 	"testing"
+
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
+	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils/mocks"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/storage"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/hashicorp/vault/sdk/logical"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -21,14 +21,14 @@ func TestGetAccount_Execute(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockStorage := mocks.NewMockStorage(ctrl)
-	ctx := apputils.WithLogger(context.Background(), hclog.New(&hclog.LoggerOptions{}))
+	ctx := log.Context(context.Background(), log.Default())
 
 	usecase := NewGetAccountUseCase().WithStorage(mockStorage)
 
 	t.Run("should execute use case successfully", func(t *testing.T) {
-		fakeAccount := testutils.FakeETHAccount()
-		expectedEntry, _ := logical.StorageEntryJSON(utils.ComputeKey(fakeAccount.Address, fakeAccount.Namespace), fakeAccount)
-		mockStorage.EXPECT().Get(ctx, utils.ComputeKey(fakeAccount.Address, fakeAccount.Namespace)).Return(expectedEntry, nil)
+		fakeAccount := apputils.FakeETHAccount()
+		expectedEntry, _ := logical.StorageEntryJSON(storage.ComputeEthereumStorageKey(fakeAccount.Address, fakeAccount.Namespace), fakeAccount)
+		mockStorage.EXPECT().Get(ctx, storage.ComputeEthereumStorageKey(fakeAccount.Address, fakeAccount.Namespace)).Return(expectedEntry, nil)
 
 		account, err := usecase.Execute(ctx, fakeAccount.Address, fakeAccount.Namespace)
 

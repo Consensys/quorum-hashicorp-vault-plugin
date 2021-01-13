@@ -2,7 +2,8 @@ package ethereum
 
 import (
 	"context"
-	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
+
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
 	usecases "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
@@ -36,7 +37,7 @@ func (uc *signEEATxUseCase) Execute(
 	tx *ethtypes.Transaction,
 	privateArgs *entities.PrivateETHTransactionParams,
 ) (string, error) {
-	logger := apputils.Logger(ctx).With("namespace", namespace).With("address", address)
+	logger := log.FromContext(ctx).With("namespace", namespace).With("address", address)
 	logger.Debug("signing eea private transaction")
 
 	account, err := uc.getAccountUC.Execute(ctx, address, namespace)

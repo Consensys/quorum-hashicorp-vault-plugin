@@ -2,13 +2,14 @@ package ethereum
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/testutils"
+	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func (s *ethereumCtrlTestSuite) TestEthereumController_Import() {
@@ -34,7 +35,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Import() {
 	})
 
 	s.T().Run("handler should execute the correct use case", func(t *testing.T) {
-		account := testutils.FakeETHAccount()
+		account := apputils.FakeETHAccount()
 		privKey := "fa88c4a5912f80503d6b5503880d0745f4b88a1ff90ce8f64cdd8f32cc3bc249"
 		request := &logical.Request{
 			Storage: s.storage,

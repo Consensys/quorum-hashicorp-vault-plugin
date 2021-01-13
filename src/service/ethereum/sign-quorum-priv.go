@@ -2,6 +2,7 @@ package ethereum
 
 import (
 	"context"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
 	"github.com/hashicorp/vault/sdk/framework"
@@ -19,13 +20,13 @@ func (c *controller) NewSignQuorumPrivateTransactionOperation() *framework.PathO
 			{
 				Description: "Signs a Quorum private transaction",
 				Data: map[string]interface{}{
-					formatters.AddressLabel:  exampleAccount.Address,
-					formatters.NonceLabel:    0,
-					formatters.ToLabel:       "0x905B88EFf8Bda1543d4d6f4aA05afef143D27E18",
-					formatters.DataLabel:     "0xfeee...",
-					formatters.AmountLabel:   "0",
-					formatters.GasPriceLabel: "0",
-					formatters.GasLimitLabel: 21000,
+					formatters.AccountIDLabel: exampleAccount.Address,
+					formatters.NonceLabel:     0,
+					formatters.ToLabel:        "0x905B88EFf8Bda1543d4d6f4aA05afef143D27E18",
+					formatters.DataLabel:      "0xfeee...",
+					formatters.AmountLabel:    "0",
+					formatters.GasPriceLabel:  "0",
+					formatters.GasLimitLabel:  21000,
 				},
 				Response: utils.Example200ResponseSignature(),
 			},
@@ -41,15 +42,15 @@ func (c *controller) NewSignQuorumPrivateTransactionOperation() *framework.PathO
 
 func (c *controller) signQuorumPrivateTransactionHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
-		address := data.Get(formatters.AddressLabel).(string)
-		namespace := getNamespace(req)
+		address := data.Get(formatters.AccountIDLabel).(string)
+		namespace := formatters.GetRequestNamespace(req)
 
 		tx, err := formatters.FormatSignQuorumPrivateTransactionRequest(data)
 		if err != nil {
 			return nil, err
 		}
 
-		ctx = utils.WithLogger(ctx, c.logger)
+		ctx = log.Context(ctx, c.logger)
 		signature, err := c.useCases.SignQuorumPrivateTransaction().WithStorage(req.Storage).Execute(ctx, address, namespace, tx)
 		if err != nil {
 			return nil, err

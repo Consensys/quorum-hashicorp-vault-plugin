@@ -2,7 +2,7 @@ package ethereum
 
 import (
 	"context"
-	mocks2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/testutils/mocks"
+	mocks2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils/mocks"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases/mocks"
 	"github.com/hashicorp/go-hclog"
@@ -59,7 +59,7 @@ func (s *ethereumCtrlTestSuite) SignEEATransaction() usecases.SignEEATransaction
 	return s.signEEATransactionUC
 }
 
-var _ usecases.UseCases = &ethereumCtrlTestSuite{}
+var _ usecases.ETHUseCases = &ethereumCtrlTestSuite{}
 
 func TestEthereumController(t *testing.T) {
 	s := new(ethereumCtrlTestSuite)

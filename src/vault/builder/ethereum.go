@@ -5,7 +5,7 @@ import (
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases/ethereum"
 )
 
-type useCases struct {
+type ethereumUseCases struct {
 	createAccount       usecases.CreateAccountUseCase
 	getAccount          usecases.GetAccountUseCase
 	listAccounts        usecases.ListAccountsUseCase
@@ -16,9 +16,9 @@ type useCases struct {
 	signEEATx           usecases.SignEEATransactionUseCase
 }
 
-func NewEthereumUseCases() usecases.UseCases {
+func NewEthereumUseCases() usecases.ETHUseCases {
 	getAccount := ethereum.NewGetAccountUseCase()
-	return &useCases{
+	return &ethereumUseCases{
 		createAccount:       ethereum.NewCreateAccountUseCase(),
 		getAccount:          getAccount,
 		listAccounts:        ethereum.NewListAccountsUseCase(),
@@ -30,34 +30,34 @@ func NewEthereumUseCases() usecases.UseCases {
 	}
 }
 
-func (ucs *useCases) CreateAccount() usecases.CreateAccountUseCase {
+func (ucs *ethereumUseCases) CreateAccount() usecases.CreateAccountUseCase {
 	return ucs.createAccount
 }
 
-func (ucs *useCases) GetAccount() usecases.GetAccountUseCase {
+func (ucs *ethereumUseCases) GetAccount() usecases.GetAccountUseCase {
 	return ucs.getAccount
 }
 
-func (ucs *useCases) ListAccounts() usecases.ListAccountsUseCase {
+func (ucs *ethereumUseCases) ListAccounts() usecases.ListAccountsUseCase {
 	return ucs.listAccounts
 }
 
-func (ucs *useCases) ListNamespaces() usecases.ListNamespacesUseCase {
+func (ucs *ethereumUseCases) ListNamespaces() usecases.ListNamespacesUseCase {
 	return ucs.listNamespaces
 }
 
-func (ucs *useCases) SignPayload() usecases.SignUseCase {
+func (ucs *ethereumUseCases) SignPayload() usecases.SignUseCase {
 	return ucs.sign
 }
 
-func (ucs *useCases) SignTransaction() usecases.SignTransactionUseCase {
+func (ucs *ethereumUseCases) SignTransaction() usecases.SignTransactionUseCase {
 	return ucs.signTx
 }
 
-func (ucs *useCases) SignQuorumPrivateTransaction() usecases.SignQuorumPrivateTransactionUseCase {
+func (ucs *ethereumUseCases) SignQuorumPrivateTransaction() usecases.SignQuorumPrivateTransactionUseCase {
 	return ucs.signQuorumPrivateTx
 }
 
-func (ucs *useCases) SignEEATransaction() usecases.SignEEATransactionUseCase {
+func (ucs *ethereumUseCases) SignEEATransaction() usecases.SignEEATransactionUseCase {
 	return ucs.signEEATx
 }

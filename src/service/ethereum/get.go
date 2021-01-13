@@ -2,6 +2,7 @@ package ethereum
 
 import (
 	"context"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
 	"github.com/hashicorp/vault/sdk/framework"
@@ -20,7 +21,7 @@ func (c *controller) NewGetOperation() *framework.PathOperation {
 			{
 				Description: "Gets an account on the tenant0 namespace",
 				Data: map[string]interface{}{
-					formatters.AddressLabel: exampleAccount.Address,
+					formatters.AccountIDLabel: exampleAccount.Address,
 				},
 				Response: successExample,
 			},
@@ -36,10 +37,10 @@ func (c *controller) NewGetOperation() *framework.PathOperation {
 
 func (c *controller) getHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
-		address := data.Get(formatters.AddressLabel).(string)
-		namespace := getNamespace(req)
+		address := data.Get(formatters.AccountIDLabel).(string)
+		namespace := formatters.GetRequestNamespace(req)
 
-		ctx = utils.WithLogger(ctx, c.logger)
+		ctx = log.Context(ctx, c.logger)
 		account, err := c.useCases.GetAccount().WithStorage(req.Storage).Execute(ctx, address, namespace)
 		if err != nil {
 			return nil, err

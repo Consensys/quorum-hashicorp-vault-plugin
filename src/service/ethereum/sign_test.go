@@ -2,13 +2,14 @@ package ethereum
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/testutils"
 	"github.com/golang/mock/gomock"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
 	"github.com/stretchr/testify/assert"
-	"testing"
+	"gitlab.com/ConsenSys/client/fr/core-stack/orchestrate.git/v2/pkg/types/testutils"
 )
 
 func (s *ethereumCtrlTestSuite) TestEthereumController_Sign() {
@@ -16,7 +17,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Sign() {
 	signOperation := path.Operations[logical.CreateOperation]
 
 	s.T().Run("should define the correct path", func(t *testing.T) {
-		assert.Equal(t, fmt.Sprintf("ethereum/accounts/%s/sign", framework.GenericNameRegex("address")), path.Pattern)
+		assert.Equal(t, fmt.Sprintf("ethereum/accounts/%s/sign", framework.GenericNameRegex(formatters.AccountIDLabel)), path.Pattern)
 		assert.NotEmpty(t, signOperation)
 	})
 
@@ -45,11 +46,11 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Sign() {
 		}
 		data := &framework.FieldData{
 			Raw: map[string]interface{}{
-				formatters.AddressLabel: account.Address,
-				formatters.DataLabel:    payload,
+				formatters.AccountIDLabel: account.Address,
+				formatters.DataLabel:      payload,
 			},
 			Schema: map[string]*framework.FieldSchema{
-				formatters.AddressLabel: formatters.AddressFieldSchema,
+				formatters.AccountIDLabel: formatters.AddressFieldSchema,
 				formatters.DataLabel: {
 					Type:        framework.TypeString,
 					Description: "data to sign",
@@ -75,11 +76,11 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Sign() {
 		}
 		data := &framework.FieldData{
 			Raw: map[string]interface{}{
-				formatters.AddressLabel: account.Address,
-				formatters.DataLabel:    payload,
+				formatters.AccountIDLabel: account.Address,
+				formatters.DataLabel:      payload,
 			},
 			Schema: map[string]*framework.FieldSchema{
-				formatters.AddressLabel: formatters.AddressFieldSchema,
+				formatters.AccountIDLabel: formatters.AddressFieldSchema,
 				formatters.DataLabel: {
 					Type:        framework.TypeString,
 					Description: "data to sign",

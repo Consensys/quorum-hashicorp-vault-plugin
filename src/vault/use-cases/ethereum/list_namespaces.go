@@ -2,10 +2,12 @@ package ethereum
 
 import (
 	"context"
-	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
+	"strings"
+
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/storage"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
 	"github.com/hashicorp/vault/sdk/logical"
-	"strings"
 )
 
 // listNamespacesUseCase is a use case to get a list of Ethereum accounts
@@ -25,12 +27,14 @@ func (uc listNamespacesUseCase) WithStorage(storage logical.Storage) usecases.Li
 
 // Execute get a list of all available namespaces
 func (uc *listNamespacesUseCase) Execute(ctx context.Context) ([]string, error) {
-	logger := apputils.Logger(ctx)
+	logger := log.FromContext(ctx)
 	logger.Debug("listing ethereum namespaces")
 
 	namespaceSet := make(map[string]bool)
-	err := uc.getNamespaces(ctx, "", namespaceSet)
+	err := storage.GetEthereumNamespaces(ctx, uc.storage, "", namespaceSet)
 	if err != nil {
+		errMessage := "failed to get namespace"
+		logger.With("error", err).Error(errMessage)
 		return nil, err
 	}
 
@@ -45,30 +49,4 @@ func (uc *listNamespacesUseCase) Execute(ctx context.Context) ([]string, error) 
 	logger.Debug("ethereum namespaces found successfully")
 	return namespaces, nil
 
-}
-
-func (uc *listNamespacesUseCase) getNamespaces(ctx context.Context, prefix string, namespaceSet map[string]bool) error {
-	if strings.HasSuffix(prefix, "ethereum/") {
-		namespace := strings.TrimSuffix(prefix, "ethereum/")
-		namespaceSet[namespace] = true
-		return nil
-	}
-
-	keys, err := uc.storage.List(ctx, prefix)
-	if err != nil {
-		errMessage := "failed to get namespace"
-		apputils.Logger(ctx).With("prefix", prefix).With("error", err).Error(errMessage)
-		return err
-	}
-
-	for _, key := range keys {
-		err := uc.getNamespaces(ctx, prefix+key, namespaceSet)
-		if err != nil {
-			errMessage := "failed to get namespace"
-			apputils.Logger(ctx).With("prefix", prefix).With("error", err).Error(errMessage)
-			return err
-		}
-	}
-
-	return nil
 }

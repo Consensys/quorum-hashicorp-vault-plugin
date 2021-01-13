@@ -2,7 +2,8 @@ package ethereum
 
 import (
 	"context"
-	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
+
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/hashicorp/vault/sdk/logical"
@@ -31,7 +32,7 @@ func (uc signQuorumPrivateTxUseCase) WithStorage(storage logical.Storage) usecas
 
 // Execute signs a Quorum private transaction
 func (uc *signQuorumPrivateTxUseCase) Execute(ctx context.Context, address, namespace string, tx *quorumtypes.Transaction) (string, error) {
-	logger := apputils.Logger(ctx).With("namespace", namespace).With("address", address)
+	logger := log.FromContext(ctx).With("namespace", namespace).With("address", address)
 	logger.Debug("signing quorum private transaction")
 
 	account, err := uc.getAccountUC.Execute(ctx, address, namespace)

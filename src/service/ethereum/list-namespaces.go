@@ -2,6 +2,7 @@ package ethereum
 
 import (
 	"context"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
@@ -33,7 +34,7 @@ func (c *controller) NewListNamespacesOperation() *framework.PathOperation {
 
 func (c *controller) listNamespacesHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
-		ctx = utils.WithLogger(ctx, c.logger)
+		ctx = log.Context(ctx, c.logger)
 		namespaces, err := c.useCases.ListNamespaces().WithStorage(req.Storage).Execute(ctx)
 		if err != nil {
 			return nil, err

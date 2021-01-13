@@ -2,6 +2,7 @@ package ethereum
 
 import (
 	"context"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
 	"github.com/hashicorp/vault/sdk/framework"
@@ -19,8 +20,8 @@ func (c *controller) NewSignPayloadOperation() *framework.PathOperation {
 			{
 				Description: "Signs a message",
 				Data: map[string]interface{}{
-					formatters.AddressLabel: exampleAccount.Address,
-					formatters.DataLabel:    "my data to sign",
+					formatters.AccountIDLabel: exampleAccount.Address,
+					formatters.DataLabel:      "my data to sign",
 				},
 				Response: utils.Example200ResponseSignature(),
 			},
@@ -36,15 +37,15 @@ func (c *controller) NewSignPayloadOperation() *framework.PathOperation {
 
 func (c *controller) signPayloadHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
-		address := data.Get(formatters.AddressLabel).(string)
+		address := data.Get(formatters.AccountIDLabel).(string)
 		payload := data.Get(formatters.DataLabel).(string)
-		namespace := getNamespace(req)
+		namespace := formatters.GetRequestNamespace(req)
 
 		if payload == "" {
 			return logical.ErrorResponse("data must be provided"), nil
 		}
 
-		ctx = utils.WithLogger(ctx, c.logger)
+		ctx = log.Context(ctx, c.logger)
 		signature, err := c.useCases.SignPayload().WithStorage(req.Storage).Execute(ctx, address, namespace, payload)
 		if err != nil {
 			return nil, err

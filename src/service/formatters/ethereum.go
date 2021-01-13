@@ -1,6 +1,8 @@
 package formatters
 
 import (
+	"math/big"
+
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 	quorumtypes "github.com/consensys/quorum/core/types"
 	"github.com/ethereum/go-ethereum/common"
@@ -9,7 +11,6 @@ import (
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
 	entities2 "gitlab.com/ConsenSys/client/fr/core-stack/orchestrate.git/v2/pkg/types/entities"
-	"math/big"
 )
 
 func FormatAccountResponse(account *entities.ETHAccount) *logical.Response {

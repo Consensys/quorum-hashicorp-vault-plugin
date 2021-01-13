@@ -3,13 +3,12 @@ package ethereum
 import (
 	"context"
 	"fmt"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/testutils/mocks"
-	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/testutils"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases/ethereum/utils"
-	"github.com/hashicorp/go-hclog"
 	"testing"
 
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
+	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils/mocks"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/storage"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -19,14 +18,14 @@ func TestListAccounts_Execute(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockStorage := mocks.NewMockStorage(ctrl)
-	ctx := apputils.WithLogger(context.Background(), hclog.New(&hclog.LoggerOptions{}))
+	ctx := log.Context(context.Background(), log.Default())
 
 	usecase := NewListAccountsUseCase().WithStorage(mockStorage)
 
 	t.Run("should execute use case successfully", func(t *testing.T) {
-		fakeAccount := testutils.FakeETHAccount()
+		fakeAccount := apputils.FakeETHAccount()
 		expectedKeys := []string{fakeAccount.Address}
-		mockStorage.EXPECT().List(ctx, utils.ComputeKey("", fakeAccount.Namespace)).Return(expectedKeys, nil)
+		mockStorage.EXPECT().List(ctx, storage.ComputeEthereumStorageKey("", fakeAccount.Namespace)).Return(expectedKeys, nil)
 
 		keys, err := usecase.Execute(ctx, fakeAccount.Namespace)
 

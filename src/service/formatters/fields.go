@@ -4,7 +4,7 @@ import "github.com/hashicorp/vault/sdk/framework"
 
 const (
 	PrivateKeyLabel     = "privateKey"
-	AddressLabel        = "address"
+	AccountIDLabel      = "id"
 	DataLabel           = "data"
 	NonceLabel          = "nonce"
 	ToLabel             = "to"
@@ -64,17 +64,17 @@ var DataFieldSchema = &framework.FieldSchema{
 	Description: "Data of the transaction",
 }
 
-var PrivateFromFielSchema = &framework.FieldSchema{
+var PrivateFromFieldSchema = &framework.FieldSchema{
 	Type:        framework.TypeString,
 	Description: "EEA PrivateFrom address in base64 format",
 }
 
-var PrivateForFielSchema = &framework.FieldSchema{
+var PrivateForFieldSchema = &framework.FieldSchema{
 	Type:        framework.TypeCommaStringSlice,
 	Description: "EEA PrivateFor addresses in base64 format",
 }
 
-var PrivacyGroupIDFielSchema = &framework.FieldSchema{
+var PrivacyGroupIDFieldSchema = &framework.FieldSchema{
 	Type:        framework.TypeString,
 	Description: "EEA PrivacyGroupID address in base64 format",
 }

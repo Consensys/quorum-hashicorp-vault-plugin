@@ -2,7 +2,8 @@ package ethereum
 
 import (
 	"context"
-	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
+
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
 	"github.com/hashicorp/vault/sdk/logical"
 
@@ -30,7 +31,7 @@ func (uc signPayloadUseCase) WithStorage(storage logical.Storage) usecases.SignU
 
 // Execute signs an arbitrary payload using an existing Ethereum account
 func (uc *signPayloadUseCase) Execute(ctx context.Context, address, namespace, data string) (string, error) {
-	logger := apputils.Logger(ctx).With("namespace", namespace).With("address", address)
+	logger := log.FromContext(ctx).With("namespace", namespace).With("address", address)
 	logger.Debug("signing message")
 
 	account, err := uc.getAccountUC.Execute(ctx, address, namespace)

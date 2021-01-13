@@ -2,13 +2,14 @@ package ethereum
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/testutils"
+	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func (s *ethereumCtrlTestSuite) TestEthereumController_Get() {
@@ -16,7 +17,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Get() {
 	getOperation := path.Operations[logical.ReadOperation]
 
 	s.T().Run("should define the correct path", func(t *testing.T) {
-		assert.Equal(t, fmt.Sprintf("ethereum/accounts/%s", framework.GenericNameRegex("address")), path.Pattern)
+		assert.Equal(t, fmt.Sprintf("ethereum/accounts/%s", framework.GenericNameRegex(formatters.AccountIDLabel)), path.Pattern)
 		assert.NotEmpty(t, getOperation)
 	})
 
@@ -34,7 +35,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Get() {
 	})
 
 	s.T().Run("handler should execute the correct use case", func(t *testing.T) {
-		account := testutils.FakeETHAccount()
+		account := apputils.FakeETHAccount()
 		request := &logical.Request{
 			Storage: s.storage,
 			Headers: map[string][]string{
@@ -43,10 +44,10 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Get() {
 		}
 		data := &framework.FieldData{
 			Raw: map[string]interface{}{
-				formatters.AddressLabel: account.Address,
+				formatters.AccountIDLabel: account.Address,
 			},
 			Schema: map[string]*framework.FieldSchema{
-				formatters.AddressLabel: formatters.AddressFieldSchema,
+				formatters.AccountIDLabel: formatters.AddressFieldSchema,
 			},
 		}
 
@@ -67,10 +68,10 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Get() {
 		}
 		data := &framework.FieldData{
 			Raw: map[string]interface{}{
-				formatters.AddressLabel: "myAddress",
+				formatters.AccountIDLabel: "myAddress",
 			},
 			Schema: map[string]*framework.FieldSchema{
-				formatters.AddressLabel: formatters.AddressFieldSchema,
+				formatters.AccountIDLabel: formatters.AddressFieldSchema,
 			},
 		}
 		expectedErr := fmt.Errorf("error")

@@ -12,12 +12,9 @@ import (
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 )
 
-//go:generate mockgen -source=use-cases.go -destination=mocks/use-cases.go -package=mocks
+//go:generate mockgen -source=ethereum.go -destination=mocks/ethereum.go -package=mocks
 
-/**
-Ethereum Use Cases
-*/
-type UseCases interface {
+type ETHUseCases interface {
 	CreateAccount() CreateAccountUseCase
 	GetAccount() GetAccountUseCase
 	ListAccounts() ListAccountsUseCase
