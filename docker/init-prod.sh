@@ -1,6 +1,6 @@
 # Store root token in a file so it can be shared with other services through volume
 # Init Vault
-curl --request POST --data '{"secret_shares": 1, "secret_threshold": 1}' ${VAULT_ADDR}/v1/sys/init >init.json
+curl --request POST --data '{"secret_shares": 1, "secret_threshold": 1}' ${VAULT_ADDR}/v1/sys/init > init.json
 
 # Retrieve root token and unseal key
 VAULT_TOKEN=$(cat init.json | jq .root_token | tr -d '"')

@@ -8,9 +8,6 @@ test:
 	go test  ./... -cover -coverprofile=coverage.txt -covermode=atomic
 
 build:
-	@CGO_ENABLED=1 GOOS=linux go build -a -o build/bin/orchestrate-hashicorp-vault-plugin
-
-build-dev:
 	@CGO_ENABLED=0 GOOS=linux go build -a -o build/bin/orchestrate-hashicorp-vault-plugin
 
 lint-tools: ## Install linting tools
@@ -25,10 +22,10 @@ lint-ci: ## Check linting
 	@misspell -error $(GOFILES)
 	@golangci-lint run
 
-up: build-dev
+prod: build
 	@docker-compose -f docker-compose.yml up --build vault-init vault
-dev: build-dev
-	@docker-compose -f docker-compose.yml up --build vault-dev
+dev: build
+	@docker-compose -f docker-compose.yml up --build vault-dev-init vault-dev
 down:
 	@docker-compose -f docker-compose.yml down --volumes --timeout 0
 

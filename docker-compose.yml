@@ -3,30 +3,45 @@ version: "3.7"
 x-container-common: &container-common
   networks:
     - vault
-    
+
 services:
   vault-dev:
     <<: *container-common
-    image: library/vault:1.6.0
+    image: library/vault:1.6.1
     restart: ${CONTAINER_RESTART-on-failure}
     tty: true
     cap_add:
       - IPC_LOCK
     volumes:
-      - ./build/bin/orchestrate-hashicorp-vault-plugin:/vault/plugins/orchestrate
-    entrypoint: vault server -dev -dev-plugin-dir=/vault/plugins/ -dev-listen-address="0.0.0.0:8200" -log-level=debug
+      - ./build/bin/orchestrate-hashicorp-vault-plugin:/vault/plugins/orchestrate-hashicorp-vault-plugin
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: "DevVaultToken"
+    entrypoint: vault server -dev -dev-plugin-dir=/vault/plugins/ -dev-listen-address="0.0.0.0:8200" -log-level=trace
     ports:
       - 8200:8200
 
+  vault-dev-init:
+    <<: *container-common
+    build: ./docker
+    environment:
+      VAULT_ADDR: http://vault-dev:8200
+      VAULT_TOKEN: "DevVaultToken"
+    restart: "no"
+    volumes:
+      - ./docker/init-dev.sh:/init.sh
+    depends_on:
+      - vault-dev
+    command: sh /init.sh
+
   vault:
     <<: *container-common
-    image: library/vault:1.6.0
+    image: library/vault:1.6.1
     restart: ${CONTAINER_RESTART-on-failure}
     tty: true
     cap_add:
       - IPC_LOCK
     volumes:
-      - ./assets/config.hcl:/vault/config.hcl:ro
+      - ./docker/config.hcl:/vault/config.hcl:ro
       - ./build/bin/orchestrate-hashicorp-vault-plugin:/vault/plugins/orchestrate
     entrypoint: vault server -config=/vault/config.hcl
     ports:
@@ -34,14 +49,14 @@ services:
 
   vault-init:
     <<: *container-common
-    build: ./assets
+    build: ./docker
     environment:
       VAULT_ADDR: http://vault:8200
       PLUGIN_FILE: /vault/plugins/orchestrate
     restart: "no"
     volumes:
       - ./build/bin/orchestrate-hashicorp-vault-plugin:/vault/plugins/orchestrate
-      - ./assets/init.sh:/init.sh
+      - ./docker/init-prod.sh:/init.sh
     depends_on:
       - vault
     command: sh /init.sh
