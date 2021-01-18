@@ -238,12 +238,16 @@ github.com/consensys/gnark v0.3.8 h1:4t8tdqDLOAWRRycw4dsmI29v+ESii0up+vHAekn/Sgw
 github.com/consensys/gnark v0.3.8/go.mod h1:ZBBVbSG3McqjLh6ek5sHu/CXbQhx5bQJFxfqV7YR8Es=
 github.com/consensys/gnark v0.3.9-0.20210116034738-87eafe358fa2 h1:D8GjqH5o1qVH84fBAeCm8vxvhVHXpmlwB+Fww7B8eV4=
 github.com/consensys/gnark v0.3.9-0.20210116034738-87eafe358fa2/go.mod h1:DlzpeOQjSLAzEZMmOIzv+2mQMsTe6YSKw/Nvz74H/p0=
+github.com/consensys/gnark v0.3.9-0.20210118153910-d64de428a945 h1:elq4itonpBaYCh0EcATVLNxjrVjNYf0rAJuIZVs0zu8=
+github.com/consensys/gnark v0.3.9-0.20210118153910-d64de428a945/go.mod h1:EKGdRIF/sc+Q6XPe/KC6pKGAnAldGWVq9ul23KNIs6c=
 github.com/consensys/goff v0.3.8/go.mod h1:sVd8qmGLPDVaNkeEc54IvC7/dGxuZdJBbo792ZLD5Ng=
 github.com/consensys/goff v0.3.10-0.20210107190153-13320bba6892/go.mod h1:xTldOBEHmFiYS0gPXd3NsaEqZWlnmeWcRLWgD3ba3xc=
 github.com/consensys/gurvy v0.3.6 h1:Wlx2rrm+pUz7gxrFSWeT3W950b45YRnJ0PFe0psk7us=
 github.com/consensys/gurvy v0.3.6/go.mod h1:PoRINoNBSpC1+qDcIgtH3EMHJkq+3CM1BGGcovuuOcU=
 github.com/consensys/gurvy v0.3.8-0.20210112212430-d33a4b57f545 h1:COFXOJUlueUWA4+m6Wax339JuuM8p5xDuea7gJK3hs8=
 github.com/consensys/gurvy v0.3.8-0.20210112212430-d33a4b57f545/go.mod h1:Leb3pnOWCjrYjEa6t+m1BtgM6ON2MUVR9uknR5ou5FY=
+github.com/consensys/gurvy v0.3.8-0.20210118135515-02bca07c2b11 h1:wGQbi+KxQD+TRfbKFOr1W12mXP/NWQDZuu9Mbbzsh+o=
+github.com/consensys/gurvy v0.3.8-0.20210118135515-02bca07c2b11/go.mod h1:Leb3pnOWCjrYjEa6t+m1BtgM6ON2MUVR9uknR5ou5FY=
 github.com/consensys/quorum v2.7.0+incompatible h1:K26IRUcsoZ+Im2MTs0JJyiQGfdj+NOzWzDnfGQJmeG4=
 github.com/consensys/quorum v2.7.0+incompatible/go.mod h1:DgIFH5zV4A+h85TddIlZFK8lXev3D85wTUBNeGi97Eg=
 github.com/containerd/cgroups v0.0.0-20190919134610-bf292b21730f/go.mod h1:OApqhQ4XNSNC13gXIwDjhOQxjWa/NxkwZXJ1EvqT0ko=

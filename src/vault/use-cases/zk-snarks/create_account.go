@@ -1,6 +1,7 @@
 package zksnarks
 
 import (
+	"bytes"
 	"context"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
@@ -30,7 +31,7 @@ func (uc *createAccountUseCase) Execute(ctx context.Context, namespace string) (
 	logger := log.FromContext(ctx).With("namespace", namespace)
 	logger.Debug("creating new zk-snarks bn256 account")
 
-	var seed [32]byte
+	var seed = make([]byte, 32)
 	for i, v := range utils.GenerateRandomSeed(32) {
 		seed[i] = v
 	}
@@ -38,18 +39,23 @@ func (uc *createAccountUseCase) Execute(ctx context.Context, namespace string) (
 	// Usually standards implementations of eddsa do not require the choice of a specific hash function (usually it's SHA256). 
 	// Here we needed to allow the choice of the hash so we can chose a hash function that is easily programmable in a snark circuit.
 	// Same hFunc should be used for sign and verify
-	pubKey, privKey := eddsa.GenerateKey(seed)
+	privKey, err := eddsa.GenerateKey(bytes.NewReader(seed))
+	if err != nil {
+		errMessage := "failed to generate key"
+		logger.With("error", err).Error(errMessage)
+		return nil, err
+	}
 
+	pubKey := privKey.Public()
 	account := &entities.ZksAccount{
 		Algorithm:  entities.ZksAlgorithmEDDSA,
 		Curve:      entities.ZksCurveBN256,
 		PrivateKey: hexutil.Encode(privKey.Bytes()),
 		PublicKey:  hexutil.Encode(pubKey.Bytes()),
 		Namespace:  namespace,
-		Seed:       seed,
 	}
 
-	err := storage.StoreJSON(ctx, uc.storage, storage.ComputeZksStorageKey(account.PublicKey, account.Namespace), account)
+	err = storage.StoreJSON(ctx, uc.storage, storage.ComputeZksStorageKey(account.PublicKey, account.Namespace), account)
 	if err != nil {
 		errMessage := "failed to create account entry"
 		logger.With("error", err).Error(errMessage)

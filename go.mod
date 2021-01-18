@@ -3,7 +3,7 @@ module github.com/ConsenSys/orchestrate-hashicorp-vault-plugin
 go 1.14
 
 require (
-	github.com/consensys/gnark v0.3.9-0.20210116034738-87eafe358fa2
+	github.com/consensys/gnark v0.3.9-0.20210118153910-d64de428a945
 	github.com/consensys/quorum v2.7.0+incompatible
 	github.com/ethereum/go-ethereum v1.9.25
 	github.com/golang/mock v1.4.3

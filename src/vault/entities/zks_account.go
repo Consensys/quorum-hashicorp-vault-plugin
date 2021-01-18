@@ -11,5 +11,4 @@ type ZksAccount struct {
 	PrivateKey string   `json:"privateKey"`
 	PublicKey  string   `json:"publicKey"`
 	Namespace  string   `json:"namespace,omitempty"`
-	Seed       [32]byte `json:"seed"`
 }

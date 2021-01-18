@@ -27,24 +27,24 @@ func (uc signPayloadUseCase) WithStorage(storage logical.Storage) usecases.ZksSi
 	return &uc
 }
 
-func (uc *signPayloadUseCase) Execute(ctx context.Context, pubKeyHex, namespace, data string) (string, error) {
-	logger := log.FromContext(ctx).With("namespace", namespace).With("pub_key", pubKeyHex)
+func (uc *signPayloadUseCase) Execute(ctx context.Context, pubKey, namespace, data string) (string, error) {
+	logger := log.FromContext(ctx).With("namespace", namespace).With("pub_key", pubKey)
 	logger.Debug("signing message")
 
-	account, err := uc.getAccountUC.Execute(ctx, pubKeyHex, namespace)
+	account, err := uc.getAccountUC.Execute(ctx, pubKey, namespace)
 	if err != nil {
 		return "", err
 	}
-	
+
 	privKey := eddsa.PrivateKey{}
 	privKeyB, _ := hexutil.Decode(account.PrivateKey)
-	_, err = privKey.SetBytes([]byte(privKeyB))
+	_, err = privKey.SetBytes(privKeyB)
 	if err != nil {
 		errMsg := "failed to deserialize private key"
 		logger.With("error", err).Error(errMsg)
 		return "", errors.EncodingError(errMsg)
 	}
-	
+
 	signatureB, err := privKey.Sign([]byte(data), sha256.New())
 	if err != nil {
 		errMessage := "failed to sign payload using EDDSA"

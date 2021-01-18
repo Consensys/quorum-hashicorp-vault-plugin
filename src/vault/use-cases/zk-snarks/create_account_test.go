@@ -29,7 +29,6 @@ func TestCreateAccount_Execute(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.Equal(t, fakeAccount.Namespace, account.Namespace)
-		assert.NotEmpty(t, account.Seed)
 		assert.NotEmpty(t, account.PublicKey)
 	})
 
