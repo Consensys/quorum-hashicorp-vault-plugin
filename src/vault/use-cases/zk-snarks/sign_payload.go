@@ -7,7 +7,9 @@ import (
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
 	eddsa "github.com/consensys/gnark/crypto/signature/eddsa/bn256"
+	"github.com/consensys/quorum/common/hexutil"
 	"github.com/hashicorp/vault/sdk/logical"
+	"gitlab.com/ConsenSys/client/fr/core-stack/orchestrate.git/v2/pkg/errors"
 )
 
 type signPayloadUseCase struct {
@@ -25,22 +27,25 @@ func (uc signPayloadUseCase) WithStorage(storage logical.Storage) usecases.ZksSi
 	return &uc
 }
 
-func (uc *signPayloadUseCase) Execute(ctx context.Context, pubKey, namespace, data string) (string, error) {
-	logger := log.FromContext(ctx).With("namespace", namespace).With("pub_key", pubKey)
+func (uc *signPayloadUseCase) Execute(ctx context.Context, pubKeyHex, namespace, data string) (string, error) {
+	logger := log.FromContext(ctx).With("namespace", namespace).With("pub_key", pubKeyHex)
 	logger.Debug("signing message")
 
-	account, err := uc.getAccountUC.Execute(ctx, pubKey, namespace)
+	account, err := uc.getAccountUC.Execute(ctx, pubKeyHex, namespace)
 	if err != nil {
 		return "", err
 	}
 	
-	// @TODO Generate new keys till we can deserialize stored keys correctly
-	publicKey, privKey := eddsa.New(account.Seed, sha256.New())
-	////
+	privKey := eddsa.PrivateKey{}
+	privKeyB, _ := hexutil.Decode(account.PrivateKey)
+	_, err = privKey.SetBytes([]byte(privKeyB))
+	if err != nil {
+		errMsg := "failed to deserialize private key"
+		logger.With("error", err).Error(errMsg)
+		return "", errors.EncodingError(errMsg)
+	}
 	
-	logger.With("public key", account.PublicKey).Debug("signing with account")
-	
-	signature, err := eddsa.Sign([]byte(data), publicKey, privKey)
+	signatureB, err := privKey.Sign([]byte(data), sha256.New())
 	if err != nil {
 		errMessage := "failed to sign payload using EDDSA"
 		logger.With("error", err).Error(errMessage)
@@ -48,6 +53,5 @@ func (uc *signPayloadUseCase) Execute(ctx context.Context, pubKey, namespace, da
 	}
 
 	logger.Info("payload signed successfully")
-	// @TODO Integrate gnark serialization for signature
-	return signature.R.X.String(), nil
+	return hexutil.Encode(signatureB), nil
 }

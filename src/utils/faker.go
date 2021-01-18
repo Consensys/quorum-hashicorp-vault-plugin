@@ -20,8 +20,8 @@ func FakeZksAccount() *entities.ZksAccount {
 	return &entities.ZksAccount{
 		Algorithm: entities.ZksAlgorithmEDDSA,
 		Curve: entities.ZksCurveBN256,
-		PublicKey: common.HexToHash(randHexString(12)).String(),
-		PrivateKey: common.HexToHash(randHexString(12)).String(),
+		PublicKey: "0x10d10e9f17a88d51c42380c14da49e237b4b3f03c5cdce8f470ca782506eb5f113733d92b86e28b7e6354bb88a2d6bb9b104b0de3698b993f735f31cc979f7bd",
+		PrivateKey: common.HexToHash(randHexString(96)).String(),
 		Namespace: "_",
 	}
 }
