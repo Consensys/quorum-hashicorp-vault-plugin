@@ -22,6 +22,11 @@ commands:
       - run:
           name: Pull and build dependencies for the project
           command: go get
+      - run:
+          name: Install binary compresor
+          command: |
+            sudo apt update
+            sudo apt -y install upx-ucl
       - save_cache:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
@@ -46,7 +51,8 @@ jobs:
       - run:
           name: Build
           command: |
-            CGO_ENABLED=0 GOOS=linux go build -a -v -o build/bin/orchestrate-hashicorp-vault-plugin
+            CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -a -v -o build/bin/orchestrate-hashicorp-vault-plugin
+            upx build/bin/orchestrate-hashicorp-vault-plugin
             sha256sum -b build/bin/orchestrate-hashicorp-vault-plugin | cut -d' ' -f1 > build/bin/SHA256SUM
       - persist_to_workspace:
           root: ~/project/build/bin
