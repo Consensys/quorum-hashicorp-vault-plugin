@@ -4,7 +4,7 @@ import "github.com/hashicorp/vault/sdk/framework"
 
 const (
 	PrivateKeyLabel     = "privateKey"
-	AccountIDLabel      = "id"
+	IDLabel             = "id"
 	DataLabel           = "data"
 	NonceLabel          = "nonce"
 	ToLabel             = "to"
@@ -15,9 +15,18 @@ const (
 	PrivateFromLabel    = "privateFrom"
 	PrivateForLabel     = "privateFor"
 	PrivacyGroupIDLabel = "privacyGroupID"
+	TagsLabel           = "tags"
+	AlgoLabel           = "algorithm"
+	CurveLabel          = "curve"
 
 	NamespaceHeader = "X-Vault-Namespace"
 )
+
+var IDFieldSchema = &framework.FieldSchema{
+	Type:        framework.TypeString,
+	Description: "ID of the key pair",
+	Required:    true,
+}
 
 var AddressFieldSchema = &framework.FieldSchema{
 	Type:        framework.TypeString,

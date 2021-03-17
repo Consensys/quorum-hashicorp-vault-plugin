@@ -21,7 +21,7 @@ func (c *controller) NewSignEEATransactionOperation() *framework.PathOperation {
 			{
 				Description: "Signs an EEA transaction",
 				Data: map[string]interface{}{
-					formatters.AccountIDLabel:   exampleAccount.Address,
+					formatters.IDLabel:          exampleAccount.Address,
 					formatters.NonceLabel:       0,
 					formatters.ToLabel:          "0x905B88EFf8Bda1543d4d6f4aA05afef143D27E18",
 					formatters.ChainIDLabel:     "1",
@@ -43,7 +43,7 @@ func (c *controller) NewSignEEATransactionOperation() *framework.PathOperation {
 
 func (c *controller) signEEATransactionHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
-		address := data.Get(formatters.AccountIDLabel).(string)
+		address := data.Get(formatters.IDLabel).(string)
 		chainID := data.Get(formatters.ChainIDLabel).(string)
 		namespace := formatters.GetRequestNamespace(req)
 

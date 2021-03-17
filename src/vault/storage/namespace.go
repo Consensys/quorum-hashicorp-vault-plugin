@@ -8,8 +8,11 @@ import (
 	"github.com/hashicorp/vault/sdk/logical"
 )
 
-const EthereumSecretsPath = "ethereum"
-const ZkSnarksSecretsPath = "zk-snarks"
+const (
+	EthereumSecretsPath = "ethereum"
+	ZkSnarksSecretsPath = "zk-snarks"
+	KeysSecretPath      = "keys"
+)
 
 func GetEthereumNamespaces(ctx context.Context, storage logical.Storage, namespace string, namespaceSet map[string]bool) error {
 	return getNamespaces(ctx, storage, EthereumSecretsPath, namespace, namespaceSet)
@@ -20,8 +23,8 @@ func GetZkSnarksNamespaces(ctx context.Context, storage logical.Storage, namespa
 }
 
 func getNamespaces(ctx context.Context, storage logical.Storage, secretsPath, namespace string, namespaceSet map[string]bool) error {
-	if strings.HasSuffix(namespace, secretsPath+ "/") {
-		namespace := strings.TrimSuffix(namespace, secretsPath+ "/")
+	if strings.HasSuffix(namespace, secretsPath+"/") {
+		namespace := strings.TrimSuffix(namespace, secretsPath+"/")
 		namespaceSet[namespace] = true
 		return nil
 	}
@@ -47,6 +50,15 @@ func ComputeEthereumStorageKey(accountID, namespace string) string {
 
 func ComputeZksStorageKey(accountID, namespace string) string {
 	return computeStorageKey(ZkSnarksSecretsPath, accountID, namespace)
+}
+
+func ComputeKeysStorageKey(id, namespace string) string {
+	path := fmt.Sprintf("%s/%s", KeysSecretPath, id)
+	if namespace != "" {
+		path = fmt.Sprintf("%s/%s", namespace, path)
+	}
+
+	return path
 }
 
 func computeStorageKey(secretsPath, accountID, namespace string) string {

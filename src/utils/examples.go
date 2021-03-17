@@ -21,11 +21,26 @@ func ExampleETHAccount() *entities.ETHAccount {
 
 func ExampleZksAccount() *entities.ZksAccount {
 	return &entities.ZksAccount{
-		Curve:      entities.ZksCurveBN256,
-		Algorithm:  entities.ZksAlgorithmEDDSA,
+		Curve:      entities.BN256,
+		Algorithm:  entities.EDDSA,
 		Namespace:  "tenant0",
 		PrivateKey: "0b0232595b77568d99364bede133839ccbcb40775967a7eacd15d355c96288b5",
 		PublicKey:  "0b0232595b77568d99364bede133839ccbcb40775967a7eacd15d355c96288b5",
+	}
+}
+
+func ExampleKey() *entities.Key {
+	return &entities.Key{
+		ID:         "my-key",
+		Curve:      entities.Secp256k1,
+		Algorithm:  entities.ECDSA,
+		Namespace:  "tenant0",
+		PrivateKey: "0b0232595b77568d99364bede133839ccbcb40775967a7eacd15d355c96288b5",
+		PublicKey:  "0b0232595b77568d99364bede133839ccbcb40775967a7eacd15d355c96288b5",
+		Tags: map[string]string{
+			"tag1": "tagValue1",
+			"tag2": "tagValue2",
+		},
 	}
 }
 
@@ -69,7 +84,21 @@ func Example200Response() *framework.Response {
 	}
 }
 
+func Example200KeyResponse() *framework.Response {
+	return &framework.Response{
+		Description: "Success",
+		Example:     formatters.FormatKeyResponse(ExampleKey()),
+	}
+}
+
 func Example200ZksResponse() *framework.Response {
+	return &framework.Response{
+		Description: "Success",
+		Example:     formatters.FormatZksAccountResponse(ExampleZksAccount()),
+	}
+}
+
+func Example200KeysResponse() *framework.Response {
 	return &framework.Response{
 		Description: "Success",
 		Example:     formatters.FormatZksAccountResponse(ExampleZksAccount()),

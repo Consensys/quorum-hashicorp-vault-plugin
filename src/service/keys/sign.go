@@ -1,4 +1,4 @@
-package ethereum
+package keys
 
 import (
 	"context"
@@ -11,17 +11,17 @@ import (
 )
 
 func (c *controller) NewSignPayloadOperation() *framework.PathOperation {
-	exampleAccount := utils.ExampleETHAccount()
+	exampleKey := utils.ExampleKey()
 
 	return &framework.PathOperation{
 		Callback:    c.signPayloadHandler(),
-		Summary:     "Signs an arbitrary message using an existing Ethereum account",
-		Description: "Signs an arbitrary message using ECDSA and the private key of an existing Ethereum account",
+		Summary:     "Signs an arbitrary message using an existing key pair",
+		Description: "Signs an arbitrary message using the private key of an existing key pair",
 		Examples: []framework.RequestExample{
 			{
 				Description: "Signs a message",
 				Data: map[string]interface{}{
-					formatters.IDLabel:   exampleAccount.Address,
+					formatters.IDLabel:   exampleKey.PublicKey,
 					formatters.DataLabel: "my data to sign",
 				},
 				Response: utils.Example200ResponseSignature(),
@@ -38,7 +38,7 @@ func (c *controller) NewSignPayloadOperation() *framework.PathOperation {
 
 func (c *controller) signPayloadHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
-		address := data.Get(formatters.IDLabel).(string)
+		id := data.Get(formatters.IDLabel).(string)
 		payload := data.Get(formatters.DataLabel).(string)
 		namespace := formatters.GetRequestNamespace(req)
 
@@ -47,7 +47,7 @@ func (c *controller) signPayloadHandler() framework.OperationFunc {
 		}
 
 		ctx = log.Context(ctx, c.logger)
-		signature, err := c.useCases.SignPayload().WithStorage(req.Storage).Execute(ctx, address, namespace, payload)
+		signature, err := c.useCases.SignPayload().WithStorage(req.Storage).Execute(ctx, id, namespace, payload)
 		if err != nil {
 			return nil, err
 		}

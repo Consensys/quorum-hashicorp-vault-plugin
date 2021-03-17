@@ -5,7 +5,7 @@ import (
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
+	usecases "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
 )
@@ -53,10 +53,10 @@ func (c *controller) pathAccounts() *framework.Path {
 
 func (c *controller) pathAccount() *framework.Path {
 	return &framework.Path{
-		Pattern:      fmt.Sprintf("zk-snarks/accounts/%s", framework.GenericNameRegex(formatters.AccountIDLabel)),
+		Pattern:      fmt.Sprintf("zk-snarks/accounts/%s", framework.GenericNameRegex(formatters.IDLabel)),
 		HelpSynopsis: "Get, update or delete an Ethereum account",
 		Fields: map[string]*framework.FieldSchema{
-			formatters.AccountIDLabel: formatters.AddressFieldSchema,
+			formatters.IDLabel: formatters.AddressFieldSchema,
 		},
 		Operations: map[logical.Operation]framework.OperationHandler{
 			logical.ReadOperation: c.NewGetOperation(),
@@ -77,9 +77,9 @@ func (c *controller) pathNamespaces() *framework.Path {
 
 func (c *controller) pathSignPayload() *framework.Path {
 	return &framework.Path{
-		Pattern: fmt.Sprintf("zk-snarks/accounts/%s/sign", framework.GenericNameRegex(formatters.AccountIDLabel)),
+		Pattern: fmt.Sprintf("zk-snarks/accounts/%s/sign", framework.GenericNameRegex(formatters.IDLabel)),
 		Fields: map[string]*framework.FieldSchema{
-			formatters.AccountIDLabel: formatters.AddressFieldSchema,
+			formatters.IDLabel: formatters.AddressFieldSchema,
 			formatters.DataLabel: {
 				Type:        framework.TypeString,
 				Description: "data to sign",

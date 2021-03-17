@@ -182,18 +182,18 @@ func (m *MockGetZksAccountUseCase) EXPECT() *MockGetZksAccountUseCaseMockRecorde
 }
 
 // Execute mocks base method
-func (m *MockGetZksAccountUseCase) Execute(ctx context.Context, address, namespace string) (*entities.ZksAccount, error) {
+func (m *MockGetZksAccountUseCase) Execute(ctx context.Context, pubKey, namespace string) (*entities.ZksAccount, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Execute", ctx, address, namespace)
+	ret := m.ctrl.Call(m, "Execute", ctx, pubKey, namespace)
 	ret0, _ := ret[0].(*entities.ZksAccount)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Execute indicates an expected call of Execute
-func (mr *MockGetZksAccountUseCaseMockRecorder) Execute(ctx, address, namespace interface{}) *gomock.Call {
+func (mr *MockGetZksAccountUseCaseMockRecorder) Execute(ctx, pubKey, namespace interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockGetZksAccountUseCase)(nil).Execute), ctx, address, namespace)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockGetZksAccountUseCase)(nil).Execute), ctx, pubKey, namespace)
 }
 
 // WithStorage mocks base method
@@ -286,18 +286,18 @@ func (m *MockZksSignUseCase) EXPECT() *MockZksSignUseCaseMockRecorder {
 }
 
 // Execute mocks base method
-func (m *MockZksSignUseCase) Execute(ctx context.Context, address, namespace, data string) (string, error) {
+func (m *MockZksSignUseCase) Execute(ctx context.Context, pubKey, namespace, data string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Execute", ctx, address, namespace, data)
+	ret := m.ctrl.Call(m, "Execute", ctx, pubKey, namespace, data)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Execute indicates an expected call of Execute
-func (mr *MockZksSignUseCaseMockRecorder) Execute(ctx, address, namespace, data interface{}) *gomock.Call {
+func (mr *MockZksSignUseCaseMockRecorder) Execute(ctx, pubKey, namespace, data interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockZksSignUseCase)(nil).Execute), ctx, address, namespace, data)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockZksSignUseCase)(nil).Execute), ctx, pubKey, namespace, data)
 }
 
 // WithStorage mocks base method

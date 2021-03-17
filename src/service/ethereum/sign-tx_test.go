@@ -17,7 +17,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignTransaction() {
 	signOperation := path.Operations[logical.CreateOperation]
 
 	s.T().Run("should define the correct path", func(t *testing.T) {
-		assert.Equal(t, fmt.Sprintf("ethereum/accounts/%s/sign-transaction", framework.GenericNameRegex(formatters.AccountIDLabel)), path.Pattern)
+		assert.Equal(t, fmt.Sprintf("ethereum/accounts/%s/sign-transaction", framework.GenericNameRegex(formatters.IDLabel)), path.Pattern)
 		assert.NotEmpty(t, signOperation)
 	})
 
@@ -45,29 +45,29 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignTransaction() {
 		}
 		data := &framework.FieldData{
 			Raw: map[string]interface{}{
-				formatters.AccountIDLabel: account.Address,
-				formatters.NonceLabel:     0,
-				formatters.ToLabel:        "0xto",
-				formatters.AmountLabel:    "0",
-				formatters.GasPriceLabel:  "0",
-				formatters.GasLimitLabel:  21000,
-				formatters.ChainIDLabel:   "1",
-				formatters.DataLabel:      "0xfeee",
+				formatters.IDLabel:       account.Address,
+				formatters.NonceLabel:    0,
+				formatters.ToLabel:       "0xto",
+				formatters.AmountLabel:   "0",
+				formatters.GasPriceLabel: "0",
+				formatters.GasLimitLabel: 21000,
+				formatters.ChainIDLabel:  "1",
+				formatters.DataLabel:     "0xfeee",
 			},
 			Schema: map[string]*framework.FieldSchema{
-				formatters.AccountIDLabel: formatters.AddressFieldSchema,
-				formatters.NonceLabel:     formatters.NonceFieldSchema,
-				formatters.ToLabel:        formatters.ToFieldSchema,
-				formatters.AmountLabel:    formatters.AmountFieldSchema,
-				formatters.GasPriceLabel:  formatters.GasPriceFieldSchema,
-				formatters.GasLimitLabel:  formatters.GasLimitFieldSchema,
-				formatters.ChainIDLabel:   formatters.ChainIDFieldSchema,
-				formatters.DataLabel:      formatters.DataFieldSchema,
+				formatters.IDLabel:       formatters.AddressFieldSchema,
+				formatters.NonceLabel:    formatters.NonceFieldSchema,
+				formatters.ToLabel:       formatters.ToFieldSchema,
+				formatters.AmountLabel:   formatters.AmountFieldSchema,
+				formatters.GasPriceLabel: formatters.GasPriceFieldSchema,
+				formatters.GasLimitLabel: formatters.GasLimitFieldSchema,
+				formatters.ChainIDLabel:  formatters.ChainIDFieldSchema,
+				formatters.DataLabel:     formatters.DataFieldSchema,
 			},
 		}
 		expectedSignature := "0x8b9679a75861e72fa6968dd5add3bf96e2747f0f124a2e728980f91e1958367e19c2486a40fdc65861824f247603bc18255fa497ca0b8b0a394aa7a6740fdc4601"
 
-		s.signTransactionUC.EXPECT().Execute(gomock.Any(), account.Address, account.Namespace, "1", 
+		s.signTransactionUC.EXPECT().Execute(gomock.Any(), account.Address, account.Namespace, "1",
 			gomock.Any()).Return(expectedSignature, nil)
 
 		response, err := signOperation.Handler()(s.ctx, request, data)
@@ -83,17 +83,17 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignTransaction() {
 		}
 		data := &framework.FieldData{
 			Raw: map[string]interface{}{
-				formatters.AccountIDLabel: account.Address,
+				formatters.IDLabel: account.Address,
 			},
 			Schema: map[string]*framework.FieldSchema{
-				formatters.AccountIDLabel: formatters.AddressFieldSchema,
-				formatters.NonceLabel:     formatters.NonceFieldSchema,
-				formatters.ToLabel:        formatters.ToFieldSchema,
-				formatters.AmountLabel:    formatters.AmountFieldSchema,
-				formatters.GasPriceLabel:  formatters.GasPriceFieldSchema,
-				formatters.GasLimitLabel:  formatters.GasLimitFieldSchema,
-				formatters.ChainIDLabel:   formatters.ChainIDFieldSchema,
-				formatters.DataLabel:      formatters.DataFieldSchema,
+				formatters.IDLabel:       formatters.AddressFieldSchema,
+				formatters.NonceLabel:    formatters.NonceFieldSchema,
+				formatters.ToLabel:       formatters.ToFieldSchema,
+				formatters.AmountLabel:   formatters.AmountFieldSchema,
+				formatters.GasPriceLabel: formatters.GasPriceFieldSchema,
+				formatters.GasLimitLabel: formatters.GasLimitFieldSchema,
+				formatters.ChainIDLabel:  formatters.ChainIDFieldSchema,
+				formatters.DataLabel:     formatters.DataFieldSchema,
 			},
 		}
 
@@ -110,24 +110,24 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignTransaction() {
 		}
 		data := &framework.FieldData{
 			Raw: map[string]interface{}{
-				formatters.AccountIDLabel: account.Address,
-				formatters.NonceLabel:     0,
-				formatters.ToLabel:        "0xto",
-				formatters.AmountLabel:    "0",
-				formatters.GasPriceLabel:  "0",
-				formatters.GasLimitLabel:  21000,
-				formatters.ChainIDLabel:   "1",
-				formatters.DataLabel:      "0xfeee",
+				formatters.IDLabel:       account.Address,
+				formatters.NonceLabel:    0,
+				formatters.ToLabel:       "0xto",
+				formatters.AmountLabel:   "0",
+				formatters.GasPriceLabel: "0",
+				formatters.GasLimitLabel: 21000,
+				formatters.ChainIDLabel:  "1",
+				formatters.DataLabel:     "0xfeee",
 			},
 			Schema: map[string]*framework.FieldSchema{
-				formatters.AccountIDLabel: formatters.AddressFieldSchema,
-				formatters.NonceLabel:     formatters.NonceFieldSchema,
-				formatters.ToLabel:        formatters.ToFieldSchema,
-				formatters.AmountLabel:    formatters.AmountFieldSchema,
-				formatters.GasPriceLabel:  formatters.GasPriceFieldSchema,
-				formatters.GasLimitLabel:  formatters.GasLimitFieldSchema,
-				formatters.ChainIDLabel:   formatters.ChainIDFieldSchema,
-				formatters.DataLabel:      formatters.DataFieldSchema,
+				formatters.IDLabel:       formatters.AddressFieldSchema,
+				formatters.NonceLabel:    formatters.NonceFieldSchema,
+				formatters.ToLabel:       formatters.ToFieldSchema,
+				formatters.AmountLabel:   formatters.AmountFieldSchema,
+				formatters.GasPriceLabel: formatters.GasPriceFieldSchema,
+				formatters.GasLimitLabel: formatters.GasLimitFieldSchema,
+				formatters.ChainIDLabel:  formatters.ChainIDFieldSchema,
+				formatters.DataLabel:     formatters.DataFieldSchema,
 			},
 		}
 		expectedErr := fmt.Errorf("error")

@@ -2,6 +2,7 @@ package zksnarks
 
 import (
 	"context"
+
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
@@ -20,8 +21,8 @@ func (c *controller) NewSignPayloadOperation() *framework.PathOperation {
 			{
 				Description: "Signs a message",
 				Data: map[string]interface{}{
-					formatters.AccountIDLabel: exampleAccount.PublicKey,
-					formatters.DataLabel:      "my data to sign",
+					formatters.IDLabel:   exampleAccount.PublicKey,
+					formatters.DataLabel: "my data to sign",
 				},
 				Response: utils.Example200ResponseSignature(),
 			},
@@ -37,7 +38,7 @@ func (c *controller) NewSignPayloadOperation() *framework.PathOperation {
 
 func (c *controller) signPayloadHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
-		address := data.Get(formatters.AccountIDLabel).(string)
+		address := data.Get(formatters.IDLabel).(string)
 		payload := data.Get(formatters.DataLabel).(string)
 		namespace := formatters.GetRequestNamespace(req)
 

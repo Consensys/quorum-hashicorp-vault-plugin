@@ -1,4 +1,4 @@
-package zksnarks
+package keys
 
 import (
 	"context"
@@ -11,18 +11,18 @@ import (
 )
 
 func (c *controller) NewGetOperation() *framework.PathOperation {
-	exampleAccount := utils.ExampleZksAccount()
-	successExample := utils.Example200Response()
+	exampleKey := utils.ExampleKey()
+	successExample := utils.Example200KeyResponse()
 
 	return &framework.PathOperation{
 		Callback:    c.getHandler(),
-		Summary:     "Gets an zk-snarks account",
-		Description: "Gets an zk-snarks account stored in the vault at the given address and namespace",
+		Summary:     "Gets a key pair",
+		Description: "Gets a key pair stored in the vault at the given id and namespace",
 		Examples: []framework.RequestExample{
 			{
-				Description: "Gets an account on the tenant0 namespace",
+				Description: "Gets a key pair on the tenant0 namespace",
 				Data: map[string]interface{}{
-					formatters.IDLabel: exampleAccount.PublicKey,
+					formatters.IDLabel: exampleKey.ID,
 				},
 				Response: successExample,
 			},
@@ -38,15 +38,15 @@ func (c *controller) NewGetOperation() *framework.PathOperation {
 
 func (c *controller) getHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
-		accountID := data.Get(formatters.IDLabel).(string)
+		id := data.Get(formatters.IDLabel).(string)
 		namespace := formatters.GetRequestNamespace(req)
 
 		ctx = log.Context(ctx, c.logger)
-		account, err := c.useCases.GetAccount().WithStorage(req.Storage).Execute(ctx, accountID, namespace)
+		key, err := c.useCases.GetKey().WithStorage(req.Storage).Execute(ctx, id, namespace)
 		if err != nil {
 			return nil, err
 		}
 
-		return formatters.FormatZksAccountResponse(account), nil
+		return formatters.FormatKeyResponse(key), nil
 	}
 }

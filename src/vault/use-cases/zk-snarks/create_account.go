@@ -1,15 +1,13 @@
 package zksnarks
 
 import (
-	"bytes"
 	"context"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/storage"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
-	eddsa "github.com/consensys/gnark/crypto/signature/eddsa/bn256"
+	usecases "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
 	"github.com/consensys/quorum/common/hexutil"
 	"github.com/hashicorp/vault/sdk/logical"
 )
@@ -31,27 +29,18 @@ func (uc *createAccountUseCase) Execute(ctx context.Context, namespace string) (
 	logger := log.FromContext(ctx).With("namespace", namespace)
 	logger.Debug("creating new zk-snarks bn256 account")
 
-	var seed = make([]byte, 32)
-	for i, v := range utils.GenerateRandomSeed(32) {
-		seed[i] = v
-	}
-
-	// Usually standards implementations of eddsa do not require the choice of a specific hash function (usually it's SHA256). 
-	// Here we needed to allow the choice of the hash so we can chose a hash function that is easily programmable in a snark circuit.
-	// Same hFunc should be used for sign and verify
-	privKey, err := eddsa.GenerateKey(bytes.NewReader(seed))
+	privKey, err := crypto.NewBN256()
 	if err != nil {
 		errMessage := "failed to generate key"
 		logger.With("error", err).Error(errMessage)
 		return nil, err
 	}
 
-	pubKey := privKey.Public()
 	account := &entities.ZksAccount{
-		Algorithm:  entities.ZksAlgorithmEDDSA,
-		Curve:      entities.ZksCurveBN256,
+		Algorithm:  entities.EDDSA,
+		Curve:      entities.BN256,
 		PrivateKey: hexutil.Encode(privKey.Bytes()),
-		PublicKey:  hexutil.Encode(pubKey.Bytes()),
+		PublicKey:  hexutil.Encode(privKey.Public().Bytes()),
 		Namespace:  namespace,
 	}
 
