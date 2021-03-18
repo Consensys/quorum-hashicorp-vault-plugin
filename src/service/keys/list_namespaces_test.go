@@ -15,7 +15,7 @@ func (s *keysCtrlTestSuite) TestKeysController_ListNamespaces() {
 	listOperation := path.Operations[logical.ListOperation]
 
 	s.T().Run("should define the correct path", func(t *testing.T) {
-		assert.Equal(t, "keys/namespaces/?", path.Pattern)
+		assert.Equal(t, "namespaces/keys/?", path.Pattern)
 		assert.NotEmpty(t, listOperation)
 	})
 

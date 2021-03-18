@@ -27,13 +27,13 @@ func GetJSON(ctx context.Context, storage logical.Storage, key string, account i
 	}
 
 	if entry == nil {
-		return logical.CodedError(404, "account could not be found")
+		return logical.CodedError(404, "resource could not be found")
 	}
-	
+
 	err = entry.DecodeJSON(&account)
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }

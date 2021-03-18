@@ -22,6 +22,10 @@ func GetZkSnarksNamespaces(ctx context.Context, storage logical.Storage, namespa
 	return getNamespaces(ctx, storage, ZkSnarksSecretsPath, namespace, namespaceSet)
 }
 
+func GetKeysNamespaces(ctx context.Context, storage logical.Storage, namespace string, namespaceSet map[string]bool) error {
+	return getNamespaces(ctx, storage, KeysSecretPath, namespace, namespaceSet)
+}
+
 func getNamespaces(ctx context.Context, storage logical.Storage, secretsPath, namespace string, namespaceSet map[string]bool) error {
 	if strings.HasSuffix(namespace, secretsPath+"/") {
 		namespace := strings.TrimSuffix(namespace, secretsPath+"/")

@@ -2,11 +2,12 @@ package ethereum
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func (s *ethereumCtrlTestSuite) TestEthereumController_ListNamespaces() {
@@ -14,7 +15,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_ListNamespaces() {
 	listOperation := path.Operations[logical.ListOperation]
 
 	s.T().Run("should define the correct path", func(t *testing.T) {
-		assert.Equal(t, "ethereum/namespaces/?", path.Pattern)
+		assert.Equal(t, "namespaces/ethereum/?", path.Pattern)
 		assert.NotEmpty(t, listOperation)
 	})
 

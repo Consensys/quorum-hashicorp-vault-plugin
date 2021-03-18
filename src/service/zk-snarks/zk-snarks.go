@@ -66,7 +66,7 @@ func (c *controller) pathAccount() *framework.Path {
 
 func (c *controller) pathNamespaces() *framework.Path {
 	return &framework.Path{
-		Pattern:      "zk-snarks/namespaces/?",
+		Pattern:      "namespaces/zk-snarks/?",
 		HelpSynopsis: "Lists all zk-snarks namespaces",
 		Operations: map[logical.Operation]framework.OperationHandler{
 			logical.ListOperation: c.NewListNamespacesOperation(),

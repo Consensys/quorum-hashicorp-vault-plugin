@@ -57,7 +57,7 @@ func (c *controller) pathAccounts() *framework.Path {
 
 func (c *controller) pathNamespaces() *framework.Path {
 	return &framework.Path{
-		Pattern:      "ethereum/namespaces/?",
+		Pattern:      "namespaces/ethereum/?",
 		HelpSynopsis: "Lists all ethereum namespaces",
 		Operations: map[logical.Operation]framework.OperationHandler{
 			logical.ListOperation: c.NewListNamespacesOperation(),

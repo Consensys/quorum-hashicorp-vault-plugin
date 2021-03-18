@@ -72,7 +72,7 @@ func (c *controller) pathKeys() *framework.Path {
 
 func (c *controller) pathNamespaces() *framework.Path {
 	return &framework.Path{
-		Pattern:      "keys/namespaces/?",
+		Pattern:      "namespaces/keys/?",
 		HelpSynopsis: "Lists all keys namespaces",
 		Operations: map[logical.Operation]framework.OperationHandler{
 			logical.ListOperation: c.NewListNamespacesOperation(),
