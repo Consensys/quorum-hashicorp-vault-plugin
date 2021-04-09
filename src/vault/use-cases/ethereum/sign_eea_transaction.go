@@ -2,15 +2,15 @@ package ethereum
 
 import (
 	"context"
+	signing "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto/ethereum"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	usecases "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/hashicorp/vault/sdk/logical"
-	"gitlab.com/ConsenSys/client/fr/core-stack/orchestrate.git/v2/pkg/crypto/ethereum/signing"
-	"gitlab.com/ConsenSys/client/fr/core-stack/orchestrate.git/v2/pkg/types/entities"
 )
 
 // signEEATxUseCase is a use case to sign a Quorum private transaction using an existing account

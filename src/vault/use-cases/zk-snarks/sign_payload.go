@@ -3,13 +3,13 @@ package zksnarks
 import (
 	"context"
 	"crypto/sha256"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
 	eddsa "github.com/consensys/gnark/crypto/signature/eddsa/bn256"
 	"github.com/consensys/quorum/common/hexutil"
 	"github.com/hashicorp/vault/sdk/logical"
-	"gitlab.com/ConsenSys/client/fr/core-stack/orchestrate.git/v2/pkg/errors"
 )
 
 type signPayloadUseCase struct {

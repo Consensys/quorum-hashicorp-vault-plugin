@@ -12,7 +12,6 @@ import (
 	types0 "github.com/ethereum/go-ethereum/core/types"
 	gomock "github.com/golang/mock/gomock"
 	logical "github.com/hashicorp/vault/sdk/logical"
-	entities0 "gitlab.com/ConsenSys/client/fr/core-stack/orchestrate.git/v2/pkg/types/entities"
 	reflect "reflect"
 )
 
@@ -487,7 +486,7 @@ func (m *MockSignEEATransactionUseCase) EXPECT() *MockSignEEATransactionUseCaseM
 }
 
 // Execute mocks base method
-func (m *MockSignEEATransactionUseCase) Execute(ctx context.Context, address, namespace, chainID string, tx *types0.Transaction, privateArgs *entities0.PrivateETHTransactionParams) (string, error) {
+func (m *MockSignEEATransactionUseCase) Execute(ctx context.Context, address, namespace, chainID string, tx *types0.Transaction, privateArgs *entities.PrivateETHTransactionParams) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Execute", ctx, address, namespace, chainID, tx, privateArgs)
 	ret0, _ := ret[0].(string)

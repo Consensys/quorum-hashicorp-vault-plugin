@@ -10,7 +10,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
-	entities2 "gitlab.com/ConsenSys/client/fr/core-stack/orchestrate.git/v2/pkg/types/entities"
 )
 
 func FormatAccountResponse(account *entities.ETHAccount) *logical.Response {
@@ -84,7 +83,7 @@ func FormatSignQuorumPrivateTransactionRequest(requestData *framework.FieldData)
 	return quorumtypes.NewTransaction(uint64(nonce), common.HexToAddress(to), amount, uint64(gasLimit), gasPrice, data), nil
 }
 
-func FormatSignEEATransactionRequest(requestData *framework.FieldData) (tx *types.Transaction, privateArgs *entities2.PrivateETHTransactionParams, err error) {
+func FormatSignEEATransactionRequest(requestData *framework.FieldData) (tx *types.Transaction, privateArgs *entities.PrivateETHTransactionParams, err error) {
 	data, err := hexutil.Decode(requestData.Get(DataLabel).(string))
 	if err != nil {
 		return nil, nil, logical.CodedError(400, "invalid data")
@@ -95,7 +94,7 @@ func FormatSignEEATransactionRequest(requestData *framework.FieldData) (tx *type
 	to := requestData.Get(ToLabel).(string)
 	nonce := requestData.Get(NonceLabel).(int)
 
-	privateArgs = &entities2.PrivateETHTransactionParams{
+	privateArgs = &entities.PrivateETHTransactionParams{
 		PrivateFrom:    requestData.Get(PrivateFromLabel).(string),
 		PrivateFor:     requestData.Get(PrivateForLabel).([]string),
 		PrivacyGroupID: requestData.Get(PrivacyGroupIDLabel).(string),

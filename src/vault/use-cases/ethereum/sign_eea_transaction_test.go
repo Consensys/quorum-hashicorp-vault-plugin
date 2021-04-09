@@ -3,16 +3,16 @@ package ethereum
 import (
 	"context"
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities/testutils"
 	"math/big"
 	"testing"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils/mocks"
 	mocks2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases/mocks"
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	testutils2 "gitlab.com/ConsenSys/client/fr/core-stack/orchestrate.git/v2/pkg/types/testutils"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -44,7 +44,7 @@ func TestSignEEATransaction_Execute(t *testing.T) {
 		fakeAccount := apputils.FakeETHAccount()
 		fakeAccount.PrivateKey = "5385714a2f6d69ca034f56a5268833216ffb8fba7229c39569bc4c5f42cde97c"
 		mockGetAccountUC.EXPECT().Execute(ctx, address, namespace).Return(fakeAccount, nil)
-		privateArgs := testutils2.FakePrivateETHTransactionParams()
+		privateArgs := testutils.FakePrivateETHTransactionParams()
 
 		signature, err := usecase.Execute(ctx, address, namespace, chainID, tx, privateArgs)
 
@@ -53,7 +53,7 @@ func TestSignEEATransaction_Execute(t *testing.T) {
 	})
 
 	t.Run("should fail with same error if Get account fails", func(t *testing.T) {
-		privateArgs := testutils2.FakePrivateETHTransactionParams()
+		privateArgs := testutils.FakePrivateETHTransactionParams()
 		expectedErr := fmt.Errorf("error")
 
 		mockGetAccountUC.EXPECT().Execute(ctx, address, namespace).Return(nil, expectedErr)
@@ -65,7 +65,7 @@ func TestSignEEATransaction_Execute(t *testing.T) {
 	})
 
 	t.Run("should fail with CryptoOperationError if creation of ECDSA private key fails", func(t *testing.T) {
-		privateArgs := testutils2.FakePrivateETHTransactionParams()
+		privateArgs := testutils.FakePrivateETHTransactionParams()
 		fakeAccount := apputils.FakeETHAccount()
 		fakeAccount.PrivateKey = "invalidPrivKey"
 		mockGetAccountUC.EXPECT().Execute(ctx, address, namespace).Return(fakeAccount, nil)

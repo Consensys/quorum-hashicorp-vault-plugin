@@ -2,6 +2,7 @@ package zksnarks
 
 import (
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities/testutils"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -10,7 +11,6 @@ import (
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
 	"github.com/stretchr/testify/assert"
-	"gitlab.com/ConsenSys/client/fr/core-stack/orchestrate.git/v2/pkg/types/testutils"
 )
 
 func (s *zksCtrlTestSuite) TestZksController_Sign() {

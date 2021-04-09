@@ -3,12 +3,12 @@ package ethereum
 import (
 	"context"
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities/testutils"
 	"testing"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils/mocks"
 	"github.com/ethereum/go-ethereum/common"
-	"gitlab.com/ConsenSys/client/fr/core-stack/orchestrate.git/v2/pkg/types/testutils"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"

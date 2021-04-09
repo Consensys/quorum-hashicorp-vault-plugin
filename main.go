@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src"
-	log2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
+	log2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/hashicorp/vault/api"
 	"github.com/hashicorp/vault/sdk/plugin"
 )

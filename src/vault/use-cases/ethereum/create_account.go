@@ -5,8 +5,8 @@ import (
 	"crypto/ecdsa"
 	"encoding/hex"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
 	cryptoutils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/storage"
 	usecases "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"

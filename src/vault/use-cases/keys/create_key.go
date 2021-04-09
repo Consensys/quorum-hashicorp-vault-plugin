@@ -4,9 +4,10 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"encoding/hex"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/storage"
 	usecases "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
@@ -14,7 +15,6 @@ import (
 	"github.com/consensys/quorum/common/hexutil"
 	crypto2 "github.com/ethereum/go-ethereum/crypto"
 	"github.com/hashicorp/vault/sdk/logical"
-	"gitlab.com/ConsenSys/client/fr/core-stack/orchestrate.git/v2/pkg/errors"
 )
 
 const errMessageFailedGeneration = "failed to generate key"
