@@ -3,6 +3,7 @@ package zksnarks
 import (
 	"context"
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
@@ -39,27 +40,20 @@ func TestGetAccount_Execute(t *testing.T) {
 		assert.NotEmpty(t, account.PublicKey)
 	})
 
-	t.Run("should fail with same error if Get fails", func(t *testing.T) {
-		expectedErr := fmt.Errorf("error")
-
-		mockStorage.EXPECT().Get(ctx, gomock.Any()).Return(nil, expectedErr)
+	t.Run("should fail with StorageError if Get fails", func(t *testing.T) {
+		mockStorage.EXPECT().Get(ctx, gomock.Any()).Return(nil, fmt.Errorf("error"))
 
 		account, err := usecase.Execute(ctx, "0xaddress", "namespace")
 
 		assert.Nil(t, account)
-		assert.Equal(t, expectedErr, err)
+		assert.True(t, errors.IsStorageError(err))
 	})
 
-	t.Run("should return CodedError with status 404 if nothing is found", func(t *testing.T) {
+	t.Run("should fail with NotFoundError if nothing is found", func(t *testing.T) {
 		mockStorage.EXPECT().Get(ctx, gomock.Any()).Return(nil, nil)
 
 		account, err := usecase.Execute(ctx, "0xaddress", "namespace")
-
 		assert.Nil(t, account)
-		assert.Error(t, err)
-
-		codedError, ok := err.(logical.HTTPCodedError)
-		assert.True(t, ok)
-		assert.Equal(t, 404, codedError.Code())
+		assert.True(t, errors.IsNotFoundError(err))
 	})
 }

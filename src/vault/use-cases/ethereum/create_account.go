@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"encoding/hex"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 
 	cryptoutils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
@@ -45,14 +46,14 @@ func (uc *createAccountUseCase) Execute(ctx context.Context, namespace, imported
 		if err != nil {
 			errMessage := "failed to generate Ethereum private key"
 			logger.With("error", err).Error(errMessage)
-			return nil, err
+			return nil, errors.CryptoOperationError(errMessage)
 		}
 	} else {
 		privKey, err = cryptoutils.ImportSecp256k1(importedPrivKey)
 		if err != nil {
 			errMessage := "failed to import Ethereum private key, please verify that the provided private key is valid"
 			logger.With("error", err).Error(errMessage)
-			return nil, err
+			return nil, errors.InvalidParameterError(errMessage)
 		}
 	}
 
@@ -64,11 +65,8 @@ func (uc *createAccountUseCase) Execute(ctx context.Context, namespace, imported
 		Namespace:           namespace,
 	}
 
-	err = storage.StoreJSON(ctx, uc.storage,
-		storage.ComputeEthereumStorageKey(account.Address, account.Namespace), account)
-
+	err = storage.StoreJSON(ctx, uc.storage, storage.ComputeEthereumStorageKey(account.Address, account.Namespace), account)
 	if err != nil {
-		logger.With("error", err).Error("failed to store account in vault")
 		return nil, err
 	}
 

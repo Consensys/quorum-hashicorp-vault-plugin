@@ -2,6 +2,7 @@ package zksnarks
 
 import (
 	"context"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
@@ -33,7 +34,7 @@ func (uc *createAccountUseCase) Execute(ctx context.Context, namespace string) (
 	if err != nil {
 		errMessage := "failed to generate key"
 		logger.With("error", err).Error(errMessage)
-		return nil, err
+		return nil, errors.CryptoOperationError(errMessage)
 	}
 
 	account := &entities.ZksAccount{
@@ -46,8 +47,6 @@ func (uc *createAccountUseCase) Execute(ctx context.Context, namespace string) (
 
 	err = storage.StoreJSON(ctx, uc.storage, storage.ComputeZksStorageKey(account.PublicKey, account.Namespace), account)
 	if err != nil {
-		errMessage := "failed to create account entry"
-		logger.With("error", err).Error(errMessage)
 		return nil, err
 	}
 

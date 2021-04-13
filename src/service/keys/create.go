@@ -2,6 +2,7 @@ package keys
 
 import (
 	"context"
+	errors2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/errors"
@@ -40,19 +41,19 @@ func (c *controller) createHandler() framework.OperationFunc {
 		tags := data.Get(formatters.TagsLabel).(map[string]string)
 
 		if id == "" {
-			return errors.BadRequestError(req, "id must be provided")
+			return errors.WriteHTTPError(req, errors2.InvalidFormatError("id must be provided"))
 		}
 		if curve == "" {
-			return errors.BadRequestError(req, "curve must be provided")
+			return errors.WriteHTTPError(req, errors2.InvalidFormatError("curve must be provided"))
 		}
 		if algo == "" {
-			return errors.BadRequestError(req, "algorithm must be provided")
+			return errors.WriteHTTPError(req, errors2.InvalidFormatError("algorithm must be provided"))
 		}
 
 		ctx = log.Context(ctx, c.logger)
 		key, err := c.useCases.CreateKey().WithStorage(req.Storage).Execute(ctx, namespace, id, algo, curve, "", tags)
 		if err != nil {
-			return nil, err
+			return errors.WriteHTTPError(req, err)
 		}
 
 		return formatters.FormatKeyResponse(key), nil

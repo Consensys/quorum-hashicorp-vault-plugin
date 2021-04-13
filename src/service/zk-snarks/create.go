@@ -2,6 +2,7 @@ package zksnarks
 
 import (
 	"context"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/errors"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -37,7 +38,7 @@ func (c *controller) createHandler() framework.OperationFunc {
 		ctx = log.Context(ctx, c.logger)
 		account, err := c.useCases.CreateAccount().WithStorage(req.Storage).Execute(ctx, namespace)
 		if err != nil {
-			return nil, err
+			return errors.WriteHTTPError(req, err)
 		}
 
 		return formatters.FormatZksAccountResponse(account), nil

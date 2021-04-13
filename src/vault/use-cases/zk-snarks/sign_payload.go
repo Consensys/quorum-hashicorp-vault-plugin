@@ -40,16 +40,16 @@ func (uc *signPayloadUseCase) Execute(ctx context.Context, pubKey, namespace, da
 	privKeyB, _ := hexutil.Decode(account.PrivateKey)
 	_, err = privKey.SetBytes(privKeyB)
 	if err != nil {
-		errMsg := "failed to deserialize private key"
-		logger.With("error", err).Error(errMsg)
-		return "", errors.EncodingError(errMsg)
+		errMessage := "failed to parse private key"
+		logger.With("error", err).Error(errMessage)
+		return "", errors.CryptoOperationError(errMessage)
 	}
 
 	signatureB, err := privKey.Sign([]byte(data), sha256.New())
 	if err != nil {
-		errMessage := "failed to sign payload using EDDSA"
+		errMessage := "failed to sign payload"
 		logger.With("error", err).Error(errMessage)
-		return "", err
+		return "", errors.CryptoOperationError(errMessage)
 	}
 
 	logger.Info("payload signed successfully")

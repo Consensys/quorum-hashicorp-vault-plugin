@@ -2,7 +2,9 @@ package ethereum
 
 import (
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities/testutils"
+	"net/http"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -68,7 +70,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Sign() {
 		assert.Equal(t, expectedSignature, response.Data["signature"])
 	})
 
-	s.T().Run("should return same error if use case fails", func(t *testing.T) {
+	s.T().Run("should map errors correctly and return the correct http status", func(t *testing.T) {
 		account := testutils.FakeETHAccount()
 		payload := "my data to sign"
 		request := &logical.Request{
@@ -88,13 +90,13 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Sign() {
 				},
 			},
 		}
-		expectedErr := fmt.Errorf("error")
+		expectedErr := errors.NotFoundError("not found")
 
 		s.signPayloadUC.EXPECT().Execute(gomock.Any(), account.Address, "", payload).Return("", expectedErr)
 
 		response, err := signOperation.Handler()(s.ctx, request, data)
 
-		assert.Empty(t, response)
-		assert.Equal(t, expectedErr, err)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusNotFound, response.Data[logical.HTTPStatusCode])
 	})
 }

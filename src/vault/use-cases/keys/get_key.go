@@ -30,7 +30,6 @@ func (uc *getKeyUseCase) Execute(ctx context.Context, id, namespace string) (*en
 	key := &entities.Key{}
 	err := storage.GetJSON(ctx, uc.storage, storage.ComputeKeysStorageKey(id, namespace), key)
 	if err != nil {
-		logger.With("error", err).Error("failed to retrieve key pair from vault")
 		return nil, err
 	}
 

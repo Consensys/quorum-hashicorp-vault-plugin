@@ -2,6 +2,7 @@ package keys
 
 import (
 	"context"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/storage"
@@ -26,5 +27,12 @@ func (uc *listKeysUseCase) Execute(ctx context.Context, namespace string) ([]str
 	logger := log.FromContext(ctx).With("namespace", namespace)
 	logger.Debug("listing key pairs")
 
-	return uc.storage.List(ctx, storage.ComputeKeysStorageKey("", namespace))
+	keys, err := uc.storage.List(ctx, storage.ComputeKeysStorageKey("", namespace))
+	if err != nil {
+		errMessage := "failed to list keys"
+		logger.With("error", err).Error(errMessage)
+		return nil, errors.StorageError(errMessage)
+	}
+
+	return keys, nil
 }

@@ -1,13 +1,14 @@
 package ethereum
 
 import (
-	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
 	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 )
 
@@ -50,18 +51,18 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_List() {
 		assert.Equal(t, expectedList, response.Data["keys"])
 	})
 
-	s.T().Run("should return same error if use case fails", func(t *testing.T) {
+	s.T().Run("should map errors correctly and return the correct http status", func(t *testing.T) {
 		request := &logical.Request{
 			Storage: s.storage,
 		}
 		data := &framework.FieldData{}
-		expectedErr := fmt.Errorf("error")
+		expectedErr := errors.NotFoundError("error")
 
 		s.listAccountsUC.EXPECT().Execute(gomock.Any(), "").Return(nil, expectedErr)
 
 		response, err := listOperation.Handler()(s.ctx, request, data)
 
-		assert.Empty(t, response)
-		assert.Equal(t, expectedErr, err)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusNotFound, response.Data[logical.HTTPStatusCode])
 	})
 }

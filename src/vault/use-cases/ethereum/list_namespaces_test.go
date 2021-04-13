@@ -3,6 +3,7 @@ package ethereum
 import (
 	"context"
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
@@ -49,27 +50,23 @@ func TestListNamespaces_Execute(t *testing.T) {
 		assert.Contains(t, namespaces, expectedNamespaces[3])
 	})
 
-	t.Run("should fail with same error if List fails", func(t *testing.T) {
-		expectedErr := fmt.Errorf("error")
-
-		mockStorage.EXPECT().List(ctx, gomock.Any()).Return(nil, expectedErr)
+	t.Run("should fail with StorageError if List fails", func(t *testing.T) {
+		mockStorage.EXPECT().List(ctx, gomock.Any()).Return(nil, fmt.Errorf("error"))
 
 		keys, err := usecase.Execute(ctx)
 
 		assert.Nil(t, keys)
-		assert.Equal(t, expectedErr, err)
+		assert.True(t, errors.IsStorageError(err))
 	})
 
 	t.Run("should fail with same error if recursive List fails", func(t *testing.T) {
-		expectedErr := fmt.Errorf("error")
-
 		gomock.InOrder(
 			mockStorage.EXPECT().List(ctx, "").Return([]string{"ns1/", "_/", "tenant0/", "ethereum/"}, nil),
-			mockStorage.EXPECT().List(ctx, gomock.Any()).Return(nil, expectedErr),
+			mockStorage.EXPECT().List(ctx, gomock.Any()).Return(nil, fmt.Errorf("error")),
 		)
 		keys, err := usecase.Execute(ctx)
 
 		assert.Nil(t, keys)
-		assert.Equal(t, expectedErr, err)
+		assert.True(t, errors.IsStorageError(err))
 	})
 }

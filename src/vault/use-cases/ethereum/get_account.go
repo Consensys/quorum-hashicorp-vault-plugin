@@ -31,10 +31,8 @@ func (uc *getAccountUseCase) Execute(ctx context.Context, address, namespace str
 	logger.Debug("getting Ethereum account")
 
 	account := &entities.ETHAccount{}
-	err := storage.GetJSON(ctx, uc.storage, 
-		storage.ComputeEthereumStorageKey(address, namespace), account)
+	err := storage.GetJSON(ctx, uc.storage, storage.ComputeEthereumStorageKey(address, namespace), account)
 	if err != nil {
-		logger.With("error", err).Error("failed to retrieve account from vault")
 		return nil, err
 	}
 

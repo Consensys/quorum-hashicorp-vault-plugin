@@ -4,8 +4,9 @@ const (
 	// Data Errors (class 42XXX)
 	Data             uint64 = 4<<16 + 2<<12
 	Encoding                = Data + 1<<8 // Invalid Encoding (subclass 421XX)
-	InvalidFormat           = Data + 3<<8 // Invalid format (subclass 423XX)
-	InvalidParameter        = Data + 4<<8 // Invalid parameter provided (subclass 424XX)
+	InvalidFormat           = Data + 2<<8 // Invalid format (subclass 423XX)
+	InvalidParameter        = Data + 3<<8 // Invalid parameter provided (subclass 424XX)
+	Crypto                  = Data + 4<<8
 )
 
 // EncodingError are raised when failing to decode a message
@@ -36,4 +37,12 @@ func InvalidParameterError(format string, a ...interface{}) *Error {
 // IsInvalidParameterError indicate whether an error is an invalid parameter error
 func IsInvalidParameterError(err error) bool {
 	return isErrorClass(FromError(err).GetCode(), InvalidParameter)
+}
+
+func CryptoOperationError(format string, a ...interface{}) *Error {
+	return Errorf(Crypto, format, a...)
+}
+
+func IsCryptoOperationError(err error) bool {
+	return isErrorClass(FromError(err).GetCode(), Crypto)
 }

@@ -3,6 +3,7 @@ package ethereum
 import (
 	"context"
 	signing "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto/ethereum"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
@@ -44,14 +45,14 @@ func (uc *signTxUseCase) Execute(ctx context.Context, address, namespace, chainI
 	if err != nil {
 		errMessage := "failed to parse private key"
 		logger.With("error", err).Error(errMessage)
-		return "", err
+		return "", errors.CryptoOperationError(errMessage)
 	}
 
 	signature, err := signing.SignTransaction(tx, ecdsaPrivKey, signing.GetEIP155Signer(chainID))
 	if err != nil {
-		errMessage := "failed to sign transaction using ECDSA"
+		errMessage := "failed to sign ethereum transaction"
 		logger.With("error", err).Error(errMessage)
-		return "", err
+		return "", errors.CryptoOperationError(errMessage)
 	}
 
 	logger.Info("ethereum transaction signed successfully")

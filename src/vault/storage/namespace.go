@@ -3,6 +3,8 @@ package storage
 import (
 	"context"
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"strings"
 
 	"github.com/hashicorp/vault/sdk/logical"
@@ -27,6 +29,8 @@ func GetKeysNamespaces(ctx context.Context, storage logical.Storage, namespace s
 }
 
 func getNamespaces(ctx context.Context, storage logical.Storage, secretsPath, namespace string, namespaceSet map[string]bool) error {
+	logger := log.FromContext(ctx).With("namespace", namespace)
+
 	if strings.HasSuffix(namespace, secretsPath+"/") {
 		namespace := strings.TrimSuffix(namespace, secretsPath+"/")
 		namespaceSet[namespace] = true
@@ -35,7 +39,9 @@ func getNamespaces(ctx context.Context, storage logical.Storage, secretsPath, na
 
 	keys, err := storage.List(ctx, namespace)
 	if err != nil {
-		return err
+		errMessage := "failed to get keys"
+		logger.With("error", err).Error(errMessage)
+		return errors.StorageError(errMessage)
 	}
 
 	for _, key := range keys {

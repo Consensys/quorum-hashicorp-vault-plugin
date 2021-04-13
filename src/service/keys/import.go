@@ -2,6 +2,7 @@ package keys
 
 import (
 	"context"
+	errors2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/errors"
@@ -50,22 +51,22 @@ func (c *controller) importHandler() framework.OperationFunc {
 		privateKeyString := data.Get(formatters.PrivateKeyLabel).(string)
 
 		if id == "" {
-			return errors.BadRequestError(req, "id must be provided")
+			return errors.WriteHTTPError(req, errors2.InvalidFormatError("id must be provided"))
 		}
 		if curve == "" {
-			return errors.BadRequestError(req, "curve must be provided")
+			return errors.WriteHTTPError(req, errors2.InvalidFormatError("curve must be provided"))
 		}
 		if algo == "" {
-			return errors.BadRequestError(req, "algorithm must be provided")
+			return errors.WriteHTTPError(req, errors2.InvalidFormatError("algorithm must be provided"))
 		}
 		if privateKeyString == "" {
-			return errors.BadRequestError(req, "privateKey must be provided")
+			return errors.WriteHTTPError(req, errors2.InvalidFormatError("privateKey must be provided"))
 		}
 
 		ctx = log.Context(ctx, c.logger)
 		key, err := c.useCases.CreateKey().WithStorage(req.Storage).Execute(ctx, namespace, id, algo, curve, privateKeyString, tags)
 		if err != nil {
-			return nil, err
+			return errors.WriteHTTPError(req, err)
 		}
 
 		return formatters.FormatKeyResponse(key), nil

@@ -2,6 +2,8 @@ package ethereum
 
 import (
 	"context"
+	errors2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/errors"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -48,18 +50,18 @@ func (c *controller) signEEATransactionHandler() framework.OperationFunc {
 		namespace := formatters.GetRequestNamespace(req)
 
 		if chainID == "" {
-			return logical.ErrorResponse("chainID must be provided"), nil
+			return errors.WriteHTTPError(req, errors2.InvalidFormatError("chainID must be provided"))
 		}
 
 		tx, privateArgs, err := formatters.FormatSignEEATransactionRequest(data)
 		if err != nil {
-			return nil, err
+			return errors.WriteHTTPError(req, err)
 		}
 
 		ctx = log.Context(ctx, c.logger)
 		signature, err := c.useCases.SignEEATransaction().WithStorage(req.Storage).Execute(ctx, address, namespace, chainID, tx, privateArgs)
 		if err != nil {
-			return nil, err
+			return errors.WriteHTTPError(req, err)
 		}
 
 		return formatters.FormatSignatureResponse(signature), nil

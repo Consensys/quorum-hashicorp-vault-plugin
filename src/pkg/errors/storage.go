@@ -18,16 +18,6 @@ func IsNotFoundError(err error) bool {
 	return isErrorClass(FromError(err).GetCode(), NotFound)
 }
 
-// ConstraintViolatedError is raised when a Data constraint has been violated
-func ConstraintViolatedError(format string, a ...interface{}) *Error {
-	return Errorf(ConstraintViolated, format, a...)
-}
-
-// IsConstraintViolatedError indicate whether an error is a constraint violated error
-func IsConstraintViolatedError(err error) bool {
-	return isErrorClass(FromError(err).GetCode(), ConstraintViolated)
-}
-
 // AlreadyExistsError is raised when a Data constraint has been violated
 func AlreadyExistsError(format string, a ...interface{}) *Error {
 	return Errorf(AlreadyExists, format, a...)
@@ -36,4 +26,12 @@ func AlreadyExistsError(format string, a ...interface{}) *Error {
 // IsAlreadyExistsError indicate whether an error is an already exists error
 func IsAlreadyExistsError(err error) bool {
 	return isErrorClass(FromError(err).GetCode(), AlreadyExists)
+}
+
+func StorageError(format string, a ...interface{}) *Error {
+	return Errorf(AlreadyExists, format, a...)
+}
+
+func IsStorageError(err error) bool {
+	return isErrorClass(FromError(err).GetCode(), Storage)
 }

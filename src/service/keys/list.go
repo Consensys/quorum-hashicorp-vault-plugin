@@ -2,6 +2,7 @@ package keys
 
 import (
 	"context"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/errors"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -41,7 +42,7 @@ func (c *controller) listHandler() framework.OperationFunc {
 		ctx = log.Context(ctx, c.logger)
 		keys, err := c.useCases.ListKeys().WithStorage(req.Storage).Execute(ctx, namespace)
 		if err != nil {
-			return nil, err
+			return errors.WriteHTTPError(req, err)
 		}
 
 		return logical.ListResponse(keys), nil

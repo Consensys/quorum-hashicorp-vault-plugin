@@ -2,6 +2,7 @@ package keys
 
 import (
 	"context"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/errors"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
@@ -38,7 +39,7 @@ func (c *controller) listNamespacesHandler() framework.OperationFunc {
 		ctx = log.Context(ctx, c.logger)
 		namespaces, err := c.useCases.ListNamespaces().WithStorage(req.Storage).Execute(ctx)
 		if err != nil {
-			return nil, err
+			return errors.WriteHTTPError(req, err)
 		}
 
 		return logical.ListResponse(namespaces), nil

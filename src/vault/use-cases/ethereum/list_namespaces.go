@@ -33,8 +33,6 @@ func (uc *listNamespacesUseCase) Execute(ctx context.Context) ([]string, error) 
 	namespaceSet := make(map[string]bool)
 	err := storage.GetEthereumNamespaces(ctx, uc.storage, "", namespaceSet)
 	if err != nil {
-		errMessage := "failed to get namespace"
-		logger.With("error", err).Error(errMessage)
 		return nil, err
 	}
 

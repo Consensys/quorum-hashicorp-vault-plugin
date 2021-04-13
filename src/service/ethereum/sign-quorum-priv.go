@@ -2,6 +2,7 @@ package ethereum
 
 import (
 	"context"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/errors"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -48,13 +49,13 @@ func (c *controller) signQuorumPrivateTransactionHandler() framework.OperationFu
 
 		tx, err := formatters.FormatSignQuorumPrivateTransactionRequest(data)
 		if err != nil {
-			return nil, err
+			return errors.WriteHTTPError(req, err)
 		}
 
 		ctx = log.Context(ctx, c.logger)
 		signature, err := c.useCases.SignQuorumPrivateTransaction().WithStorage(req.Storage).Execute(ctx, address, namespace, tx)
 		if err != nil {
-			return nil, err
+			return errors.WriteHTTPError(req, err)
 		}
 
 		return formatters.FormatSignatureResponse(signature), nil

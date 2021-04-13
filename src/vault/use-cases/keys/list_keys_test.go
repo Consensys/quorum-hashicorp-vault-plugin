@@ -3,6 +3,7 @@ package keys
 import (
 	"context"
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
@@ -33,14 +34,11 @@ func TestListKeys_Execute(t *testing.T) {
 		assert.Equal(t, expectedKeys, keys)
 	})
 
-	t.Run("should fail with same error if List fails", func(t *testing.T) {
-		expectedErr := fmt.Errorf("error")
-
-		mockStorage.EXPECT().List(ctx, gomock.Any()).Return(nil, expectedErr)
+	t.Run("should fail with StorageError if List fails", func(t *testing.T) {
+		mockStorage.EXPECT().List(ctx, gomock.Any()).Return(nil, fmt.Errorf("error"))
 
 		keys, err := usecase.Execute(ctx, "namespace")
-
 		assert.Nil(t, keys)
-		assert.Equal(t, expectedErr, err)
+		assert.True(t, errors.IsStorageError(err))
 	})
 }

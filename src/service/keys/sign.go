@@ -2,6 +2,8 @@ package keys
 
 import (
 	"context"
+	errors2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/errors"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -43,13 +45,13 @@ func (c *controller) signPayloadHandler() framework.OperationFunc {
 		namespace := formatters.GetRequestNamespace(req)
 
 		if payload == "" {
-			return logical.ErrorResponse("data must be provided"), nil
+			return errors.WriteHTTPError(req, errors2.InvalidFormatError("data must be provided"))
 		}
 
 		ctx = log.Context(ctx, c.logger)
 		signature, err := c.useCases.SignPayload().WithStorage(req.Storage).Execute(ctx, id, namespace, payload)
 		if err != nil {
-			return nil, err
+			return errors.WriteHTTPError(req, err)
 		}
 
 		return formatters.FormatSignatureResponse(signature), nil

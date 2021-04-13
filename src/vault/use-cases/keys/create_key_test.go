@@ -88,17 +88,15 @@ func TestCreateKey_Execute(t *testing.T) {
 		assert.True(t, errors.IsInvalidParameterError(err))
 	})
 
-	t.Run("should fail with same error if Store fails", func(t *testing.T) {
+	t.Run("should fail with StorageError if Put fails", func(t *testing.T) {
 		fakeKey := utils.FakeKey()
 		fakeKey.Algorithm = entities.ECDSA
 		fakeKey.Curve = entities.Secp256k1
-		expectedErr := fmt.Errorf("error")
 
-		mockStorage.EXPECT().Put(ctx, gomock.Any()).Return(expectedErr)
+		mockStorage.EXPECT().Put(ctx, gomock.Any()).Return(fmt.Errorf("error"))
 
 		key, err := usecase.Execute(ctx, fakeKey.Namespace, fakeKey.ID, fakeKey.Algorithm, fakeKey.Curve, "", map[string]string{})
-
 		assert.Nil(t, key)
-		assert.Equal(t, expectedErr, err)
+		assert.True(t, errors.IsStorageError(err))
 	})
 }

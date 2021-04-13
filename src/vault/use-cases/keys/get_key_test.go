@@ -3,6 +3,7 @@ package keys
 import (
 	"context"
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
@@ -39,27 +40,19 @@ func TestGetKey_Execute(t *testing.T) {
 		assert.Equal(t, fakeKey.ID, key.ID)
 	})
 
-	t.Run("should fail with same error if Get fails", func(t *testing.T) {
-		expectedErr := fmt.Errorf("error")
-
-		mockStorage.EXPECT().Get(ctx, gomock.Any()).Return(nil, expectedErr)
+	t.Run("should fail with StorageError if Get fails", func(t *testing.T) {
+		mockStorage.EXPECT().Get(ctx, gomock.Any()).Return(nil, fmt.Errorf("error"))
 
 		key, err := usecase.Execute(ctx, "my-key", "namespace")
-
 		assert.Nil(t, key)
-		assert.Equal(t, expectedErr, err)
+		assert.True(t, errors.IsStorageError(err))
 	})
 
 	t.Run("should return CodedError with status 404 if nothing is found", func(t *testing.T) {
 		mockStorage.EXPECT().Get(ctx, gomock.Any()).Return(nil, nil)
 
 		key, err := usecase.Execute(ctx, "my-key", "namespace")
-
 		assert.Nil(t, key)
-		assert.Error(t, err)
-
-		codedError, ok := err.(logical.HTTPCodedError)
-		assert.True(t, ok)
-		assert.Equal(t, 404, codedError.Code())
+		assert.True(t, errors.IsNotFoundError(err))
 	})
 }

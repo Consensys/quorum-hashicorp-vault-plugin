@@ -1,7 +1,8 @@
 package ethereum
 
 import (
-	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"net/http"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -67,7 +68,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Import() {
 		assert.Equal(t, account.Namespace, response.Data["namespace"])
 	})
 
-	s.T().Run("should return same error if use case fails", func(t *testing.T) {
+	s.T().Run("should map errors correctly and return the correct http status", func(t *testing.T) {
 		privKey := "fa88c4a5912f80503d6b5503880d0745f4b88a1ff90ce8f64cdd8f32cc3bc249"
 		request := &logical.Request{
 			Storage: s.storage,
@@ -84,13 +85,13 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Import() {
 				},
 			},
 		}
-		expectedErr := fmt.Errorf("error")
+		expectedErr := errors.NotFoundError("error")
 
 		s.createAccountUC.EXPECT().Execute(gomock.Any(), "", privKey).Return(nil, expectedErr)
 
 		response, err := importOperation.Handler()(s.ctx, request, data)
 
-		assert.Empty(t, response)
-		assert.Equal(t, expectedErr, err)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusNotFound, response.Data[logical.HTTPStatusCode])
 	})
 }

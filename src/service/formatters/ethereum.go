@@ -1,6 +1,7 @@
 package formatters
 
 import (
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 	"math/big"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
@@ -34,17 +35,17 @@ func FormatSignatureResponse(signature string) *logical.Response {
 func FormatSignETHTransactionRequest(requestData *framework.FieldData) (*types.Transaction, error) {
 	amount, ok := new(big.Int).SetString(requestData.Get(AmountLabel).(string), 10)
 	if !ok {
-		return nil, logical.CodedError(400, "invalid amount")
+		return nil, errors.InvalidFormatError("invalid amount")
 	}
 
 	gasPrice, ok := new(big.Int).SetString(requestData.Get(GasPriceLabel).(string), 10)
 	if !ok {
-		return nil, logical.CodedError(400, "invalid gas price")
+		return nil, errors.InvalidFormatError("invalid gas price")
 	}
 
 	data, err := hexutil.Decode(requestData.Get(DataLabel).(string))
 	if err != nil {
-		return nil, logical.CodedError(400, "invalid data")
+		return nil, errors.InvalidFormatError("invalid data")
 	}
 
 	nonce := requestData.Get(NonceLabel).(int)
@@ -60,17 +61,17 @@ func FormatSignETHTransactionRequest(requestData *framework.FieldData) (*types.T
 func FormatSignQuorumPrivateTransactionRequest(requestData *framework.FieldData) (*quorumtypes.Transaction, error) {
 	amount, ok := new(big.Int).SetString(requestData.Get(AmountLabel).(string), 10)
 	if !ok {
-		return nil, logical.CodedError(400, "invalid amount")
+		return nil, errors.InvalidFormatError("invalid amount")
 	}
 
 	gasPrice, ok := new(big.Int).SetString(requestData.Get(GasPriceLabel).(string), 10)
 	if !ok {
-		return nil, logical.CodedError(400, "invalid gas price")
+		return nil, errors.InvalidFormatError("invalid gas price")
 	}
 
 	data, err := hexutil.Decode(requestData.Get(DataLabel).(string))
 	if err != nil {
-		return nil, logical.CodedError(400, "invalid data")
+		return nil, errors.InvalidFormatError("invalid data")
 	}
 
 	nonce := requestData.Get(NonceLabel).(int)
@@ -86,8 +87,9 @@ func FormatSignQuorumPrivateTransactionRequest(requestData *framework.FieldData)
 func FormatSignEEATransactionRequest(requestData *framework.FieldData) (tx *types.Transaction, privateArgs *entities.PrivateETHTransactionParams, err error) {
 	data, err := hexutil.Decode(requestData.Get(DataLabel).(string))
 	if err != nil {
-		return nil, nil, logical.CodedError(400, "invalid data")
+		return nil, nil, errors.InvalidFormatError("invalid data")
 	}
+
 	amount := big.NewInt(0)
 	gasPrice := big.NewInt(0)
 	gas := uint64(0)

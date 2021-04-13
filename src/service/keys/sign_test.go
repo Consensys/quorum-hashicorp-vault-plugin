@@ -2,6 +2,8 @@ package keys
 
 import (
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"net/http"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -68,7 +70,7 @@ func (s *keysCtrlTestSuite) TestKeysController_Sign() {
 		assert.Equal(t, expectedSignature, response.Data["signature"])
 	})
 
-	s.T().Run("should return same error if use case fails", func(t *testing.T) {
+	s.T().Run("should map errors correctly and return the correct http status", func(t *testing.T) {
 		key := utils.FakeKey()
 		payload := "my data to sign"
 		request := &logical.Request{
@@ -88,13 +90,13 @@ func (s *keysCtrlTestSuite) TestKeysController_Sign() {
 				},
 			},
 		}
-		expectedErr := fmt.Errorf("error")
+		expectedErr := errors.NotFoundError("error")
 
 		s.signPayloadUC.EXPECT().Execute(gomock.Any(), key.ID, "", payload).Return("", expectedErr)
 
 		response, err := signOperation.Handler()(s.ctx, request, data)
 
-		assert.Empty(t, response)
-		assert.Equal(t, expectedErr, err)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusNotFound, response.Data[logical.HTTPStatusCode])
 	})
 }

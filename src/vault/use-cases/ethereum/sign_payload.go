@@ -2,6 +2,7 @@ package ethereum
 
 import (
 	"context"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
@@ -41,16 +42,16 @@ func (uc *signPayloadUseCase) Execute(ctx context.Context, address, namespace, d
 
 	ecdsaPrivKey, err := crypto.HexToECDSA(account.PrivateKey)
 	if err != nil {
-		errMessage := "failed to parse secp256k1 private key"
+		errMessage := "failed to parse private key"
 		logger.With("error", err).Error(errMessage)
-		return "", err
+		return "", errors.CryptoOperationError(errMessage)
 	}
 
 	signature, err := crypto.Sign(crypto.Keccak256([]byte(data)), ecdsaPrivKey)
 	if err != nil {
-		errMessage := "failed to sign payload using ECDSA"
+		errMessage := "failed to sign payload"
 		logger.With("error", err).Error(errMessage)
-		return "", err
+		return "", errors.CryptoOperationError(errMessage)
 	}
 
 	logger.Info("payload signed successfully")

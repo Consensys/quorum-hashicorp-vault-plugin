@@ -4,9 +4,8 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"encoding/hex"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
-
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/storage"
@@ -16,8 +15,6 @@ import (
 	crypto2 "github.com/ethereum/go-ethereum/crypto"
 	"github.com/hashicorp/vault/sdk/logical"
 )
-
-const errMessageFailedGeneration = "failed to generate key"
 
 type createKeyUseCase struct {
 	storage logical.Storage
@@ -52,16 +49,19 @@ func (uc *createKeyUseCase) Execute(ctx context.Context, namespace, id, algo, cu
 	case algo == entities.EDDSA && curve == entities.BN256:
 		privKey, err := uc.eddsaBN256(importedPrivKey)
 		if err != nil {
-			logger.With("error", err).Error(errMessageFailedGeneration)
-			return nil, err
+			errMessage := "failed to generate EDDSA/BN256 key pair"
+			logger.With("error", err).Error(errMessage)
+			return nil, errors.InvalidParameterError(errMessage)
 		}
+
 		key.PrivateKey = hexutil.Encode(privKey.Bytes())
 		key.PublicKey = hexutil.Encode(privKey.Public().Bytes())
 	case algo == entities.ECDSA && curve == entities.Secp256k1:
 		privKey, err := uc.ecdsaSecp256k1(importedPrivKey)
 		if err != nil {
-			logger.With("error", err).Error(errMessageFailedGeneration)
-			return nil, err
+			errMessage := "failed to generate Secp256k1/ECDSA key pair"
+			logger.With("error", err).Error(errMessage)
+			return nil, errors.InvalidParameterError(errMessage)
 		}
 
 		key.PrivateKey = hex.EncodeToString(crypto2.FromECDSA(privKey))
@@ -74,8 +74,6 @@ func (uc *createKeyUseCase) Execute(ctx context.Context, namespace, id, algo, cu
 
 	err := storage.StoreJSON(ctx, uc.storage, storage.ComputeKeysStorageKey(id, key.Namespace), key)
 	if err != nil {
-		errMessage := "failed to store key"
-		logger.With("error", err).Error(errMessage)
 		return nil, err
 	}
 
@@ -85,16 +83,37 @@ func (uc *createKeyUseCase) Execute(ctx context.Context, namespace, id, algo, cu
 
 func (*createKeyUseCase) eddsaBN256(importedPrivKey string) (eddsa.PrivateKey, error) {
 	if importedPrivKey == "" {
-		return crypto.NewBN256()
+		key, err := crypto.NewBN256()
+		if err != nil {
+			return key, errors.CryptoOperationError(err.Error())
+		}
+
+		return key, nil
 	} else {
-		return crypto.ImportBN256(importedPrivKey)
+		key, err := crypto.ImportBN256(importedPrivKey)
+		if err != nil {
+			return key, errors.InvalidParameterError(err.Error())
+		}
+
+		return key, nil
 	}
 }
 
 func (*createKeyUseCase) ecdsaSecp256k1(importedPrivKey string) (*ecdsa.PrivateKey, error) {
 	if importedPrivKey == "" {
-		return crypto.NewSecp256k1()
+		key, err := crypto.NewSecp256k1()
+		if err != nil {
+			return key, errors.CryptoOperationError(err.Error())
+		}
+
+		return key, nil
+
 	} else {
-		return crypto.ImportSecp256k1(importedPrivKey)
+		key, err := crypto.ImportSecp256k1(importedPrivKey)
+		if err != nil {
+			return key, errors.InvalidParameterError(err.Error())
+		}
+
+		return key, nil
 	}
 }

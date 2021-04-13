@@ -3,6 +3,7 @@ package zksnarks
 import (
 	"context"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/errors"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
 	"github.com/hashicorp/vault/sdk/framework"
@@ -40,7 +41,7 @@ func (c *controller) listHandler() framework.OperationFunc {
 		ctx = log.Context(ctx, c.logger)
 		accounts, err := c.useCases.ListAccounts().WithStorage(req.Storage).Execute(ctx, namespace)
 		if err != nil {
-			return nil, err
+			return errors.WriteHTTPError(req, err)
 		}
 
 		return logical.ListResponse(accounts), nil

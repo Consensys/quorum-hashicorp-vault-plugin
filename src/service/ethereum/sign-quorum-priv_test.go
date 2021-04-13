@@ -2,6 +2,8 @@ package ethereum
 
 import (
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"net/http"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -74,7 +76,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignQuorumPrivateTransact
 		assert.Equal(t, expectedSignature, response.Data["signature"])
 	})
 
-	s.T().Run("should fail if validation fails", func(t *testing.T) {
+	s.T().Run("should fail with 400 if validation fails", func(t *testing.T) {
 		account := apputils.FakeETHAccount()
 		request := &logical.Request{
 			Storage: s.storage,
@@ -96,11 +98,78 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignQuorumPrivateTransact
 
 		response, err := signOperation.Handler()(s.ctx, request, data)
 
-		assert.Nil(t, response)
-		assert.Error(t, err)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusBadRequest, response.Data[logical.HTTPStatusCode])
 	})
 
-	s.T().Run("should return same error if use case fails", func(t *testing.T) {
+	s.T().Run("should fail with 400 if data is invalid", func(t *testing.T) {
+		account := apputils.FakeETHAccount()
+		request := &logical.Request{
+			Storage: s.storage,
+		}
+		data := &framework.FieldData{
+			Raw: map[string]interface{}{
+				formatters.IDLabel:       account.Address,
+				formatters.NonceLabel:    0,
+				formatters.ToLabel:       "0x905B88EFf8Bda1543d4d6f4aA05afef143D27E18",
+				formatters.AmountLabel:   "0",
+				formatters.GasPriceLabel: "0",
+				formatters.GasLimitLabel: 21000,
+				formatters.DataLabel:     "",
+			},
+			Schema: map[string]*framework.FieldSchema{
+				formatters.IDLabel:       formatters.AddressFieldSchema,
+				formatters.NonceLabel:    formatters.NonceFieldSchema,
+				formatters.ToLabel:       formatters.ToFieldSchema,
+				formatters.AmountLabel:   formatters.AmountFieldSchema,
+				formatters.GasPriceLabel: formatters.GasPriceFieldSchema,
+				formatters.GasLimitLabel: formatters.GasLimitFieldSchema,
+				formatters.DataLabel:     formatters.DataFieldSchema,
+			},
+		}
+
+		response, err := signOperation.Handler()(s.ctx, request, data)
+
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusBadRequest, response.Data[logical.HTTPStatusCode])
+	})
+
+	s.T().Run("should fail with 404 if NotFoundError is returned by use case", func(t *testing.T) {
+		account := apputils.FakeETHAccount()
+		request := &logical.Request{
+			Storage: s.storage,
+		}
+		data := &framework.FieldData{
+			Raw: map[string]interface{}{
+				formatters.IDLabel:       account.Address,
+				formatters.NonceLabel:    0,
+				formatters.ToLabel:       "0x905B88EFf8Bda1543d4d6f4aA05afef143D27E18",
+				formatters.AmountLabel:   "0",
+				formatters.GasPriceLabel: "0",
+				formatters.GasLimitLabel: 21000,
+				formatters.DataLabel:     "0xfeee",
+			},
+			Schema: map[string]*framework.FieldSchema{
+				formatters.IDLabel:       formatters.AddressFieldSchema,
+				formatters.NonceLabel:    formatters.NonceFieldSchema,
+				formatters.ToLabel:       formatters.ToFieldSchema,
+				formatters.AmountLabel:   formatters.AmountFieldSchema,
+				formatters.GasPriceLabel: formatters.GasPriceFieldSchema,
+				formatters.GasLimitLabel: formatters.GasLimitFieldSchema,
+				formatters.DataLabel:     formatters.DataFieldSchema,
+			},
+		}
+		expectedErr := errors.NotFoundError("not found")
+
+		s.signQuorumPrivateTransactionUC.EXPECT().Execute(gomock.Any(), account.Address, "", gomock.Any()).Return("", expectedErr)
+
+		response, err := signOperation.Handler()(s.ctx, request, data)
+
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusNotFound, response.Data[logical.HTTPStatusCode])
+	})
+
+	s.T().Run("should fail with 500 if use case fails with any non mapped error", func(t *testing.T) {
 		account := apputils.FakeETHAccount()
 		request := &logical.Request{
 			Storage: s.storage,
@@ -131,7 +200,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignQuorumPrivateTransact
 
 		response, err := signOperation.Handler()(s.ctx, request, data)
 
-		assert.Empty(t, response)
-		assert.Equal(t, expectedErr, err)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusInternalServerError, response.Data[logical.HTTPStatusCode])
 	})
 }

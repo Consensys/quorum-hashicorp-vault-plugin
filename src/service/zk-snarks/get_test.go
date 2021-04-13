@@ -2,6 +2,8 @@ package zksnarks
 
 import (
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"net/http"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -62,7 +64,7 @@ func (s *zksCtrlTestSuite) TestZksController_Get() {
 		assert.Equal(t, account.Curve, response.Data["curve"])
 	})
 
-	s.T().Run("should return same error if use case fails", func(t *testing.T) {
+	s.T().Run("should map errors correctly and return the correct http status", func(t *testing.T) {
 		request := &logical.Request{
 			Storage: s.storage,
 		}
@@ -74,13 +76,13 @@ func (s *zksCtrlTestSuite) TestZksController_Get() {
 				formatters.IDLabel: formatters.AddressFieldSchema,
 			},
 		}
-		expectedErr := fmt.Errorf("error")
+		expectedErr := errors.NotFoundError("error")
 
 		s.getAccountUC.EXPECT().Execute(gomock.Any(), "myAddress", "").Return(nil, expectedErr)
 
 		response, err := getOperation.Handler()(s.ctx, request, data)
 
-		assert.Empty(t, response)
-		assert.Equal(t, expectedErr, err)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusNotFound, response.Data[logical.HTTPStatusCode])
 	})
 }

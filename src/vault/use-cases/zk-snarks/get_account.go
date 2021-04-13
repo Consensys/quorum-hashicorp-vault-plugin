@@ -30,7 +30,6 @@ func (uc *getAccountUseCase) Execute(ctx context.Context, pubKey, namespace stri
 	account := &entities.ZksAccount{}
 	err := storage.GetJSON(ctx, uc.storage, storage.ComputeZksStorageKey(pubKey, namespace), account)
 	if err != nil {
-		logger.With("error", err).Error("failed to retrieve account from vault")
 		return nil, err
 	}
 

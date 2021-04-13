@@ -3,6 +3,7 @@ package ethereum
 import (
 	"context"
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities/testutils"
 	"testing"
 
@@ -47,13 +48,11 @@ func TestCreateAccount_Execute(t *testing.T) {
 		assert.Equal(t, "0xeca84382E0f1dDdE22EedCd0D803442972EC7BE5", account.Address)
 	})
 
-	t.Run("should fail with same error if Put fails", func(t *testing.T) {
-		expectedErr := fmt.Errorf("error")
-
-		mockStorage.EXPECT().Put(ctx, gomock.Any()).Return(expectedErr)
+	t.Run("should fail with StorageError if Put fails", func(t *testing.T) {
+		mockStorage.EXPECT().Put(ctx, gomock.Any()).Return(fmt.Errorf("error"))
 
 		account, err := usecase.Execute(ctx, "namespace", "")
 		assert.Nil(t, account)
-		assert.Equal(t, expectedErr, err)
+		assert.True(t, errors.IsStorageError(err))
 	})
 }

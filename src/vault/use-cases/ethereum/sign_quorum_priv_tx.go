@@ -2,6 +2,7 @@ package ethereum
 
 import (
 	"context"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 
 	signing "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto/ethereum"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
@@ -44,14 +45,14 @@ func (uc *signQuorumPrivateTxUseCase) Execute(ctx context.Context, address, name
 	if err != nil {
 		errMessage := "failed to parse private key"
 		logger.With("error", err).Error(errMessage)
-		return "", err
+		return "", errors.CryptoOperationError(errMessage)
 	}
 
 	signature, err := signing.SignQuorumPrivateTransaction(tx, ecdsaPrivKey, signing.GetQuorumPrivateTxSigner())
 	if err != nil {
 		errMessage := "failed to sign quorum private transaction"
 		logger.With("error", err).Error(errMessage)
-		return "", err
+		return "", errors.CryptoOperationError(errMessage)
 	}
 
 	logger.Info("quorum private transaction signed successfully")

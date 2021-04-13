@@ -2,6 +2,8 @@ package ethereum
 
 import (
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"net/http"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -76,7 +78,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignEEATransaction() {
 		assert.Equal(t, expectedSignature, response.Data["signature"])
 	})
 
-	s.T().Run("should fail if chainID is not provided", func(t *testing.T) {
+	s.T().Run("should fail with 400 if chainID is not provided", func(t *testing.T) {
 		account := apputils.FakeETHAccount()
 		request := &logical.Request{
 			Storage: s.storage,
@@ -100,10 +102,10 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignEEATransaction() {
 		response, err := signOperation.Handler()(s.ctx, request, data)
 
 		assert.NoError(t, err)
-		assert.NotEmpty(t, response.Data["error"])
+		assert.Equal(t, http.StatusBadRequest, response.Data[logical.HTTPStatusCode])
 	})
 
-	s.T().Run("should fail if validation fails", func(t *testing.T) {
+	s.T().Run("should fail with 400 if data is invalid", func(t *testing.T) {
 		account := apputils.FakeETHAccount()
 		request := &logical.Request{
 			Storage: s.storage,
@@ -127,11 +129,47 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignEEATransaction() {
 
 		response, err := signOperation.Handler()(s.ctx, request, data)
 
-		assert.Nil(t, response)
-		assert.Error(t, err)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusBadRequest, response.Data[logical.HTTPStatusCode])
 	})
 
-	s.T().Run("should return same error if use case fails", func(t *testing.T) {
+	s.T().Run("should fail with 404 if NotFoundError is returned by use case", func(t *testing.T) {
+		account := apputils.FakeETHAccount()
+		request := &logical.Request{
+			Storage: s.storage,
+		}
+		data := &framework.FieldData{
+			Raw: map[string]interface{}{
+				formatters.IDLabel:          account.Address,
+				formatters.NonceLabel:       0,
+				formatters.ToLabel:          "0x905B88EFf8Bda1543d4d6f4aA05afef143D27E18",
+				formatters.ChainIDLabel:     "1",
+				formatters.DataLabel:        "0xfeee",
+				formatters.PrivateFromLabel: "A1aVtMxLCUHmBVHXoZzzBgPbW/wj5axDpW9X8l91SGo=",
+				formatters.PrivateForLabel:  []string{"A1aVtMxLCUHmBVHXoZzzBgPbW/wj5axDpW9X8l91SGo=", "B1aVtMxLCUHmBVHXoZzzBgPbW/wj5axDpW9X8l91SGo="},
+			},
+			Schema: map[string]*framework.FieldSchema{
+				formatters.IDLabel:             formatters.AddressFieldSchema,
+				formatters.NonceLabel:          formatters.NonceFieldSchema,
+				formatters.ToLabel:             formatters.ToFieldSchema,
+				formatters.ChainIDLabel:        formatters.ChainIDFieldSchema,
+				formatters.DataLabel:           formatters.DataFieldSchema,
+				formatters.PrivateFromLabel:    formatters.PrivateFromFieldSchema,
+				formatters.PrivateForLabel:     formatters.PrivateForFieldSchema,
+				formatters.PrivacyGroupIDLabel: formatters.PrivacyGroupIDFieldSchema,
+			},
+		}
+		expectedErr := errors.NotFoundError("not found")
+
+		s.signEEATransactionUC.EXPECT().Execute(gomock.Any(), account.Address, "", "1", gomock.Any(), gomock.Any()).Return("", expectedErr)
+
+		response, err := signOperation.Handler()(s.ctx, request, data)
+
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusNotFound, response.Data[logical.HTTPStatusCode])
+	})
+
+	s.T().Run("should fail with 500 if use case fails with any non mapped error", func(t *testing.T) {
 		account := apputils.FakeETHAccount()
 		request := &logical.Request{
 			Storage: s.storage,
@@ -163,7 +201,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignEEATransaction() {
 
 		response, err := signOperation.Handler()(s.ctx, request, data)
 
-		assert.Empty(t, response)
-		assert.Equal(t, expectedErr, err)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusInternalServerError, response.Data[logical.HTTPStatusCode])
 	})
 }

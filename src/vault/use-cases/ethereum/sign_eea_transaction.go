@@ -3,6 +3,7 @@ package ethereum
 import (
 	"context"
 	signing "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto/ethereum"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
@@ -49,12 +50,14 @@ func (uc *signEEATxUseCase) Execute(
 	if err != nil {
 		errMessage := "failed to parse private key"
 		logger.With("error", err).Error(errMessage)
-		return "", err
+		return "", errors.CryptoOperationError(errMessage)
 	}
 
 	signature, err := signing.SignEEATransaction(tx, privateArgs, chainID, ecdsaPrivKey)
 	if err != nil {
-		return "", err
+		errMessage := "failed to sign eea transaction"
+		logger.With("error", err).Error(errMessage)
+		return "", errors.CryptoOperationError(errMessage)
 	}
 
 	logger.Info("eea private transaction signed successfully")
