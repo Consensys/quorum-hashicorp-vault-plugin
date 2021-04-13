@@ -14,6 +14,7 @@ import (
 	"github.com/consensys/quorum/common/hexutil"
 	crypto2 "github.com/ethereum/go-ethereum/crypto"
 	"github.com/hashicorp/vault/sdk/logical"
+	"time"
 )
 
 type createKeyUseCase struct {
@@ -37,12 +38,16 @@ func (uc *createKeyUseCase) Execute(ctx context.Context, namespace, id, algo, cu
 		With("id", id)
 	logger.Debug("creating new key")
 
+	timeNow := time.Now()
 	key := &entities.Key{
 		ID:        id,
 		Algorithm: algo,
 		Curve:     curve,
 		Namespace: namespace,
 		Tags:      tags,
+		Version:   1,
+		CreatedAt: timeNow,
+		UpdatedAt: timeNow,
 	}
 
 	switch {
