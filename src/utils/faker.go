@@ -2,6 +2,7 @@ package utils
 
 import (
 	"math/rand"
+	"time"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 	"github.com/ethereum/go-ethereum/common"
@@ -38,6 +39,9 @@ func FakeKey() *entities.Key {
 			"tag1": "tagValue1",
 			"tag2": "tagValue2",
 		},
+		Version:   1,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 }
 

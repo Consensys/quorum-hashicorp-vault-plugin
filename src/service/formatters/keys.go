@@ -14,6 +14,7 @@ func FormatKeyResponse(key *entities.Key) *logical.Response {
 			"publicKey": key.PublicKey,
 			"namespace": key.Namespace,
 			"tags":      key.Tags,
+			"version":   key.Version,
 			"createdAt": key.CreatedAt,
 			"updatedAt": key.UpdatedAt,
 		},

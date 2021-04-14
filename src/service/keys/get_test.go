@@ -64,6 +64,9 @@ func (s *keysCtrlTestSuite) TestKeysController_Get() {
 		assert.Equal(t, key.Curve, response.Data["curve"])
 		assert.Equal(t, key.ID, response.Data["id"])
 		assert.Equal(t, key.Tags, response.Data["tags"])
+		assert.NotNil(t, key.Tags, response.Data["createdAt"])
+		assert.NotNil(t, key.Tags, response.Data["updatedAt"])
+		assert.Equal(t, 1, response.Data["version"])
 	})
 
 	s.T().Run("should map errors correctly and return the correct http status", func(t *testing.T) {
