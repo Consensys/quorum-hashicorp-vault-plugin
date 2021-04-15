@@ -74,7 +74,7 @@ func (s *keysCtrlTestSuite) TestKeysController_Create() {
 		response, err := createOperation.Handler()(s.ctx, request, data)
 
 		assert.NoError(t, err)
-		assert.Equal(t, key.PublicKey, response.Data["publicKey"])
+		assert.Equal(t, key.PublicKey, response.Data["public_key"])
 		assert.Equal(t, key.Namespace, response.Data["namespace"])
 		assert.Equal(t, key.Algorithm, response.Data["algorithm"])
 		assert.Equal(t, key.Curve, response.Data["curve"])

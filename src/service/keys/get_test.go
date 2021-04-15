@@ -58,14 +58,14 @@ func (s *keysCtrlTestSuite) TestKeysController_Get() {
 		response, err := getOperation.Handler()(s.ctx, request, data)
 
 		assert.NoError(t, err)
-		assert.Equal(t, key.PublicKey, response.Data["publicKey"])
+		assert.Equal(t, key.PublicKey, response.Data["public_key"])
 		assert.Equal(t, key.Namespace, response.Data["namespace"])
 		assert.Equal(t, key.Algorithm, response.Data["algorithm"])
 		assert.Equal(t, key.Curve, response.Data["curve"])
 		assert.Equal(t, key.ID, response.Data["id"])
 		assert.Equal(t, key.Tags, response.Data["tags"])
-		assert.NotNil(t, key.Tags, response.Data["createdAt"])
-		assert.NotNil(t, key.Tags, response.Data["updatedAt"])
+		assert.NotNil(t, key.Tags, response.Data["created_at"])
+		assert.NotNil(t, key.Tags, response.Data["updated_at"])
 		assert.Equal(t, 1, response.Data["version"])
 	})
 

@@ -87,7 +87,7 @@ func (s *keysCtrlTestSuite) TestEthereumController_Import() {
 
 		assert.NoError(t, err)
 		assert.Equal(t, key.ID, response.Data["id"])
-		assert.Equal(t, key.PublicKey, response.Data["publicKey"])
+		assert.Equal(t, key.PublicKey, response.Data["public_key"])
 		assert.Equal(t, key.Namespace, response.Data["namespace"])
 		assert.Equal(t, key.Curve, response.Data["curve"])
 		assert.Equal(t, key.Algorithm, response.Data["algorithm"])
