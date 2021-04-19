@@ -3,6 +3,8 @@ package zksnarks
 import (
 	"context"
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
@@ -29,22 +31,22 @@ func TestSignPayload_Execute(t *testing.T) {
 
 	t.Run("should execute use case successfully", func(t *testing.T) {
 		account := apputils.FakeZksAccount()
-		
+
 		mockGetAccountUC.EXPECT().Execute(ctx, address, namespace).Return(account, nil)
-		
-		signature, err := usecase.Execute(ctx, address, namespace, "my data to sign")
-		
+
+		signature, err := usecase.Execute(ctx, address, namespace, "0xdaaa")
+
 		assert.NoError(t, err)
 		assert.NotEmpty(t, signature)
 	})
 
 	t.Run("should fail with same error if Get Account fails", func(t *testing.T) {
 		expectedErr := fmt.Errorf("error")
-		
+
 		mockGetAccountUC.EXPECT().Execute(ctx, gomock.Any(), gomock.Any()).Return(nil, expectedErr)
-		
-		signature, err := usecase.Execute(ctx, address, namespace, "my data to sign")
-		
+
+		signature, err := usecase.Execute(ctx, address, namespace, "0xdaaa")
+
 		assert.Empty(t, signature)
 		assert.Equal(t, expectedErr, err)
 	})
@@ -52,12 +54,24 @@ func TestSignPayload_Execute(t *testing.T) {
 	t.Run("should fail if creation of EDDSA private key fails", func(t *testing.T) {
 		account := apputils.FakeZksAccount()
 		account.PrivateKey = "account.PrivateKey"
-		
+
 		mockGetAccountUC.EXPECT().Execute(ctx, address, namespace).Return(account, nil)
-		
-		signature, err := usecase.Execute(ctx, address, namespace, "my data to sign")
-		
+
+		signature, err := usecase.Execute(ctx, address, namespace, "0xdaaa")
+
 		assert.Empty(t, signature)
 		assert.Error(t, err)
+	})
+
+	t.Run("should fail with InvalidParameterError if data is not a hex string", func(t *testing.T) {
+		key := apputils.FakeKey()
+		key.Curve = entities.Secp256k1
+		key.Algorithm = entities.ECDSA
+		key.PrivateKey = "account.PrivateKey"
+
+		signature, err := usecase.Execute(ctx, address, namespace, "invalid data")
+
+		assert.Empty(t, signature)
+		assert.True(t, errors.IsInvalidParameterError(err))
 	})
 }

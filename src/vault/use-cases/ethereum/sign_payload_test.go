@@ -3,6 +3,7 @@ package ethereum
 import (
 	"context"
 	"fmt"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
@@ -33,10 +34,10 @@ func TestSignPayload_Execute(t *testing.T) {
 
 		mockGetAccountUC.EXPECT().Execute(ctx, address, namespace).Return(account, nil)
 
-		signature, err := usecase.Execute(ctx, address, namespace, "my data to sign")
+		signature, err := usecase.Execute(ctx, address, namespace, "0xda")
 
 		assert.NoError(t, err)
-		assert.Equal(t, signature, "0x7107193a8683e258ada2dfa76b5e6fc145ebd98f0e6eee77cb91381201fe7bca5445beccebe164e23abe0639f089e17b24ce867be9fece8b4872cfe13d91464601")
+		assert.Equal(t, "0x618b7f28507e1a1fe180005393ad2e61f6dca806c5bbd7426e3377fc23476a775644aea49fcc0e4a1c61f490979fc7e91043b22c58b441a075255eb88c034bc400", signature)
 	})
 
 	t.Run("should fail with same error if Get Account fails", func(t *testing.T) {
@@ -44,7 +45,7 @@ func TestSignPayload_Execute(t *testing.T) {
 
 		mockGetAccountUC.EXPECT().Execute(ctx, gomock.Any(), gomock.Any()).Return(nil, expectedErr)
 
-		signature, err := usecase.Execute(ctx, address, namespace, "my data to sign")
+		signature, err := usecase.Execute(ctx, address, namespace, "0xda")
 
 		assert.Empty(t, signature)
 		assert.Equal(t, expectedErr, err)
@@ -56,9 +57,16 @@ func TestSignPayload_Execute(t *testing.T) {
 
 		mockGetAccountUC.EXPECT().Execute(ctx, address, namespace).Return(account, nil)
 
-		signature, err := usecase.Execute(ctx, address, namespace, "my data to sign")
+		signature, err := usecase.Execute(ctx, address, namespace, "0xda")
 
 		assert.Empty(t, signature)
 		assert.Error(t, err)
+	})
+
+	t.Run("should fail with InvalidParameterError if data is not a hex string", func(t *testing.T) {
+		signature, err := usecase.Execute(ctx, address, namespace, "invalid data")
+
+		assert.Empty(t, signature)
+		assert.True(t, errors.IsInvalidParameterError(err))
 	})
 }

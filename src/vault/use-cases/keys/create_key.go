@@ -10,7 +10,7 @@ import (
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/storage"
 	usecases "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
-	eddsa "github.com/consensys/gnark/crypto/signature/eddsa/bn256"
+	"github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
 	"github.com/consensys/quorum/common/hexutil"
 	crypto2 "github.com/ethereum/go-ethereum/crypto"
 	"github.com/hashicorp/vault/sdk/logical"
@@ -51,10 +51,10 @@ func (uc *createKeyUseCase) Execute(ctx context.Context, namespace, id, algo, cu
 	}
 
 	switch {
-	case algo == entities.EDDSA && curve == entities.BN256:
-		privKey, err := uc.eddsaBN256(importedPrivKey)
+	case algo == entities.EDDSA && curve == entities.BN254:
+		privKey, err := uc.eddsaBN254(importedPrivKey)
 		if err != nil {
-			errMessage := "failed to generate EDDSA/BN256 key pair"
+			errMessage := "failed to generate EDDSA/BN254 key pair"
 			logger.With("error", err).Error(errMessage)
 			return nil, errors.InvalidParameterError(errMessage)
 		}
@@ -86,9 +86,9 @@ func (uc *createKeyUseCase) Execute(ctx context.Context, namespace, id, algo, cu
 	return key, nil
 }
 
-func (*createKeyUseCase) eddsaBN256(importedPrivKey string) (eddsa.PrivateKey, error) {
+func (*createKeyUseCase) eddsaBN254(importedPrivKey string) (eddsa.PrivateKey, error) {
 	if importedPrivKey == "" {
-		key, err := crypto.NewBN256()
+		key, err := crypto.NewBN254()
 		if err != nil {
 			return key, errors.CryptoOperationError(err.Error())
 		}

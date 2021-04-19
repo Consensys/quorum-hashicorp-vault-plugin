@@ -23,10 +23,10 @@ func TestCreateKey_Execute(t *testing.T) {
 
 	usecase := NewCreateKeyUseCase().WithStorage(mockStorage)
 
-	t.Run("should execute use case successfully by generating a private key: BN256, EDDSA", func(t *testing.T) {
+	t.Run("should execute use case successfully by generating a private key: BN254, EDDSA", func(t *testing.T) {
 		fakeKey := utils.FakeKey()
 		fakeKey.Algorithm = entities.EDDSA
-		fakeKey.Curve = entities.BN256
+		fakeKey.Curve = entities.BN254
 
 		mockStorage.EXPECT().Put(ctx, gomock.Any()).Return(nil)
 
@@ -37,10 +37,10 @@ func TestCreateKey_Execute(t *testing.T) {
 		assert.NotEmpty(t, key.PublicKey)
 	})
 
-	t.Run("should execute use case successfully by importing a private key: BN256, EDDSA", func(t *testing.T) {
+	t.Run("should execute use case successfully by importing a private key: BN254, EDDSA", func(t *testing.T) {
 		fakeKey := utils.FakeKey()
 		fakeKey.Algorithm = entities.EDDSA
-		fakeKey.Curve = entities.BN256
+		fakeKey.Curve = entities.BN254
 		privKey := "0x5fd633ff9f8ee36f9e3a874709406103854c0f6650cb908c010ea55eabc35191866e2a1e939a98bb32734cd6694c7ad58e3164ee215edc56307e9c59c8d3f1b4868507981bf553fd21c1d97b0c0d665cbcdb5adeed192607ca46763cb0ca03c7"
 
 		mockStorage.EXPECT().Put(ctx, gomock.Any()).Return(nil)

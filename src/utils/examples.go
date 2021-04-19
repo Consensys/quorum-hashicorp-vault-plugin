@@ -21,7 +21,7 @@ func ExampleETHAccount() *entities.ETHAccount {
 
 func ExampleZksAccount() *entities.ZksAccount {
 	return &entities.ZksAccount{
-		Curve:      entities.BN256,
+		Curve:      entities.BN254,
 		Algorithm:  entities.EDDSA,
 		Namespace:  "tenant0",
 		PrivateKey: "0b0232595b77568d99364bede133839ccbcb40775967a7eacd15d355c96288b5",

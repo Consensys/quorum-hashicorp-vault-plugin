@@ -2,13 +2,13 @@ package crypto
 
 import (
 	"bytes"
+	"github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
-	eddsa "github.com/consensys/gnark/crypto/signature/eddsa/bn256"
 	"github.com/consensys/quorum/common/hexutil"
 )
 
-func NewBN256() (eddsa.PrivateKey, error) {
+func NewBN254() (eddsa.PrivateKey, error) {
 	var seed = make([]byte, 32)
 	for i, v := range utils.GenerateRandomSeed(32) {
 		seed[i] = v

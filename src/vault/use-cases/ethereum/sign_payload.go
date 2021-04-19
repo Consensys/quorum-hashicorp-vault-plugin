@@ -35,6 +35,13 @@ func (uc *signPayloadUseCase) Execute(ctx context.Context, address, namespace, d
 	logger := log.FromContext(ctx).With("namespace", namespace).With("address", address)
 	logger.Debug("signing message")
 
+	dataBytes, err := hexutil.Decode(data)
+	if err != nil {
+		errMessage := "data must be a hex string"
+		logger.With("error", err).Error(errMessage)
+		return "", errors.InvalidParameterError(errMessage)
+	}
+
 	account, err := uc.getAccountUC.Execute(ctx, address, namespace)
 	if err != nil {
 		return "", err
@@ -47,7 +54,7 @@ func (uc *signPayloadUseCase) Execute(ctx context.Context, address, namespace, d
 		return "", errors.CryptoOperationError(errMessage)
 	}
 
-	signature, err := crypto.Sign(crypto.Keccak256([]byte(data)), ecdsaPrivKey)
+	signature, err := crypto.Sign(crypto.Keccak256(dataBytes), ecdsaPrivKey)
 	if err != nil {
 		errMessage := "failed to sign payload"
 		logger.With("error", err).Error(errMessage)

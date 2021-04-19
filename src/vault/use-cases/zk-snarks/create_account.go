@@ -30,7 +30,7 @@ func (uc *createAccountUseCase) Execute(ctx context.Context, namespace string) (
 	logger := log.FromContext(ctx).With("namespace", namespace)
 	logger.Debug("creating new zk-snarks bn256 account")
 
-	privKey, err := crypto.NewBN256()
+	privKey, err := crypto.NewBN254()
 	if err != nil {
 		errMessage := "failed to generate key"
 		logger.With("error", err).Error(errMessage)
@@ -39,7 +39,7 @@ func (uc *createAccountUseCase) Execute(ctx context.Context, namespace string) (
 
 	account := &entities.ZksAccount{
 		Algorithm:  entities.EDDSA,
-		Curve:      entities.BN256,
+		Curve:      entities.BN254,
 		PrivateKey: hexutil.Encode(privKey.Bytes()),
 		PublicKey:  hexutil.Encode(privKey.Public().Bytes()),
 		Namespace:  namespace,
