@@ -3,16 +3,16 @@ package keys
 import (
 	"context"
 	"crypto/ecdsa"
-	"encoding/hex"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto"
+	crypto2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/encoding"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
+
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/storage"
 	usecases "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
 	"github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
-	"github.com/consensys/quorum/common/hexutil"
-	crypto2 "github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/hashicorp/vault/sdk/logical"
 	"time"
 )
@@ -59,8 +59,8 @@ func (uc *createKeyUseCase) Execute(ctx context.Context, namespace, id, algo, cu
 			return nil, errors.InvalidParameterError(errMessage)
 		}
 
-		key.PrivateKey = hexutil.Encode(privKey.Bytes())
-		key.PublicKey = hexutil.Encode(privKey.Public().Bytes())
+		key.PrivateKey = encoding.EncodeToBase64(privKey.Bytes())
+		key.PublicKey = encoding.EncodeToBase64(privKey.Public().Bytes())
 	case algo == entities.ECDSA && curve == entities.Secp256k1:
 		privKey, err := uc.ecdsaSecp256k1(importedPrivKey)
 		if err != nil {
@@ -69,8 +69,8 @@ func (uc *createKeyUseCase) Execute(ctx context.Context, namespace, id, algo, cu
 			return nil, errors.InvalidParameterError(errMessage)
 		}
 
-		key.PrivateKey = hex.EncodeToString(crypto2.FromECDSA(privKey))
-		key.PublicKey = hexutil.Encode(crypto2.FromECDSAPub(&privKey.PublicKey))
+		key.PrivateKey = encoding.EncodeToBase64(crypto.FromECDSA(privKey))
+		key.PublicKey = encoding.EncodeToBase64(crypto.FromECDSAPub(&privKey.PublicKey))
 	default:
 		errMessage := "invalid signing algorithm/elliptic curve combination"
 		logger.Error(errMessage)
@@ -88,37 +88,47 @@ func (uc *createKeyUseCase) Execute(ctx context.Context, namespace, id, algo, cu
 
 func (*createKeyUseCase) eddsaBN254(importedPrivKey string) (eddsa.PrivateKey, error) {
 	if importedPrivKey == "" {
-		key, err := crypto.NewBN254()
+		key, err := crypto2.NewBN254()
 		if err != nil {
-			return key, errors.CryptoOperationError(err.Error())
-		}
-
-		return key, nil
-	} else {
-		key, err := crypto.ImportBN256(importedPrivKey)
-		if err != nil {
-			return key, errors.InvalidParameterError(err.Error())
+			return key, err
 		}
 
 		return key, nil
 	}
+
+	key := eddsa.PrivateKey{}
+	privKeyBytes, err := encoding.DecodeBase64(importedPrivKey)
+	if err != nil {
+		return key, err
+	}
+
+	_, err = key.SetBytes(privKeyBytes)
+	if err != nil {
+		return key, err
+	}
+
+	return key, nil
 }
 
 func (*createKeyUseCase) ecdsaSecp256k1(importedPrivKey string) (*ecdsa.PrivateKey, error) {
 	if importedPrivKey == "" {
-		key, err := crypto.NewSecp256k1()
+		key, err := crypto.GenerateKey()
 		if err != nil {
-			return key, errors.CryptoOperationError(err.Error())
-		}
-
-		return key, nil
-
-	} else {
-		key, err := crypto.ImportSecp256k1(importedPrivKey)
-		if err != nil {
-			return key, errors.InvalidParameterError(err.Error())
+			return nil, err
 		}
 
 		return key, nil
 	}
+
+	privKeyBytes, err := encoding.DecodeBase64(importedPrivKey)
+	if err != nil {
+		return nil, err
+	}
+
+	key, err := crypto.ToECDSA(privKeyBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return key, nil
 }

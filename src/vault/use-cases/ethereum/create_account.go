@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 
-	cryptoutils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/storage"
@@ -42,14 +41,14 @@ func (uc *createAccountUseCase) Execute(ctx context.Context, namespace, imported
 	var privKey = new(ecdsa.PrivateKey)
 	var err error
 	if importedPrivKey == "" {
-		privKey, err = cryptoutils.NewSecp256k1()
+		privKey, err = crypto.GenerateKey()
 		if err != nil {
 			errMessage := "failed to generate Ethereum private key"
 			logger.With("error", err).Error(errMessage)
 			return nil, errors.CryptoOperationError(errMessage)
 		}
 	} else {
-		privKey, err = cryptoutils.ImportSecp256k1(importedPrivKey)
+		privKey, err = crypto.HexToECDSA(importedPrivKey)
 		if err != nil {
 			errMessage := "failed to import Ethereum private key, please verify that the provided private key is valid"
 			logger.With("error", err).Error(errMessage)

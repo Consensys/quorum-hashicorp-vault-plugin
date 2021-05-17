@@ -2,6 +2,7 @@ package keys
 
 import (
 	"context"
+	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/encoding"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
 	"github.com/consensys/gnark-crypto/crypto/hash"
 	"github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
@@ -10,7 +11,6 @@ import (
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 	usecases "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
-	"github.com/consensys/quorum/common/hexutil"
 	"github.com/consensys/quorum/crypto"
 	"github.com/hashicorp/vault/sdk/logical"
 )
@@ -34,9 +34,9 @@ func (uc *signPayloadUseCase) Execute(ctx context.Context, id, namespace, data s
 	logger := log.FromContext(ctx).With("namespace", namespace).With("id", id)
 	logger.Debug("signing message")
 
-	dataBytes, err := hexutil.Decode(data)
+	dataBytes, err := encoding.DecodeBase64(data)
 	if err != nil {
-		errMessage := "data must be a hex string"
+		errMessage := "data must be a base64 string"
 		logger.With("error", err).Error(errMessage)
 		return "", errors.InvalidParameterError(errMessage)
 	}
@@ -45,12 +45,13 @@ func (uc *signPayloadUseCase) Execute(ctx context.Context, id, namespace, data s
 	if err != nil {
 		return "", err
 	}
+	privKeyB, _ := encoding.DecodeBase64(key.PrivateKey)
 
 	switch {
 	case key.Algorithm == entities.EDDSA && key.Curve == entities.BN254:
-		return uc.signEDDSA(logger, key.PrivateKey, dataBytes)
+		return uc.signEDDSA(logger, privKeyB, dataBytes)
 	case key.Algorithm == entities.ECDSA && key.Curve == entities.Secp256k1:
-		return uc.signECDSA(logger, key.PrivateKey, dataBytes)
+		return uc.signECDSA(logger, privKeyB, dataBytes)
 	default:
 		errMessage := "invalid signing algorithm/elliptic curve combination"
 		logger.Error(errMessage)
@@ -58,27 +59,27 @@ func (uc *signPayloadUseCase) Execute(ctx context.Context, id, namespace, data s
 	}
 }
 
-func (uc *signPayloadUseCase) signECDSA(logger hclog.Logger, privKeyString string, data []byte) (string, error) {
-	ecdsaPrivKey, err := crypto.HexToECDSA(privKeyString)
+func (uc *signPayloadUseCase) signECDSA(logger hclog.Logger, privKeyB, data []byte) (string, error) {
+	ecdsaPrivKey, err := crypto.ToECDSA(privKeyB)
 	if err != nil {
 		errMessage := "failed to parse ECDSA private key"
 		logger.With("error", err).Error(errMessage)
 		return "", errors.CryptoOperationError(errMessage)
 	}
 
-	signatureB, err := crypto.Sign(crypto.Keccak256([]byte(data)), ecdsaPrivKey)
+	signatureB, err := crypto.Sign(crypto.Keccak256(data), ecdsaPrivKey)
 	if err != nil {
 		errMessage := "failed to sign payload with ECDSA"
 		logger.With("error", err).Error(errMessage)
 		return "", errors.CryptoOperationError(errMessage)
 	}
 
-	return hexutil.Encode(signatureB), nil
+	// We remove the recID from the signature (last byte).
+	return encoding.EncodeToBase64(signatureB[:len(signatureB)-1]), nil
 }
 
-func (uc *signPayloadUseCase) signEDDSA(logger hclog.Logger, privKeyString string, data []byte) (string, error) {
+func (uc *signPayloadUseCase) signEDDSA(logger hclog.Logger, privKeyB, data []byte) (string, error) {
 	privKey := eddsa.PrivateKey{}
-	privKeyB, _ := hexutil.Decode(privKeyString)
 	_, err := privKey.SetBytes(privKeyB)
 	if err != nil {
 		errMessage := "failed to parse EDDSA private key"
@@ -93,5 +94,5 @@ func (uc *signPayloadUseCase) signEDDSA(logger hclog.Logger, privKeyString strin
 		return "", errors.CryptoOperationError(errMessage)
 	}
 
-	return hexutil.Encode(signatureB), nil
+	return encoding.EncodeToBase64(signatureB), nil
 }
