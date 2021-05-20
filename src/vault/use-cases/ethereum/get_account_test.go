@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"github.com/consensys/quorum/common"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils/mocks"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/storage"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/hashicorp/vault/sdk/logical"
 
 	"github.com/golang/mock/gomock"

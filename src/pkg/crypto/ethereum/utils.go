@@ -4,8 +4,7 @@ import (
 	"encoding/base64"
 	"math/big"
 
-	quorumtypes "github.com/consensys/quorum/core/types"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/consensys/quorum/core/types"
 )
 
 func GetEncodedPrivateFrom(privateFrom string) ([]byte, error) {
@@ -46,6 +45,6 @@ func GetEIP155Signer(chainID string) types.Signer {
 	return types.NewEIP155Signer(chainIDBigInt)
 }
 
-func GetQuorumPrivateTxSigner() quorumtypes.Signer {
-	return quorumtypes.QuorumPrivateTxSigner{}
+func GetQuorumPrivateTxSigner() types.Signer {
+	return types.QuorumPrivateTxSigner{}
 }

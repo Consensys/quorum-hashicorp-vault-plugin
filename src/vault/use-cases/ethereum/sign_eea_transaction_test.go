@@ -11,8 +11,8 @@ import (
 	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils/mocks"
 	mocks2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases/mocks"
+	"github.com/consensys/quorum/core/types"
 	"github.com/ethereum/go-ethereum/common"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -28,7 +28,7 @@ func TestSignEEATransaction_Execute(t *testing.T) {
 	address := "0xaddress"
 	namespace := "namespace"
 	chainID := "1"
-	tx := ethtypes.NewTransaction(
+	tx := types.NewTransaction(
 		0,
 		common.HexToAddress("0x905B88EFf8Bda1543d4d6f4aA05afef143D27E18"),
 		big.NewInt(10000000000),

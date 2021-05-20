@@ -1,21 +1,17 @@
 package ethereum
 
 import (
-	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/consensys/quorum/common"
+	"github.com/consensys/quorum/rlp"
 	"golang.org/x/crypto/sha3"
 )
 
-func Hash(object interface{}) (hash ethcommon.Hash, err error) {
+func Hash(object interface{}) (hash common.Hash, err error) {
 	hashAlgo := sha3.NewLegacyKeccak256()
 	err = rlp.Encode(hashAlgo, object)
 	if err != nil {
-		return ethcommon.Hash{}, err
+		return common.Hash{}, err
 	}
 	hashAlgo.Sum(hash[:0])
 	return hash, nil
-}
-
-func Encode(object interface{}) ([]byte, error) {
-	return rlp.EncodeToBytes(object)
 }

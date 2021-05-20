@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"github.com/consensys/quorum/crypto"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
@@ -25,7 +26,6 @@ func TestSignPayload_Execute(t *testing.T) {
 	ctx := log.Context(context.Background(), log.Default())
 	address := "0xaddress"
 	namespace := "namespace"
-	data := base64.StdEncoding.EncodeToString([]byte("my data to sign"))
 
 	mockGetKeyUC.EXPECT().WithStorage(mockStorage).Return(mockGetKeyUC).AnyTimes()
 
@@ -36,6 +36,7 @@ func TestSignPayload_Execute(t *testing.T) {
 		key.Curve = entities.Secp256k1
 		key.Algorithm = entities.ECDSA
 		key.PrivateKey = "2zN8oyleQFBYZ5PyUuZB87OoNzkBj6TM4BqBypIOfhw="
+		data := base64.URLEncoding.EncodeToString(crypto.Keccak256([]byte("my data to sign")))
 
 		mockGetKeyUC.EXPECT().Execute(ctx, address, namespace).Return(key, nil)
 
@@ -49,6 +50,7 @@ func TestSignPayload_Execute(t *testing.T) {
 		key := apputils.FakeKey()
 		key.Curve = entities.BN254
 		key.Algorithm = entities.EDDSA
+		data := base64.URLEncoding.EncodeToString([]byte("my data to sign"))
 
 		mockGetKeyUC.EXPECT().Execute(ctx, address, namespace).Return(key, nil)
 
@@ -60,6 +62,7 @@ func TestSignPayload_Execute(t *testing.T) {
 
 	t.Run("should fail with same error if Get Account fails", func(t *testing.T) {
 		expectedErr := fmt.Errorf("error")
+		data := base64.URLEncoding.EncodeToString(crypto.Keccak256([]byte("my data to sign")))
 
 		mockGetKeyUC.EXPECT().Execute(ctx, gomock.Any(), gomock.Any()).Return(nil, expectedErr)
 
@@ -74,6 +77,7 @@ func TestSignPayload_Execute(t *testing.T) {
 		key.Curve = entities.BN254
 		key.Algorithm = entities.EDDSA
 		key.PrivateKey = "account.PrivateKey"
+		data := base64.URLEncoding.EncodeToString(crypto.Keccak256([]byte("my data to sign")))
 
 		mockGetKeyUC.EXPECT().Execute(ctx, address, namespace).Return(key, nil)
 
@@ -88,6 +92,7 @@ func TestSignPayload_Execute(t *testing.T) {
 		key.Curve = entities.Secp256k1
 		key.Algorithm = entities.ECDSA
 		key.PrivateKey = "account.PrivateKey"
+		data := base64.URLEncoding.EncodeToString(crypto.Keccak256([]byte("my data to sign")))
 
 		mockGetKeyUC.EXPECT().Execute(ctx, address, namespace).Return(key, nil)
 

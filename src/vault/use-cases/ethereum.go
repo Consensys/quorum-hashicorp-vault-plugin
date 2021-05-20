@@ -2,10 +2,9 @@ package usecases
 
 import (
 	"context"
-	quorumtypes "github.com/consensys/quorum/core/types"
 	"github.com/hashicorp/vault/sdk/logical"
 
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/consensys/quorum/core/types"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 )
@@ -44,12 +43,12 @@ type SignUseCase interface {
 }
 
 type SignTransactionUseCase interface {
-	Execute(ctx context.Context, address, namespace, chainID string, tx *ethtypes.Transaction) (string, error)
+	Execute(ctx context.Context, address, namespace, chainID string, tx *types.Transaction) (string, error)
 	WithStorage(storage logical.Storage) SignTransactionUseCase
 }
 
 type SignQuorumPrivateTransactionUseCase interface {
-	Execute(ctx context.Context, address, namespace string, tx *quorumtypes.Transaction) (string, error)
+	Execute(ctx context.Context, address, namespace string, tx *types.Transaction) (string, error)
 	WithStorage(storage logical.Storage) SignQuorumPrivateTransactionUseCase
 }
 
@@ -57,7 +56,7 @@ type SignEEATransactionUseCase interface {
 	Execute(
 		ctx context.Context,
 		address, namespace string, chainID string,
-		tx *ethtypes.Transaction,
+		tx *types.Transaction,
 		privateArgs *entities.PrivateETHTransactionParams,
 	) (string, error)
 	WithStorage(storage logical.Storage) SignEEATransactionUseCase

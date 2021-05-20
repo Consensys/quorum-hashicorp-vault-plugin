@@ -8,9 +8,9 @@ import (
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	usecases "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/consensys/quorum/common/hexutil"
+	"github.com/consensys/quorum/core/types"
+	"github.com/consensys/quorum/crypto"
 	"github.com/hashicorp/vault/sdk/logical"
 )
 
@@ -35,7 +35,7 @@ func (uc signEEATxUseCase) WithStorage(storage logical.Storage) usecases.SignEEA
 func (uc *signEEATxUseCase) Execute(
 	ctx context.Context,
 	address, namespace, chainID string,
-	tx *ethtypes.Transaction,
+	tx *types.Transaction,
 	privateArgs *entities.PrivateETHTransactionParams,
 ) (string, error) {
 	logger := log.FromContext(ctx).With("namespace", namespace).With("address", address)

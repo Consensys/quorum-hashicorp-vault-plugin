@@ -7,11 +7,11 @@ import (
 	signing "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto/ethereum"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/consensys/quorum/crypto"
 	"github.com/hashicorp/vault/sdk/logical"
 
 	"github.com/consensys/quorum/common/hexutil"
-	quorumtypes "github.com/consensys/quorum/core/types"
+	"github.com/consensys/quorum/core/types"
 )
 
 // signQuorumPrivateTxUseCase is a use case to sign a Quorum private transaction using an existing account
@@ -32,7 +32,7 @@ func (uc signQuorumPrivateTxUseCase) WithStorage(storage logical.Storage) usecas
 }
 
 // Execute signs a Quorum private transaction
-func (uc *signQuorumPrivateTxUseCase) Execute(ctx context.Context, address, namespace string, tx *quorumtypes.Transaction) (string, error) {
+func (uc *signQuorumPrivateTxUseCase) Execute(ctx context.Context, address, namespace string, tx *types.Transaction) (string, error) {
 	logger := log.FromContext(ctx).With("namespace", namespace).With("address", address)
 	logger.Debug("signing quorum private transaction")
 

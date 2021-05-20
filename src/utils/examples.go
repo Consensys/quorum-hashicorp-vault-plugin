@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/consensys/quorum/common"
 )
 
 func ExampleETHAccount() *entities.ETHAccount {

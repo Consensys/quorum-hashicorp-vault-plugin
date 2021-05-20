@@ -10,8 +10,8 @@ import (
 	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
 	mocks2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils/mocks"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases/mocks"
+	"github.com/consensys/quorum/core/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"

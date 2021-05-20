@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/consensys/quorum/common"
 )
 
 func FakeETHAccount() *entities.ETHAccount {

@@ -10,7 +10,7 @@ import (
 
 	"github.com/consensys/quorum/common/hexutil"
 
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/consensys/quorum/crypto"
 )
 
 // signPayloadUseCase is a use case to sign an arbitrary payload usign an existing Ethereum account

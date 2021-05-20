@@ -9,7 +9,7 @@ import (
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils/mocks"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/consensys/quorum/common"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"

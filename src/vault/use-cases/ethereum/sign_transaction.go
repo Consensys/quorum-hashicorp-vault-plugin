@@ -4,11 +4,11 @@ import (
 	"context"
 	signing "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto/ethereum"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"github.com/consensys/quorum/core/types"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/consensys/quorum/crypto"
 	"github.com/hashicorp/vault/sdk/logical"
 
 	"github.com/consensys/quorum/common/hexutil"
@@ -32,7 +32,7 @@ func (uc signTxUseCase) WithStorage(storage logical.Storage) usecases.SignTransa
 }
 
 // Execute signs an ethereum transaction
-func (uc *signTxUseCase) Execute(ctx context.Context, address, namespace, chainID string, tx *ethtypes.Transaction) (string, error) {
+func (uc *signTxUseCase) Execute(ctx context.Context, address, namespace, chainID string, tx *types.Transaction) (string, error) {
 	logger := log.FromContext(ctx).With("namespace", namespace).With("address", address)
 	logger.Debug("signing ethereum transaction")
 

@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/encoding"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
-	"github.com/consensys/gnark-crypto/crypto/hash"
 	"github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
+	"github.com/consensys/gnark-crypto/hash"
 	"github.com/hashicorp/go-hclog"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
@@ -60,6 +60,10 @@ func (uc *signPayloadUseCase) Execute(ctx context.Context, id, namespace, data s
 }
 
 func (uc *signPayloadUseCase) signECDSA(logger hclog.Logger, privKeyB, data []byte) (string, error) {
+	if len(data) != crypto.DigestLength {
+		return "", errors.InvalidParameterError("data is required to be exactly %d bytes (%d)", crypto.DigestLength, len(data))
+	}
+
 	ecdsaPrivKey, err := crypto.ToECDSA(privKeyB)
 	if err != nil {
 		errMessage := "failed to parse ECDSA private key"
@@ -67,7 +71,7 @@ func (uc *signPayloadUseCase) signECDSA(logger hclog.Logger, privKeyB, data []by
 		return "", errors.CryptoOperationError(errMessage)
 	}
 
-	signatureB, err := crypto.Sign(crypto.Keccak256(data), ecdsaPrivKey)
+	signatureB, err := crypto.Sign(data, ecdsaPrivKey)
 	if err != nil {
 		errMessage := "failed to sign payload with ECDSA"
 		logger.With("error", err).Error(errMessage)

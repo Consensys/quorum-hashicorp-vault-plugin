@@ -12,7 +12,7 @@ import (
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/storage"
 	usecases "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
 	"github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/consensys/quorum/crypto"
 	"github.com/hashicorp/vault/sdk/logical"
 	"time"
 )

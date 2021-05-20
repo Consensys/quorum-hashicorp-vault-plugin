@@ -5,10 +5,8 @@ import (
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
 	"math/big"
 
-	quorumtypes "github.com/consensys/quorum/core/types"
-
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/consensys/quorum/core/types"
+	"github.com/consensys/quorum/crypto"
 )
 
 func SignTransaction(tx *types.Transaction, privKey *ecdsa.PrivateKey, signer types.Signer) ([]byte, error) {
@@ -21,7 +19,7 @@ func SignTransaction(tx *types.Transaction, privKey *ecdsa.PrivateKey, signer ty
 	return decodedSignature, nil
 }
 
-func SignQuorumPrivateTransaction(tx *quorumtypes.Transaction, privKey *ecdsa.PrivateKey, signer quorumtypes.Signer) ([]byte, error) {
+func SignQuorumPrivateTransaction(tx *types.Transaction, privKey *ecdsa.PrivateKey, signer types.Signer) ([]byte, error) {
 	h := signer.Hash(tx)
 	decodedSignature, err := crypto.Sign(h[:], privKey)
 	if err != nil {

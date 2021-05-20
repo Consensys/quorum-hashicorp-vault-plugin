@@ -3,8 +3,8 @@ package zksnarks
 import (
 	"context"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
-	"github.com/consensys/gnark-crypto/crypto/hash"
 	"github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
+	"github.com/consensys/gnark-crypto/hash"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
