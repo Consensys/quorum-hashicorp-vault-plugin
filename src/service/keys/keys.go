@@ -35,6 +35,7 @@ func (c *controller) Paths() []*framework.Path {
 			c.pathKey(),
 			c.pathSignPayload(),
 			c.pathNamespaces(),
+			c.pathDestroy(),
 		},
 	)
 }
@@ -61,11 +62,7 @@ func (c *controller) pathKeys() *framework.Path {
 				Description: "Signing algorithm",
 				Required:    true,
 			},
-			formatters.TagsLabel: {
-				Type:        framework.TypeKVPairs,
-				Description: "Tags",
-				Required:    true,
-			},
+			formatters.TagsLabel: formatters.TagsFieldSchema,
 		},
 	}
 }
@@ -86,10 +83,12 @@ func (c *controller) pathKey() *framework.Path {
 		Pattern:      fmt.Sprintf("keys/%s", framework.GenericNameRegex(formatters.IDLabel)),
 		HelpSynopsis: "Get, update or delete a key pair",
 		Fields: map[string]*framework.FieldSchema{
-			formatters.IDLabel: formatters.IDFieldSchema,
+			formatters.IDLabel:   formatters.IDFieldSchema,
+			formatters.TagsLabel: formatters.TagsFieldSchema,
 		},
 		Operations: map[logical.Operation]framework.OperationHandler{
-			logical.ReadOperation: c.NewGetOperation(),
+			logical.ReadOperation:   c.NewGetOperation(),
+			logical.UpdateOperation: c.NewUpdateOperation(),
 		},
 	}
 }
@@ -114,10 +113,7 @@ func (c *controller) pathImportKey() *framework.Path {
 				Description: "Signing algorithm",
 				Required:    true,
 			},
-			formatters.TagsLabel: {
-				Type:        framework.TypeKVPairs,
-				Description: "Tags",
-			},
+			formatters.TagsLabel: formatters.TagsFieldSchema,
 		},
 		Operations: map[logical.Operation]framework.OperationHandler{
 			logical.CreateOperation: c.NewImportOperation(),
@@ -143,5 +139,18 @@ func (c *controller) pathSignPayload() *framework.Path {
 			logical.UpdateOperation: c.NewSignPayloadOperation(),
 		},
 		HelpSynopsis: "Signs an arbitrary message using an existing key pair",
+	}
+}
+
+func (c *controller) pathDestroy() *framework.Path {
+	return &framework.Path{
+		Pattern: fmt.Sprintf("keys/%s/destroy", framework.GenericNameRegex(formatters.IDLabel)),
+		Fields: map[string]*framework.FieldSchema{
+			formatters.IDLabel: formatters.AddressFieldSchema,
+		},
+		Operations: map[logical.Operation]framework.OperationHandler{
+			logical.DeleteOperation: c.NewDestroyOperation(),
+		},
+		HelpSynopsis: "Destroys an existing key pair",
 	}
 }

@@ -53,3 +53,16 @@ func GetJSON(ctx context.Context, storage logical.Storage, key string, entity in
 
 	return nil
 }
+
+func DestroyJSON(ctx context.Context, storage logical.Storage, key string) error {
+	logger := log.FromContext(ctx).With("key", key)
+
+	err := storage.Delete(ctx, key)
+	if err != nil {
+		errMessage := "failed to delete entry"
+		logger.With("error", err).Error(errMessage)
+		return errors.StorageError(errMessage)
+	}
+
+	return nil
+}

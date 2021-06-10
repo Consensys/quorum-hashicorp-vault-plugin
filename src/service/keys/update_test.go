@@ -3,28 +3,27 @@ package keys
 import (
 	"fmt"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
-	"net/http"
-	"testing"
-
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
 	"github.com/stretchr/testify/assert"
+	"net/http"
+	"testing"
 )
 
-func (s *keysCtrlTestSuite) TestKeysController_Sign() {
-	path := s.controller.Paths()[3]
-	signOperation := path.Operations[logical.CreateOperation]
+func (s *keysCtrlTestSuite) TestKeysController_Update() {
+	path := s.controller.Paths()[2]
+	updateOperation := path.Operations[logical.UpdateOperation]
 
 	s.T().Run("should define the correct path", func(t *testing.T) {
-		assert.Equal(t, fmt.Sprintf("keys/%s/sign", framework.GenericNameRegex(formatters.IDLabel)), path.Pattern)
-		assert.NotEmpty(t, signOperation)
+		assert.Equal(t, fmt.Sprintf("keys/%s", framework.GenericNameRegex(formatters.IDLabel)), path.Pattern)
+		assert.NotEmpty(t, updateOperation)
 	})
 
 	s.T().Run("should define correct properties", func(t *testing.T) {
-		properties := signOperation.Properties()
+		properties := updateOperation.Properties()
 
 		assert.NotEmpty(t, properties.Description)
 		assert.NotEmpty(t, properties.Summary)
@@ -38,63 +37,65 @@ func (s *keysCtrlTestSuite) TestKeysController_Sign() {
 	})
 
 	s.T().Run("handler should execute the correct use case", func(t *testing.T) {
-		account := utils.FakeKey()
-		payload := "my data to sign"
+		key := utils.FakeKey()
+		tags := map[string]string{
+			"tag1": "tagValue1",
+			"tag2": "tagValue2",
+		}
 		request := &logical.Request{
 			Storage: s.storage,
 			Headers: map[string][]string{
-				formatters.NamespaceHeader: {account.Namespace},
+				formatters.NamespaceHeader: {key.Namespace},
 			},
 		}
 		data := &framework.FieldData{
 			Raw: map[string]interface{}{
-				formatters.IDLabel:   account.ID,
-				formatters.DataLabel: payload,
+				formatters.IDLabel:   key.ID,
+				formatters.TagsLabel: tags,
 			},
 			Schema: map[string]*framework.FieldSchema{
-				formatters.IDLabel: formatters.AddressFieldSchema,
-				formatters.DataLabel: {
-					Type:        framework.TypeString,
-					Description: "data to sign",
-					Required:    true,
-				},
+				formatters.IDLabel:   formatters.AddressFieldSchema,
+				formatters.TagsLabel: formatters.TagsFieldSchema,
 			},
 		}
-		expectedSignature := "0x8b9679a75861e72fa6968dd5add3bf96e2747f0f124a2e728980f91e1958367e19c2486a40fdc65861824f247603bc18255fa497ca0b8b0a394aa7a6740fdc4601"
 
-		s.signPayloadUC.EXPECT().Execute(gomock.Any(), account.ID, account.Namespace, payload).Return(expectedSignature, nil)
+		s.updateKeyUC.EXPECT().Execute(gomock.Any(), key.Namespace, key.ID, key.Tags).Return(key, nil)
 
-		response, err := signOperation.Handler()(s.ctx, request, data)
+		response, err := updateOperation.Handler()(s.ctx, request, data)
 
 		assert.NoError(t, err)
-		assert.Equal(t, expectedSignature, response.Data["signature"])
+		assert.Equal(t, key.PublicKey, response.Data["public_key"])
+		assert.Equal(t, key.Namespace, response.Data["namespace"])
+		assert.Equal(t, key.Algorithm, response.Data["algorithm"])
+		assert.Equal(t, key.Curve, response.Data["curve"])
+		assert.Equal(t, key.ID, response.Data["id"])
+		assert.Equal(t, key.Tags, response.Data["tags"])
 	})
 
 	s.T().Run("should map errors correctly and return the correct http status", func(t *testing.T) {
 		key := utils.FakeKey()
-		payload := "my data to sign"
+		tags := map[string]string{
+			"tag1": "tagValue1",
+			"tag2": "tagValue2",
+		}
 		request := &logical.Request{
 			Storage: s.storage,
 		}
 		data := &framework.FieldData{
 			Raw: map[string]interface{}{
 				formatters.IDLabel:   key.ID,
-				formatters.DataLabel: payload,
+				formatters.TagsLabel: tags,
 			},
 			Schema: map[string]*framework.FieldSchema{
-				formatters.IDLabel: formatters.AddressFieldSchema,
-				formatters.DataLabel: {
-					Type:        framework.TypeString,
-					Description: "data to sign",
-					Required:    true,
-				},
+				formatters.IDLabel:   formatters.AddressFieldSchema,
+				formatters.TagsLabel: formatters.TagsFieldSchema,
 			},
 		}
 		expectedErr := errors.NotFoundError("error")
 
-		s.signPayloadUC.EXPECT().Execute(gomock.Any(), key.ID, "", payload).Return("", expectedErr)
+		s.updateKeyUC.EXPECT().Execute(gomock.Any(), "", key.ID, key.Tags).Return(nil, expectedErr)
 
-		response, err := signOperation.Handler()(s.ctx, request, data)
+		response, err := updateOperation.Handler()(s.ctx, request, data)
 
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusNotFound, response.Data[logical.HTTPStatusCode])

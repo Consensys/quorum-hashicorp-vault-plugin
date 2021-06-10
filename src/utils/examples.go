@@ -101,7 +101,7 @@ func Example200ZksResponse() *framework.Response {
 func Example200KeysResponse() *framework.Response {
 	return &framework.Response{
 		Description: "Success",
-		Example:     formatters.FormatZksAccountResponse(ExampleZksAccount()),
+		Example:     formatters.FormatKeyResponse(ExampleKey()),
 	}
 }
 

@@ -87,3 +87,9 @@ var PrivacyGroupIDFieldSchema = &framework.FieldSchema{
 	Type:        framework.TypeString,
 	Description: "EEA PrivacyGroupID address in base64 format",
 }
+
+var TagsFieldSchema = &framework.FieldSchema{
+	Type:        framework.TypeKVPairs,
+	Description: "Tags",
+	Required:    true,
+}

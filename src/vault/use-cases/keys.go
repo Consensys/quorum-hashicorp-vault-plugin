@@ -15,11 +15,23 @@ type KeysUseCases interface {
 	ListKeys() ListKeysUseCase
 	ListNamespaces() ListKeysNamespacesUseCase
 	SignPayload() KeysSignUseCase
+	UpdateKey() UpdateKeyUseCase
+	DestroyKey() DestroyKeyUseCase
 }
 
 type CreateKeyUseCase interface {
 	Execute(ctx context.Context, namespace, id, algo, curve, importedPrivKey string, tags map[string]string) (*entities.Key, error)
 	WithStorage(storage logical.Storage) CreateKeyUseCase
+}
+
+type UpdateKeyUseCase interface {
+	Execute(ctx context.Context, namespace, id string, tags map[string]string) (*entities.Key, error)
+	WithStorage(storage logical.Storage) UpdateKeyUseCase
+}
+
+type DestroyKeyUseCase interface {
+	Execute(ctx context.Context, namespace, id string) error
+	WithStorage(storage logical.Storage) DestroyKeyUseCase
 }
 
 type GetKeyUseCase interface {

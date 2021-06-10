@@ -11,6 +11,8 @@ type keysUseCases struct {
 	listKeys       usecases.ListKeysUseCase
 	listNamespaces usecases.ListKeysNamespacesUseCase
 	sign           usecases.KeysSignUseCase
+	destroy        usecases.DestroyKeyUseCase
+	update         usecases.UpdateKeyUseCase
 }
 
 func NewKeysUseCases() usecases.KeysUseCases {
@@ -21,6 +23,8 @@ func NewKeysUseCases() usecases.KeysUseCases {
 		listKeys:       keys.NewListKeysUseCase(),
 		listNamespaces: keys.NewListNamespacesUseCase(),
 		sign:           keys.NewSignUseCase(getKeyUC),
+		destroy:        keys.NewDestroyKeyUseCase(),
+		update:         keys.NewUpdateKeyUseCase(getKeyUC),
 	}
 }
 
@@ -42,4 +46,12 @@ func (ucs *keysUseCases) ListNamespaces() usecases.ListKeysNamespacesUseCase {
 
 func (ucs *keysUseCases) SignPayload() usecases.KeysSignUseCase {
 	return ucs.sign
+}
+
+func (ucs *keysUseCases) DestroyKey() usecases.DestroyKeyUseCase {
+	return ucs.destroy
+}
+
+func (ucs *keysUseCases) UpdateKey() usecases.UpdateKeyUseCase {
+	return ucs.update
 }

@@ -20,6 +20,8 @@ type keysCtrlTestSuite struct {
 	listKeysUC       *mocks.MockListKeysUseCase
 	listNamespacesUC *mocks.MockListKeysNamespacesUseCase
 	signPayloadUC    *mocks.MockKeysSignUseCase
+	destroyKeyUC     *mocks.MockDestroyKeyUseCase
+	updateKeyUC      *mocks.MockUpdateKeyUseCase
 	storage          *mocks2.MockStorage
 	ctx              context.Context
 	controller       *controller
@@ -45,6 +47,14 @@ func (s *keysCtrlTestSuite) SignPayload() usecases.KeysSignUseCase {
 	return s.signPayloadUC
 }
 
+func (s *keysCtrlTestSuite) DestroyKey() usecases.DestroyKeyUseCase {
+	return s.destroyKeyUC
+}
+
+func (s *keysCtrlTestSuite) UpdateKey() usecases.UpdateKeyUseCase {
+	return s.updateKeyUC
+}
+
 var _ usecases.KeysUseCases = &keysCtrlTestSuite{}
 
 func TestKeysController(t *testing.T) {
@@ -61,6 +71,8 @@ func (s *keysCtrlTestSuite) SetupTest() {
 	s.listKeysUC = mocks.NewMockListKeysUseCase(ctrl)
 	s.listNamespacesUC = mocks.NewMockListKeysNamespacesUseCase(ctrl)
 	s.signPayloadUC = mocks.NewMockKeysSignUseCase(ctrl)
+	s.destroyKeyUC = mocks.NewMockDestroyKeyUseCase(ctrl)
+	s.updateKeyUC = mocks.NewMockUpdateKeyUseCase(ctrl)
 	s.controller = NewController(s, hclog.Default())
 	s.storage = mocks2.NewMockStorage(ctrl)
 	s.ctx = context.Background()
@@ -70,4 +82,6 @@ func (s *keysCtrlTestSuite) SetupTest() {
 	s.listKeysUC.EXPECT().WithStorage(s.storage).Return(s.listKeysUC).AnyTimes()
 	s.listNamespacesUC.EXPECT().WithStorage(s.storage).Return(s.listNamespacesUC).AnyTimes()
 	s.signPayloadUC.EXPECT().WithStorage(s.storage).Return(s.signPayloadUC).AnyTimes()
+	s.destroyKeyUC.EXPECT().WithStorage(s.storage).Return(s.destroyKeyUC).AnyTimes()
+	s.updateKeyUC.EXPECT().WithStorage(s.storage).Return(s.updateKeyUC).AnyTimes()
 }

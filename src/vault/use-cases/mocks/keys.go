@@ -106,6 +106,34 @@ func (mr *MockKeysUseCasesMockRecorder) SignPayload() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignPayload", reflect.TypeOf((*MockKeysUseCases)(nil).SignPayload))
 }
 
+// UpdateKey mocks base method
+func (m *MockKeysUseCases) UpdateKey() usecases.UpdateKeyUseCase {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateKey")
+	ret0, _ := ret[0].(usecases.UpdateKeyUseCase)
+	return ret0
+}
+
+// UpdateKey indicates an expected call of UpdateKey
+func (mr *MockKeysUseCasesMockRecorder) UpdateKey() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateKey", reflect.TypeOf((*MockKeysUseCases)(nil).UpdateKey))
+}
+
+// DestroyKey mocks base method
+func (m *MockKeysUseCases) DestroyKey() usecases.DestroyKeyUseCase {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DestroyKey")
+	ret0, _ := ret[0].(usecases.DestroyKeyUseCase)
+	return ret0
+}
+
+// DestroyKey indicates an expected call of DestroyKey
+func (mr *MockKeysUseCasesMockRecorder) DestroyKey() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DestroyKey", reflect.TypeOf((*MockKeysUseCases)(nil).DestroyKey))
+}
+
 // MockCreateKeyUseCase is a mock of CreateKeyUseCase interface
 type MockCreateKeyUseCase struct {
 	ctrl     *gomock.Controller
@@ -156,6 +184,109 @@ func (m *MockCreateKeyUseCase) WithStorage(storage logical.Storage) usecases.Cre
 func (mr *MockCreateKeyUseCaseMockRecorder) WithStorage(storage interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WithStorage", reflect.TypeOf((*MockCreateKeyUseCase)(nil).WithStorage), storage)
+}
+
+// MockUpdateKeyUseCase is a mock of UpdateKeyUseCase interface
+type MockUpdateKeyUseCase struct {
+	ctrl     *gomock.Controller
+	recorder *MockUpdateKeyUseCaseMockRecorder
+}
+
+// MockUpdateKeyUseCaseMockRecorder is the mock recorder for MockUpdateKeyUseCase
+type MockUpdateKeyUseCaseMockRecorder struct {
+	mock *MockUpdateKeyUseCase
+}
+
+// NewMockUpdateKeyUseCase creates a new mock instance
+func NewMockUpdateKeyUseCase(ctrl *gomock.Controller) *MockUpdateKeyUseCase {
+	mock := &MockUpdateKeyUseCase{ctrl: ctrl}
+	mock.recorder = &MockUpdateKeyUseCaseMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (m *MockUpdateKeyUseCase) EXPECT() *MockUpdateKeyUseCaseMockRecorder {
+	return m.recorder
+}
+
+// Execute mocks base method
+func (m *MockUpdateKeyUseCase) Execute(ctx context.Context, namespace, id string, tags map[string]string) (*entities.Key, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Execute", ctx, namespace, id, tags)
+	ret0, _ := ret[0].(*entities.Key)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Execute indicates an expected call of Execute
+func (mr *MockUpdateKeyUseCaseMockRecorder) Execute(ctx, namespace, id, tags interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockUpdateKeyUseCase)(nil).Execute), ctx, namespace, id, tags)
+}
+
+// WithStorage mocks base method
+func (m *MockUpdateKeyUseCase) WithStorage(storage logical.Storage) usecases.UpdateKeyUseCase {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "WithStorage", storage)
+	ret0, _ := ret[0].(usecases.UpdateKeyUseCase)
+	return ret0
+}
+
+// WithStorage indicates an expected call of WithStorage
+func (mr *MockUpdateKeyUseCaseMockRecorder) WithStorage(storage interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WithStorage", reflect.TypeOf((*MockUpdateKeyUseCase)(nil).WithStorage), storage)
+}
+
+// MockDestroyKeyUseCase is a mock of DestroyKeyUseCase interface
+type MockDestroyKeyUseCase struct {
+	ctrl     *gomock.Controller
+	recorder *MockDestroyKeyUseCaseMockRecorder
+}
+
+// MockDestroyKeyUseCaseMockRecorder is the mock recorder for MockDestroyKeyUseCase
+type MockDestroyKeyUseCaseMockRecorder struct {
+	mock *MockDestroyKeyUseCase
+}
+
+// NewMockDestroyKeyUseCase creates a new mock instance
+func NewMockDestroyKeyUseCase(ctrl *gomock.Controller) *MockDestroyKeyUseCase {
+	mock := &MockDestroyKeyUseCase{ctrl: ctrl}
+	mock.recorder = &MockDestroyKeyUseCaseMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (m *MockDestroyKeyUseCase) EXPECT() *MockDestroyKeyUseCaseMockRecorder {
+	return m.recorder
+}
+
+// Execute mocks base method
+func (m *MockDestroyKeyUseCase) Execute(ctx context.Context, namespace, id string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Execute", ctx, namespace, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Execute indicates an expected call of Execute
+func (mr *MockDestroyKeyUseCaseMockRecorder) Execute(ctx, namespace, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockDestroyKeyUseCase)(nil).Execute), ctx, namespace, id)
+}
+
+// WithStorage mocks base method
+func (m *MockDestroyKeyUseCase) WithStorage(storage logical.Storage) usecases.DestroyKeyUseCase {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "WithStorage", storage)
+	ret0, _ := ret[0].(usecases.DestroyKeyUseCase)
+	return ret0
+}
+
+// WithStorage indicates an expected call of WithStorage
+func (mr *MockDestroyKeyUseCaseMockRecorder) WithStorage(storage interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WithStorage", reflect.TypeOf((*MockDestroyKeyUseCase)(nil).WithStorage), storage)
 }
 
 // MockGetKeyUseCase is a mock of GetKeyUseCase interface
