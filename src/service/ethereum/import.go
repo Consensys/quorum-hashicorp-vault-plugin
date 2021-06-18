@@ -37,7 +37,7 @@ func (c *controller) NewImportOperation() *framework.PathOperation {
 
 func (c *controller) importHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
-		privateKeyString := data.Get("privateKey").(string)
+		privateKeyString := data.Get(formatters.PrivateKeyLabel).(string)
 		namespace := formatters.GetRequestNamespace(req)
 
 		if privateKeyString == "" {

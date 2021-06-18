@@ -75,7 +75,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignTransaction() {
 		response, err := signOperation.Handler()(s.ctx, request, data)
 
 		assert.NoError(t, err)
-		assert.Equal(t, expectedSignature, response.Data["signature"])
+		assert.Equal(t, expectedSignature, response.Data[formatters.SignatureLabel])
 	})
 
 	s.T().Run("should fail with 400 if validation fails", func(t *testing.T) {

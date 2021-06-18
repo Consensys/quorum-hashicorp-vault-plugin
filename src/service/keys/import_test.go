@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func (s *keysCtrlTestSuite) TestEthereumController_Import() {
+func (s *keysCtrlTestSuite) TestKeysController_Import() {
 	path := s.controller.Paths()[1]
 	importOperation := path.Operations[logical.CreateOperation]
 
@@ -48,14 +48,14 @@ func (s *keysCtrlTestSuite) TestEthereumController_Import() {
 			Raw: map[string]interface{}{
 				formatters.PrivateKeyLabel: privKey,
 				formatters.CurveLabel:      key.Curve,
-				formatters.AlgoLabel:       key.Algorithm,
+				formatters.AlgorithmLabel:  key.Algorithm,
 				formatters.IDLabel:         key.ID,
 				formatters.TagsLabel:       key.Tags,
 			},
 			Schema: map[string]*framework.FieldSchema{
 				formatters.PrivateKeyLabel: {
 					Type:        framework.TypeString,
-					Description: "Private key in hexadecimal format",
+					Description: "Private key in base64 format",
 					Required:    true,
 				},
 				formatters.IDLabel: {
@@ -68,7 +68,7 @@ func (s *keysCtrlTestSuite) TestEthereumController_Import() {
 					Description: "Elliptic curve",
 					Required:    true,
 				},
-				formatters.AlgoLabel: {
+				formatters.AlgorithmLabel: {
 					Type:        framework.TypeString,
 					Description: "Signing algorithm",
 					Required:    true,
@@ -86,12 +86,12 @@ func (s *keysCtrlTestSuite) TestEthereumController_Import() {
 		response, err := importOperation.Handler()(s.ctx, request, data)
 
 		assert.NoError(t, err)
-		assert.Equal(t, key.ID, response.Data["id"])
-		assert.Equal(t, key.PublicKey, response.Data["public_key"])
-		assert.Equal(t, key.Namespace, response.Data["namespace"])
-		assert.Equal(t, key.Curve, response.Data["curve"])
-		assert.Equal(t, key.Algorithm, response.Data["algorithm"])
-		assert.Equal(t, key.Tags, response.Data["tags"])
+		assert.Equal(t, key.ID, response.Data[formatters.IDLabel])
+		assert.Equal(t, key.PublicKey, response.Data[formatters.PublicKeyLabel])
+		assert.Equal(t, key.Namespace, response.Data[formatters.NamespaceLabel])
+		assert.Equal(t, key.Curve, response.Data[formatters.CurveLabel])
+		assert.Equal(t, key.Algorithm, response.Data[formatters.AlgorithmLabel])
+		assert.Equal(t, key.Tags, response.Data[formatters.TagsLabel])
 	})
 
 	s.T().Run("should map errors correctly and return the correct http status", func(t *testing.T) {
@@ -103,7 +103,7 @@ func (s *keysCtrlTestSuite) TestEthereumController_Import() {
 			Raw: map[string]interface{}{
 				formatters.PrivateKeyLabel: privKey,
 				formatters.CurveLabel:      "curve",
-				formatters.AlgoLabel:       "algo",
+				formatters.AlgorithmLabel:  "algo",
 				formatters.IDLabel:         "id",
 			},
 			Schema: map[string]*framework.FieldSchema{
@@ -122,7 +122,7 @@ func (s *keysCtrlTestSuite) TestEthereumController_Import() {
 					Description: "Elliptic curve",
 					Required:    true,
 				},
-				formatters.AlgoLabel: {
+				formatters.AlgorithmLabel: {
 					Type:        framework.TypeString,
 					Description: "Signing algorithm",
 					Required:    true,

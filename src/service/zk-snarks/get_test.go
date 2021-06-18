@@ -58,10 +58,10 @@ func (s *zksCtrlTestSuite) TestZksController_Get() {
 		response, err := getOperation.Handler()(s.ctx, request, data)
 
 		assert.NoError(t, err)
-		assert.Equal(t, account.PublicKey, response.Data["publicKey"])
-		assert.Equal(t, account.Namespace, response.Data["namespace"])
-		assert.Equal(t, account.Algorithm, response.Data["signingAlgorithm"])
-		assert.Equal(t, account.Curve, response.Data["curve"])
+		assert.Equal(t, account.PublicKey, response.Data[formatters.PublicKeyLabel])
+		assert.Equal(t, account.Namespace, response.Data[formatters.NamespaceLabel])
+		assert.Equal(t, account.Algorithm, response.Data[formatters.AlgorithmLabel])
+		assert.Equal(t, account.Curve, response.Data[formatters.CurveLabel])
 	})
 
 	s.T().Run("should map errors correctly and return the correct http status", func(t *testing.T) {

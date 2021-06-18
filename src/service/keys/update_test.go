@@ -64,12 +64,12 @@ func (s *keysCtrlTestSuite) TestKeysController_Update() {
 		response, err := updateOperation.Handler()(s.ctx, request, data)
 
 		assert.NoError(t, err)
-		assert.Equal(t, key.PublicKey, response.Data["public_key"])
-		assert.Equal(t, key.Namespace, response.Data["namespace"])
-		assert.Equal(t, key.Algorithm, response.Data["algorithm"])
-		assert.Equal(t, key.Curve, response.Data["curve"])
-		assert.Equal(t, key.ID, response.Data["id"])
-		assert.Equal(t, key.Tags, response.Data["tags"])
+		assert.Equal(t, key.PublicKey, response.Data[formatters.PublicKeyLabel])
+		assert.Equal(t, key.Namespace, response.Data[formatters.NamespaceLabel])
+		assert.Equal(t, key.Algorithm, response.Data[formatters.AlgorithmLabel])
+		assert.Equal(t, key.Curve, response.Data[formatters.CurveLabel])
+		assert.Equal(t, key.ID, response.Data[formatters.IDLabel])
+		assert.Equal(t, key.Tags, response.Data[formatters.TagsLabel])
 	})
 
 	s.T().Run("should map errors correctly and return the correct http status", func(t *testing.T) {

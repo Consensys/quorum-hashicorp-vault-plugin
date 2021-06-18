@@ -8,15 +8,15 @@ import (
 func FormatKeyResponse(key *entities.Key) *logical.Response {
 	return &logical.Response{
 		Data: map[string]interface{}{
-			"id":         key.ID,
-			"curve":      key.Curve,
-			"algorithm":  key.Algorithm,
-			"public_key": key.PublicKey,
-			"namespace":  key.Namespace,
-			"tags":       key.Tags,
-			"version":    key.Version,
-			"created_at": key.CreatedAt,
-			"updated_at": key.UpdatedAt,
+			IDLabel:        key.ID,
+			CurveLabel:     key.Curve,
+			AlgorithmLabel: key.Algorithm,
+			PublicKeyLabel: key.PublicKey,
+			NamespaceLabel: key.Namespace,
+			TagsLabel:      key.Tags,
+			VersionLabel:   key.Version,
+			CreatedAtLabel: key.CreatedAt,
+			UpdatedAtLabel: key.UpdatedAt,
 		},
 	}
 }

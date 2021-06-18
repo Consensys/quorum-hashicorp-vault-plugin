@@ -37,7 +37,7 @@ func (c *controller) createHandler() framework.OperationFunc {
 		namespace := formatters.GetRequestNamespace(req)
 		id := data.Get(formatters.IDLabel).(string)
 		curve := data.Get(formatters.CurveLabel).(string)
-		algo := data.Get(formatters.AlgoLabel).(string)
+		algo := data.Get(formatters.AlgorithmLabel).(string)
 		tags := data.Get(formatters.TagsLabel).(map[string]string)
 
 		if id == "" {

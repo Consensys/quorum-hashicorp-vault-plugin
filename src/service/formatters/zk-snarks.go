@@ -8,10 +8,10 @@ import (
 func FormatZksAccountResponse(account *entities.ZksAccount) *logical.Response {
 	return &logical.Response{
 		Data: map[string]interface{}{
-			"curve":            account.Curve,
-			"signingAlgorithm": account.Algorithm,
-			"publicKey":        account.PublicKey,
-			"namespace":        account.Namespace,
+			CurveLabel:     account.Curve,
+			AlgorithmLabel: account.Algorithm,
+			PublicKeyLabel: account.PublicKey,
+			NamespaceLabel: account.Namespace,
 		},
 	}
 }

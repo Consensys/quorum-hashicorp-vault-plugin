@@ -26,7 +26,7 @@ func (c *controller) NewImportOperation() *framework.PathOperation {
 				Data: map[string]interface{}{
 					formatters.PrivateKeyLabel: exampleKey.PrivateKey,
 					formatters.CurveLabel:      exampleKey.Curve,
-					formatters.AlgoLabel:       exampleKey.Algorithm,
+					formatters.AlgorithmLabel:  exampleKey.Algorithm,
 					formatters.IDLabel:         exampleKey.ID,
 					formatters.TagsLabel:       exampleKey.Tags,
 				},
@@ -46,7 +46,7 @@ func (c *controller) importHandler() framework.OperationFunc {
 		namespace := formatters.GetRequestNamespace(req)
 		id := data.Get(formatters.IDLabel).(string)
 		curve := data.Get(formatters.CurveLabel).(string)
-		algo := data.Get(formatters.AlgoLabel).(string)
+		algo := data.Get(formatters.AlgorithmLabel).(string)
 		tags := data.Get(formatters.TagsLabel).(map[string]string)
 		privateKeyString := data.Get(formatters.PrivateKeyLabel).(string)
 

@@ -57,7 +57,7 @@ func (c *controller) pathKeys() *framework.Path {
 				Description: "Elliptic curve",
 				Required:    true,
 			},
-			formatters.AlgoLabel: {
+			formatters.AlgorithmLabel: {
 				Type:        framework.TypeString,
 				Description: "Signing algorithm",
 				Required:    true,
@@ -99,7 +99,7 @@ func (c *controller) pathImportKey() *framework.Path {
 		Fields: map[string]*framework.FieldSchema{
 			formatters.PrivateKeyLabel: {
 				Type:        framework.TypeString,
-				Description: "Private key in hexadecimal format",
+				Description: "Private key in base64 format",
 				Required:    true,
 			},
 			formatters.IDLabel: formatters.IDFieldSchema,
@@ -108,7 +108,7 @@ func (c *controller) pathImportKey() *framework.Path {
 				Description: "Elliptic curve",
 				Required:    true,
 			},
-			formatters.AlgoLabel: {
+			formatters.AlgorithmLabel: {
 				Type:        framework.TypeString,
 				Description: "Signing algorithm",
 				Required:    true,

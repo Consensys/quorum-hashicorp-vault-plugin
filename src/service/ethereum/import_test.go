@@ -62,10 +62,10 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Import() {
 		response, err := importOperation.Handler()(s.ctx, request, data)
 
 		assert.NoError(t, err)
-		assert.Equal(t, account.Address, response.Data["address"])
-		assert.Equal(t, account.PublicKey, response.Data["publicKey"])
-		assert.Equal(t, account.CompressedPublicKey, response.Data["compressedPublicKey"])
-		assert.Equal(t, account.Namespace, response.Data["namespace"])
+		assert.Equal(t, account.Address, response.Data[formatters.AddressLabel])
+		assert.Equal(t, account.PublicKey, response.Data[formatters.PublicKeyLabel])
+		assert.Equal(t, account.CompressedPublicKey, response.Data[formatters.CompressedPublicKeyLabel])
+		assert.Equal(t, account.Namespace, response.Data[formatters.NamespaceLabel])
 	})
 
 	s.T().Run("should map errors correctly and return the correct http status", func(t *testing.T) {

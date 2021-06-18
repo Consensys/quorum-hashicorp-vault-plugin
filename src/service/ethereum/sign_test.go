@@ -67,7 +67,7 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Sign() {
 		response, err := signOperation.Handler()(s.ctx, request, data)
 
 		assert.NoError(t, err)
-		assert.Equal(t, expectedSignature, response.Data["signature"])
+		assert.Equal(t, expectedSignature, response.Data[formatters.SignatureLabel])
 	})
 
 	s.T().Run("should map errors correctly and return the correct http status", func(t *testing.T) {
