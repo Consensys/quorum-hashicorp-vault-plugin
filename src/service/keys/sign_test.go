@@ -3,7 +3,7 @@ package keys
 import (
 	"fmt"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
-	"net/http"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -65,8 +65,8 @@ func (s *keysCtrlTestSuite) TestKeysController_Sign() {
 		s.signPayloadUC.EXPECT().Execute(gomock.Any(), account.ID, account.Namespace, payload).Return(expectedSignature, nil)
 
 		response, err := signOperation.Handler()(s.ctx, request, data)
+		require.NoError(t, err)
 
-		assert.NoError(t, err)
 		assert.Equal(t, expectedSignature, response.Data[formatters.SignatureLabel])
 	})
 
@@ -94,9 +94,8 @@ func (s *keysCtrlTestSuite) TestKeysController_Sign() {
 
 		s.signPayloadUC.EXPECT().Execute(gomock.Any(), key.ID, "", payload).Return("", expectedErr)
 
-		response, err := signOperation.Handler()(s.ctx, request, data)
+		_, err := signOperation.Handler()(s.ctx, request, data)
 
-		assert.NoError(t, err)
-		assert.Equal(t, http.StatusNotFound, response.Data[logical.HTTPStatusCode])
+		assert.Equal(t, err, logical.ErrUnsupportedPath)
 	})
 }

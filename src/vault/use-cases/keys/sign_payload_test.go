@@ -57,7 +57,7 @@ func TestSignPayload_Execute(t *testing.T) {
 		signature, err := usecase.Execute(ctx, address, namespace, data)
 
 		assert.NoError(t, err)
-		assert.Equal(t, "tdpR9JkX7lKSugSvYJX2icf6_uQnCAmXG9v_FG26vS0AcBqg6eVakZQNYwfic_Ec3LWqzSbXg54TBteQq6grdw==", signature)
+		assert.Equal(t, "tdpR9JkX7lKSugSvYJX2icf6_uQnCAmXG9v_FG26va0C4EOrAi_-gBT_BtlB6JY7P2erqACqKMV0wRgHGgZcWg==", signature)
 	})
 
 	t.Run("should fail with same error if Get Account fails", func(t *testing.T) {

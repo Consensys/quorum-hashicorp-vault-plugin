@@ -41,19 +41,19 @@ func (c *controller) createHandler() framework.OperationFunc {
 		tags := data.Get(formatters.TagsLabel).(map[string]string)
 
 		if id == "" {
-			return errors.WriteHTTPError(req, errors2.InvalidFormatError("id must be provided"))
+			return errors.ParseHTTPError(errors2.InvalidFormatError("id must be provided"))
 		}
 		if curve == "" {
-			return errors.WriteHTTPError(req, errors2.InvalidFormatError("curve must be provided"))
+			return errors.ParseHTTPError(errors2.InvalidFormatError("curve must be provided"))
 		}
 		if algo == "" {
-			return errors.WriteHTTPError(req, errors2.InvalidFormatError("algorithm must be provided"))
+			return errors.ParseHTTPError(errors2.InvalidFormatError("signing_algorithm must be provided"))
 		}
 
 		ctx = log.Context(ctx, c.logger)
 		key, err := c.useCases.CreateKey().WithStorage(req.Storage).Execute(ctx, namespace, id, algo, curve, "", tags)
 		if err != nil {
-			return errors.WriteHTTPError(req, err)
+			return errors.ParseHTTPError(err)
 		}
 
 		return formatters.FormatKeyResponse(key), nil

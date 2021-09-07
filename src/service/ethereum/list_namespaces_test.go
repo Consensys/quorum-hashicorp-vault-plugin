@@ -2,7 +2,7 @@ package ethereum
 
 import (
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
-	"net/http"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -40,8 +40,8 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_ListNamespaces() {
 		s.listNamespacesUC.EXPECT().Execute(gomock.Any()).Return(expectedList, nil)
 
 		response, err := listOperation.Handler()(s.ctx, request, &framework.FieldData{})
+		require.NoError(t, err)
 
-		assert.NoError(t, err)
 		assert.Equal(t, expectedList, response.Data["keys"])
 	})
 
@@ -53,9 +53,8 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_ListNamespaces() {
 
 		s.listNamespacesUC.EXPECT().Execute(gomock.Any()).Return(nil, expectedErr)
 
-		response, err := listOperation.Handler()(s.ctx, request, &framework.FieldData{})
+		_, err := listOperation.Handler()(s.ctx, request, &framework.FieldData{})
 
-		assert.NoError(t, err)
-		assert.Equal(t, http.StatusNotFound, response.Data[logical.HTTPStatusCode])
+		assert.Equal(t, err, logical.ErrUnsupportedPath)
 	})
 }

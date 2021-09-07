@@ -38,7 +38,7 @@ func (c *controller) listNamespacesHandler() framework.OperationFunc {
 		ctx = log.Context(ctx, c.logger)
 		namespaces, err := c.useCases.ListNamespaces().WithStorage(req.Storage).Execute(ctx)
 		if err != nil {
-			return errors.WriteHTTPError(req, err)
+			return errors.ParseHTTPError(err)
 		}
 
 		return logical.ListResponse(namespaces), nil

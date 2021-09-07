@@ -3,7 +3,7 @@ package ethereum
 import (
 	"fmt"
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
-	"net/http"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -73,8 +73,8 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignEEATransaction() {
 			gomock.Any(), expectedPrivateArgs).Return(expectedSignature, nil)
 
 		response, err := signOperation.Handler()(s.ctx, request, data)
+		require.NoError(t, err)
 
-		assert.NoError(t, err)
 		assert.Equal(t, expectedSignature, response.Data[formatters.SignatureLabel])
 	})
 
@@ -101,8 +101,8 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignEEATransaction() {
 
 		response, err := signOperation.Handler()(s.ctx, request, data)
 
-		assert.NoError(t, err)
-		assert.Equal(t, http.StatusBadRequest, response.Data[logical.HTTPStatusCode])
+		assert.Equal(t, err, logical.ErrInvalidRequest)
+		assert.Equal(t, response.Error().Error(), "chainID must be provided")
 	})
 
 	s.T().Run("should fail with 400 if data is invalid", func(t *testing.T) {
@@ -129,8 +129,8 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignEEATransaction() {
 
 		response, err := signOperation.Handler()(s.ctx, request, data)
 
-		assert.NoError(t, err)
-		assert.Equal(t, http.StatusBadRequest, response.Data[logical.HTTPStatusCode])
+		assert.Equal(t, err, logical.ErrInvalidRequest)
+		assert.Equal(t, response.Error().Error(), "invalid data")
 	})
 
 	s.T().Run("should fail with 404 if NotFoundError is returned by use case", func(t *testing.T) {
@@ -163,10 +163,9 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignEEATransaction() {
 
 		s.signEEATransactionUC.EXPECT().Execute(gomock.Any(), account.Address, "", "1", gomock.Any(), gomock.Any()).Return("", expectedErr)
 
-		response, err := signOperation.Handler()(s.ctx, request, data)
+		_, err := signOperation.Handler()(s.ctx, request, data)
 
-		assert.NoError(t, err)
-		assert.Equal(t, http.StatusNotFound, response.Data[logical.HTTPStatusCode])
+		assert.Equal(t, err, logical.ErrUnsupportedPath)
 	})
 
 	s.T().Run("should fail with 500 if use case fails with any non mapped error", func(t *testing.T) {
@@ -199,9 +198,8 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_SignEEATransaction() {
 
 		s.signEEATransactionUC.EXPECT().Execute(gomock.Any(), account.Address, "", "1", gomock.Any(), gomock.Any()).Return("", expectedErr)
 
-		response, err := signOperation.Handler()(s.ctx, request, data)
+		_, err := signOperation.Handler()(s.ctx, request, data)
 
-		assert.NoError(t, err)
-		assert.Equal(t, http.StatusInternalServerError, response.Data[logical.HTTPStatusCode])
+		assert.Error(t, err)
 	})
 }

@@ -42,7 +42,7 @@ func (c *controller) listHandler() framework.OperationFunc {
 		ctx = log.Context(ctx, c.logger)
 		keys, err := c.useCases.ListKeys().WithStorage(req.Storage).Execute(ctx, namespace)
 		if err != nil {
-			return errors.WriteHTTPError(req, err)
+			return errors.ParseHTTPError(err)
 		}
 
 		return logical.ListResponse(keys), nil

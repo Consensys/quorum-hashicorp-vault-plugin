@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
 	"github.com/stretchr/testify/assert"
-	"net/http"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -46,8 +46,8 @@ func (s *zksCtrlTestSuite) TestEthereumController_List() {
 		s.listAccountsUC.EXPECT().Execute(gomock.Any(), account.Namespace).Return(expectedList, nil)
 
 		response, err := listOperation.Handler()(s.ctx, request, data)
+		require.NoError(t, err)
 
-		assert.NoError(t, err)
 		assert.Equal(t, expectedList, response.Data["keys"])
 	})
 
@@ -60,9 +60,8 @@ func (s *zksCtrlTestSuite) TestEthereumController_List() {
 
 		s.listAccountsUC.EXPECT().Execute(gomock.Any(), "").Return(nil, expectedErr)
 
-		response, err := listOperation.Handler()(s.ctx, request, data)
+		_, err := listOperation.Handler()(s.ctx, request, data)
 
-		assert.NoError(t, err)
-		assert.Equal(t, http.StatusNotFound, response.Data[logical.HTTPStatusCode])
+		assert.Equal(t, err, logical.ErrUnsupportedPath)
 	})
 }

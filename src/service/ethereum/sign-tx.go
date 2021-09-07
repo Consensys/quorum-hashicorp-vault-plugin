@@ -51,18 +51,18 @@ func (c *controller) signTransactionHandler() framework.OperationFunc {
 		namespace := formatters.GetRequestNamespace(req)
 
 		if chainID == "" {
-			return errors.WriteHTTPError(req, errors2.InvalidFormatError("chainID must be provided"))
+			return errors.ParseHTTPError(errors2.InvalidFormatError("chainID must be provided"))
 		}
 
 		tx, err := formatters.FormatSignETHTransactionRequest(data)
 		if err != nil {
-			return errors.WriteHTTPError(req, err)
+			return errors.ParseHTTPError(err)
 		}
 
 		ctx = log.Context(ctx, c.logger)
 		signature, err := c.useCases.SignTransaction().WithStorage(req.Storage).Execute(ctx, address, namespace, chainID, tx)
 		if err != nil {
-			return errors.WriteHTTPError(req, err)
+			return errors.ParseHTTPError(err)
 		}
 
 		return formatters.FormatSignatureResponse(signature), nil

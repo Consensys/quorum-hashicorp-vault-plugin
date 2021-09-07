@@ -45,7 +45,7 @@ func (c *controller) getHandler() framework.OperationFunc {
 		ctx = log.Context(ctx, c.logger)
 		key, err := c.useCases.GetKey().WithStorage(req.Storage).Execute(ctx, id, namespace)
 		if err != nil {
-			return errors.WriteHTTPError(req, err)
+			return errors.ParseHTTPError(err)
 		}
 
 		return formatters.FormatKeyResponse(key), nil

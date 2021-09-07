@@ -2,7 +2,7 @@ package keys
 
 import (
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
-	"net/http"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -72,8 +72,8 @@ func (s *keysCtrlTestSuite) TestKeysController_Create() {
 		s.createKeyUC.EXPECT().Execute(gomock.Any(), key.Namespace, key.ID, key.Algorithm, key.Curve, "", key.Tags).Return(key, nil)
 
 		response, err := createOperation.Handler()(s.ctx, request, data)
+		require.NoError(t, err)
 
-		assert.NoError(t, err)
 		assert.Equal(t, key.PublicKey, response.Data[formatters.PublicKeyLabel])
 		assert.Equal(t, key.Namespace, response.Data[formatters.NamespaceLabel])
 		assert.Equal(t, key.Algorithm, response.Data[formatters.AlgorithmLabel])
@@ -115,9 +115,8 @@ func (s *keysCtrlTestSuite) TestKeysController_Create() {
 
 		s.createKeyUC.EXPECT().Execute(gomock.Any(), "", "id", "algo", "curve", "", map[string]string{}).Return(nil, expectedErr)
 
-		response, err := createOperation.Handler()(s.ctx, request, data)
+		_, err := createOperation.Handler()(s.ctx, request, data)
 
-		assert.NoError(t, err)
-		assert.Equal(t, http.StatusNotFound, response.Data[logical.HTTPStatusCode])
+		assert.Equal(t, err, logical.ErrUnsupportedPath)
 	})
 }

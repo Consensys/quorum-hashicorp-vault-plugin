@@ -39,7 +39,7 @@ func (c *controller) destroyHandler() framework.OperationFunc {
 		ctx = log.Context(ctx, c.logger)
 		err := c.useCases.DestroyKey().WithStorage(req.Storage).Execute(ctx, namespace, id)
 		if err != nil {
-			return errors.WriteHTTPError(req, err)
+			return errors.ParseHTTPError(err)
 		}
 
 		return &logical.Response{}, nil

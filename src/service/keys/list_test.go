@@ -2,7 +2,7 @@ package keys
 
 import (
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
-	"net/http"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -47,8 +47,8 @@ func (s *keysCtrlTestSuite) TestKeysController_List() {
 		s.listKeysUC.EXPECT().Execute(gomock.Any(), key.Namespace).Return(expectedList, nil)
 
 		response, err := listOperation.Handler()(s.ctx, request, data)
+		require.NoError(t, err)
 
-		assert.NoError(t, err)
 		assert.Equal(t, expectedList, response.Data["keys"])
 	})
 
@@ -61,9 +61,8 @@ func (s *keysCtrlTestSuite) TestKeysController_List() {
 
 		s.listKeysUC.EXPECT().Execute(gomock.Any(), "").Return(nil, expectedErr)
 
-		response, err := listOperation.Handler()(s.ctx, request, data)
+		_, err := listOperation.Handler()(s.ctx, request, data)
 
-		assert.NoError(t, err)
-		assert.Equal(t, http.StatusNotFound, response.Data[logical.HTTPStatusCode])
+		assert.Equal(t, err, logical.ErrUnsupportedPath)
 	})
 }

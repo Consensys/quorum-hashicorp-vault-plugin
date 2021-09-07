@@ -47,7 +47,7 @@ func (c *controller) importHandler() framework.OperationFunc {
 		ctx = log.Context(ctx, c.logger)
 		account, err := c.useCases.CreateAccount().WithStorage(req.Storage).Execute(ctx, namespace, privateKeyString)
 		if err != nil {
-			return errors.WriteHTTPError(req, err)
+			return errors.ParseHTTPError(err)
 		}
 
 		return formatters.FormatAccountResponse(account), nil

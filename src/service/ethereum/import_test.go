@@ -2,7 +2,7 @@ package ethereum
 
 import (
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
-	"net/http"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
@@ -60,8 +60,8 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Import() {
 		s.createAccountUC.EXPECT().Execute(gomock.Any(), account.Namespace, privKey).Return(account, nil)
 
 		response, err := importOperation.Handler()(s.ctx, request, data)
+		require.NoError(t, err)
 
-		assert.NoError(t, err)
 		assert.Equal(t, account.Address, response.Data[formatters.AddressLabel])
 		assert.Equal(t, account.PublicKey, response.Data[formatters.PublicKeyLabel])
 		assert.Equal(t, account.CompressedPublicKey, response.Data[formatters.CompressedPublicKeyLabel])
@@ -89,9 +89,8 @@ func (s *ethereumCtrlTestSuite) TestEthereumController_Import() {
 
 		s.createAccountUC.EXPECT().Execute(gomock.Any(), "", privKey).Return(nil, expectedErr)
 
-		response, err := importOperation.Handler()(s.ctx, request, data)
+		_, err := importOperation.Handler()(s.ctx, request, data)
 
-		assert.NoError(t, err)
-		assert.Equal(t, http.StatusNotFound, response.Data[logical.HTTPStatusCode])
+		assert.Equal(t, err, logical.ErrUnsupportedPath)
 	})
 }

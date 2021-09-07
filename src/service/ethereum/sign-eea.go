@@ -50,18 +50,18 @@ func (c *controller) signEEATransactionHandler() framework.OperationFunc {
 		namespace := formatters.GetRequestNamespace(req)
 
 		if chainID == "" {
-			return errors.WriteHTTPError(req, errors2.InvalidFormatError("chainID must be provided"))
+			return errors.ParseHTTPError(errors2.InvalidFormatError("chainID must be provided"))
 		}
 
 		tx, privateArgs, err := formatters.FormatSignEEATransactionRequest(data)
 		if err != nil {
-			return errors.WriteHTTPError(req, err)
+			return errors.ParseHTTPError(err)
 		}
 
 		ctx = log.Context(ctx, c.logger)
 		signature, err := c.useCases.SignEEATransaction().WithStorage(req.Storage).Execute(ctx, address, namespace, chainID, tx, privateArgs)
 		if err != nil {
-			return errors.WriteHTTPError(req, err)
+			return errors.ParseHTTPError(err)
 		}
 
 		return formatters.FormatSignatureResponse(signature), nil
