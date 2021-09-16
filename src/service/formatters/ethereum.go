@@ -1,10 +1,10 @@
 package formatters
 
 import (
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/errors"
 	"math/big"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/entities"
 	"github.com/consensys/quorum/common/hexutil"
 	"github.com/consensys/quorum/core/types"
 	"github.com/ethereum/go-ethereum/common"

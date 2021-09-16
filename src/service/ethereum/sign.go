@@ -2,12 +2,12 @@ package ethereum
 
 import (
 	"context"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/errors"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/service/errors"
 
-	errors2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/formatters"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
+	errors2 "github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/errors"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/log"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/service/formatters"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/utils"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
 )

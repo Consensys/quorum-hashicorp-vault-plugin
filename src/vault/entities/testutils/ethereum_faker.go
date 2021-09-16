@@ -1,7 +1,7 @@
 package testutils
 
 import (
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/entities"
 	"github.com/consensys/quorum/common"
 )
 

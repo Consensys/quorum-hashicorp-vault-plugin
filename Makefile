@@ -7,8 +7,8 @@ DATE = $(shell date +'%s')
 test:
 	go test  ./... -cover -coverprofile=coverage.txt -covermode=atomic
 
-build:
-	@CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -a -o build/bin/orchestrate-hashicorp-vault-plugin
+gobuild:
+	@CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -a -o build/bin/quorum-hashicorp-vault-plugin
 
 lint-tools: ## Install linting tools
 	@GO111MODULE=on go get github.com/client9/misspell/cmd/misspell@v0.3.4
@@ -22,10 +22,12 @@ lint-ci: ## Check linting
 	@misspell -error $(GOFILES)
 	@golangci-lint run
 
-prod: build
+prod: gobuild
 	@docker-compose -f docker-compose.yml up --build vault-init vault
-dev: build
+
+dev: gobuild
 	@docker-compose -f docker-compose.yml up --build vault-dev-init vault-dev
+
 down:
 	@docker-compose -f docker-compose.yml down --volumes --timeout 0
 

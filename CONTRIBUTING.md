@@ -1,8 +1,8 @@
-# Contributing to Orchestrate
+# Contributing to Quorum Hashicorp Vault Plugin
 
 :+1::tada: First off, thanks for taking the time to contribute! :tada::+1:
 
-Welcome to the Orchestrate repositories! The following is a set of guidelines for contributing to this repo and its packages. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
+Welcome to the Consensys repositories! The following is a set of guidelines for contributing to this repo and its packages. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
 
 #### Table Of Contents
 
@@ -95,7 +95,6 @@ Provide more context by answering these questions:
 
 Include details about your configuration and environment:
 
-- **Which version of the software are you using?** You can get the exact version by running `npm list pegasys-orchestrate` in your terminal.
 - **What OS & Version are you running?**
   - **For Linux - What kernel are you running?** You can get the exact version by running `uname -a` in your terminal.
 - **Are you running in a virtual machine?** If so, which VM software are you using and which operating systems and versions are used for the host and the guest?

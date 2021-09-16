@@ -2,12 +2,12 @@ package zksnarks
 
 import (
 	"context"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/errors"
 	"github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
 	"github.com/consensys/gnark-crypto/hash"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/log"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/use-cases"
 	"github.com/consensys/quorum/common/hexutil"
 	"github.com/hashicorp/vault/sdk/logical"
 )

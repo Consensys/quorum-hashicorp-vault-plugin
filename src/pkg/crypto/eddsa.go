@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/utils"
 )
 
 func NewBN254() (eddsa.PrivateKey, error) {

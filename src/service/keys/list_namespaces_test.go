@@ -1,7 +1,7 @@
 package keys
 
 import (
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/errors"
 	"github.com/stretchr/testify/require"
 	"testing"
 

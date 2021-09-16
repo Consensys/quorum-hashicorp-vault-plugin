@@ -4,7 +4,7 @@ version: 2.1
 executors:
   golang_executor:
     docker:
-      - image: circleci/golang:1.14
+      - image: circleci/golang:1.15
 
 commands:
   prepare_golang:
@@ -51,9 +51,9 @@ jobs:
       - run:
           name: Build
           command: |
-            CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -a -v -o build/bin/orchestrate-hashicorp-vault-plugin
-            upx build/bin/orchestrate-hashicorp-vault-plugin
-            sha256sum -b build/bin/orchestrate-hashicorp-vault-plugin | cut -d' ' -f1 > build/bin/SHA256SUM
+            CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -a -v -o build/bin/quorum-hashicorp-vault-plugin
+            upx build/bin/quourum-hashicorp-vault-plugin
+            sha256sum -b build/bin/quourum-hashicorp-vault-plugin | cut -d' ' -f1 > build/bin/SHA256SUM
       - persist_to_workspace:
           root: ~/project/build/bin
           paths:

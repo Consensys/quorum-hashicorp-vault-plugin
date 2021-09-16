@@ -6,8 +6,8 @@ package mocks
 
 import (
 	context "context"
-	entities "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
-	usecases "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
+	entities "github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/entities"
+	usecases "github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/use-cases"
 	gomock "github.com/golang/mock/gomock"
 	logical "github.com/hashicorp/vault/sdk/logical"
 	reflect "reflect"

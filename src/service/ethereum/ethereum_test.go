@@ -2,9 +2,9 @@ package ethereum
 
 import (
 	"context"
-	mocks2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils/mocks"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases/mocks"
+	mocks2 "github.com/consensys/quorum-hashicorp-vault-plugin/src/utils/mocks"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/use-cases"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/use-cases/mocks"
 	"github.com/hashicorp/go-hclog"
 	"testing"
 

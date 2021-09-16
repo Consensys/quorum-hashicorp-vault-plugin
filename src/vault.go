@@ -3,11 +3,11 @@ package src
 import (
 	"context"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/ethereum"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/service/ethereum"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/keys"
-	zksnarks "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/service/zk-snarks"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/builder"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/service/keys"
+	zksnarks "github.com/consensys/quorum-hashicorp-vault-plugin/src/service/zk-snarks"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/builder"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/logical"
 )
@@ -15,7 +15,7 @@ import (
 // NewVaultBackend returns the Hashicorp Vault backend
 func NewVaultBackend(ctx context.Context, conf *logical.BackendConfig) (logical.Backend, error) {
 	vaultPlugin := &framework.Backend{
-		Help: "Orchestrate Hashicorp Vault Plugin",
+		Help: "Quorum Hashicorp Vault Plugin",
 		PathsSpecial: &logical.Paths{
 			SealWrapStorage: []string{
 				"ethereum/accounts/",

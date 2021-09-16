@@ -1,8 +1,8 @@
 package builder
 
 import (
-	usecases "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases/keys"
+	usecases "github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/use-cases"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/use-cases/keys"
 )
 
 type keysUseCases struct {

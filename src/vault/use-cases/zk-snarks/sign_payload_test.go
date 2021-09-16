@@ -3,14 +3,14 @@ package zksnarks
 import (
 	"context"
 	"fmt"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/errors"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/entities"
 	"testing"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
-	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
-	mocks2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils/mocks"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases/mocks"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/log"
+	apputils "github.com/consensys/quorum-hashicorp-vault-plugin/src/utils"
+	mocks2 "github.com/consensys/quorum-hashicorp-vault-plugin/src/utils/mocks"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/use-cases/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )

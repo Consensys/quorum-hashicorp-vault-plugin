@@ -2,15 +2,15 @@ package keys
 
 import (
 	"context"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/encoding"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/encoding"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/errors"
 	"github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
 	"github.com/consensys/gnark-crypto/hash"
 	"github.com/hashicorp/go-hclog"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
-	usecases "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/log"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/entities"
+	usecases "github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/use-cases"
 	"github.com/consensys/quorum/crypto"
 	"github.com/hashicorp/vault/sdk/logical"
 )

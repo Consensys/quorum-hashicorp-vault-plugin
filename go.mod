@@ -1,6 +1,6 @@
-module github.com/ConsenSys/orchestrate-hashicorp-vault-plugin
+module github.com/consensys/quorum-hashicorp-vault-plugin
 
-go 1.14
+go 1.15
 
 require (
 	github.com/consensys/gnark-crypto v0.5.0

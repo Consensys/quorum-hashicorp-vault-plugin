@@ -3,13 +3,13 @@ package keys
 import (
 	"context"
 	"fmt"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/errors"
 	"testing"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils/mocks"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/log"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/utils"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/utils/mocks"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/entities"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )

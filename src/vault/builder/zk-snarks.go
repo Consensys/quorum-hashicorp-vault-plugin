@@ -1,8 +1,8 @@
 package builder
 
 import (
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases/zk-snarks"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/use-cases"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/use-cases/zk-snarks"
 )
 
 type zkSnarksUseCases struct {

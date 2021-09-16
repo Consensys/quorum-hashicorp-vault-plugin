@@ -2,7 +2,7 @@ package errors
 
 import (
 	"errors"
-	pkgerrors "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	pkgerrors "github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/errors"
 	"github.com/hashicorp/vault/sdk/logical"
 )
 

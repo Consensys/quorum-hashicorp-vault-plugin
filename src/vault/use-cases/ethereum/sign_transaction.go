@@ -2,12 +2,12 @@ package ethereum
 
 import (
 	"context"
-	signing "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/crypto/ethereum"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/errors"
+	signing "github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/crypto/ethereum"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/errors"
 	"github.com/consensys/quorum/core/types"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/log"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/use-cases"
 	"github.com/consensys/quorum/crypto"
 	"github.com/hashicorp/vault/sdk/logical"
 

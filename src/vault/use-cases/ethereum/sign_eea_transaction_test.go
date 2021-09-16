@@ -3,14 +3,14 @@ package ethereum
 import (
 	"context"
 	"fmt"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/entities/testutils"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/entities/testutils"
 	"math/big"
 	"testing"
 
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/pkg/log"
-	apputils "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils"
-	"github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/utils/mocks"
-	mocks2 "github.com/ConsenSys/orchestrate-hashicorp-vault-plugin/src/vault/use-cases/mocks"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/log"
+	apputils "github.com/consensys/quorum-hashicorp-vault-plugin/src/utils"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/utils/mocks"
+	mocks2 "github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/use-cases/mocks"
 	"github.com/consensys/quorum/core/types"
 	"github.com/ethereum/go-ethereum/common"
 
