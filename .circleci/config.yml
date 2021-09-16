@@ -52,8 +52,8 @@ jobs:
           name: Build
           command: |
             CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -a -v -o build/bin/quorum-hashicorp-vault-plugin
-            upx build/bin/quourum-hashicorp-vault-plugin
-            sha256sum -b build/bin/quourum-hashicorp-vault-plugin | cut -d' ' -f1 > build/bin/SHA256SUM
+            upx build/bin/quorum-hashicorp-vault-plugin
+            sha256sum -b build/bin/quorum-hashicorp-vault-plugin | cut -d' ' -f1 > build/bin/SHA256SUM
       - persist_to_workspace:
           root: ~/project/build/bin
           paths:
