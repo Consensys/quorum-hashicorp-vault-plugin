@@ -16,13 +16,6 @@ The Quorum plugin enhances Hashicorp Vault Service with cryptographic operations
  - Create and import ZKP accounts
  - ZKP signing operation
 
-## Quorum Key Manager Compatibility
-
-| Versions        | Quorum Key Manager       |
-| ------------------- | -------------------------- |
-| master/HEAD         | v21.x.x         		   |
-| Plugin v0.0.11      | v21.9.0 		           |
-
 ## Development
 
 ### Pre-requirements
