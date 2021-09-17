@@ -30,7 +30,7 @@ To run our plugin in development mode you have to first build the plugin using:
 $> make dev
 ```
 
-### Test it using Curl
+### Test using Curl
 Now you have your Vault running on port `:8200`. Open  a new terminal to run the following command to
 enable Orchestrate plugin:
 ```
