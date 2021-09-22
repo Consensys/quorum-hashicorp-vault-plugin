@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/encoding"
 	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/errors"
-	"github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
+	babyjubjub "github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
 	"github.com/consensys/gnark-crypto/hash"
 	"github.com/hashicorp/go-hclog"
 
@@ -48,7 +48,7 @@ func (uc *signPayloadUseCase) Execute(ctx context.Context, id, namespace, data s
 	privKeyB, _ := encoding.DecodeBase64(key.PrivateKey)
 
 	switch {
-	case key.Algorithm == entities.EDDSA && key.Curve == entities.BN254:
+	case key.Algorithm == entities.EDDSA && key.Curve == entities.Babyjubjub:
 		return uc.signEDDSA(logger, privKeyB, dataBytes)
 	case key.Algorithm == entities.ECDSA && key.Curve == entities.Secp256k1:
 		return uc.signECDSA(logger, privKeyB, dataBytes)
@@ -83,7 +83,7 @@ func (uc *signPayloadUseCase) signECDSA(logger hclog.Logger, privKeyB, data []by
 }
 
 func (uc *signPayloadUseCase) signEDDSA(logger hclog.Logger, privKeyB, data []byte) (string, error) {
-	privKey := eddsa.PrivateKey{}
+	privKey := babyjubjub.PrivateKey{}
 	_, err := privKey.SetBytes(privKeyB)
 	if err != nil {
 		errMessage := "failed to parse EDDSA private key"

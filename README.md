@@ -7,7 +7,7 @@
 # Quorum Hashicorp Vault plugin
 
 The Quorum plugin enhances Hashicorp Vault Service with cryptographic operations under Vault engine, such as:
- - Create and import keys with the following supported eliptic curve and signing algorithm: ecdsa+sepc256k1 or eddsa+bn254
+ - Create and import keys with the following supported eliptic curve and signing algorithm: ecdsa+sepc256k1 or eddsa+babyjubjub
  - Sign with every supported key pair. 
  - Create and import Ethereum wallets
  - Sign Ethereum transactions
