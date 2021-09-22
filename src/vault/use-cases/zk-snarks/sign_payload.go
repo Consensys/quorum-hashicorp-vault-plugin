@@ -3,7 +3,7 @@ package zksnarks
 import (
 	"context"
 	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/errors"
-	"github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
+	babyjubjub "github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
 	"github.com/consensys/gnark-crypto/hash"
 
 	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/log"
@@ -43,7 +43,7 @@ func (uc *signPayloadUseCase) Execute(ctx context.Context, pubKey, namespace, da
 		return "", err
 	}
 
-	privKey := eddsa.PrivateKey{}
+	privKey := babyjubjub.PrivateKey{}
 	privKeyB, _ := hexutil.Decode(account.PrivateKey)
 	_, err = privKey.SetBytes(privKeyB)
 	if err != nil {

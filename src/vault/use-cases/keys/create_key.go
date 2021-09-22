@@ -11,7 +11,7 @@ import (
 	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/entities"
 	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/storage"
 	usecases "github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/use-cases"
-	"github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
+	babyjubjub "github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
 	"github.com/consensys/quorum/crypto"
 	"github.com/hashicorp/vault/sdk/logical"
 	"time"
@@ -51,10 +51,10 @@ func (uc *createKeyUseCase) Execute(ctx context.Context, namespace, id, algo, cu
 	}
 
 	switch {
-	case algo == entities.EDDSA && curve == entities.BN254:
-		privKey, err := uc.eddsaBN254(importedPrivKey)
+	case algo == entities.EDDSA && curve == entities.Babyjubjub:
+		privKey, err := uc.eddsaBabyjubjub(importedPrivKey)
 		if err != nil {
-			errMessage := "failed to generate EDDSA/BN254 key pair"
+			errMessage := "failed to generate EDDSA/Babyjubjub key pair"
 			logger.With("error", err).Error(errMessage)
 			return nil, errors.InvalidParameterError(errMessage)
 		}
@@ -86,9 +86,9 @@ func (uc *createKeyUseCase) Execute(ctx context.Context, namespace, id, algo, cu
 	return key, nil
 }
 
-func (*createKeyUseCase) eddsaBN254(importedPrivKey string) (eddsa.PrivateKey, error) {
+func (*createKeyUseCase) eddsaBabyjubjub(importedPrivKey string) (babyjubjub.PrivateKey, error) {
 	if importedPrivKey == "" {
-		key, err := crypto2.NewBN254()
+		key, err := crypto2.NewBabyjubjub()
 		if err != nil {
 			return key, err
 		}
@@ -96,7 +96,7 @@ func (*createKeyUseCase) eddsaBN254(importedPrivKey string) (eddsa.PrivateKey, e
 		return key, nil
 	}
 
-	key := eddsa.PrivateKey{}
+	key := babyjubjub.PrivateKey{}
 	privKeyBytes, err := encoding.DecodeBase64(importedPrivKey)
 	if err != nil {
 		return key, err

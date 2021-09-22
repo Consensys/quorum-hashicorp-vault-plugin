@@ -48,7 +48,7 @@ func TestSignPayload_Execute(t *testing.T) {
 
 	t.Run("should execute use case successfully: EDDSA", func(t *testing.T) {
 		key := apputils.FakeKey()
-		key.Curve = entities.BN254
+		key.Curve = entities.Babyjubjub
 		key.Algorithm = entities.EDDSA
 		data := base64.URLEncoding.EncodeToString([]byte("my data to sign"))
 
@@ -74,7 +74,7 @@ func TestSignPayload_Execute(t *testing.T) {
 
 	t.Run("should fail if creation of EDDSA private key fails", func(t *testing.T) {
 		key := apputils.FakeKey()
-		key.Curve = entities.BN254
+		key.Curve = entities.Babyjubjub
 		key.Algorithm = entities.EDDSA
 		key.PrivateKey = "account.PrivateKey"
 		data := base64.URLEncoding.EncodeToString(crypto.Keccak256([]byte("my data to sign")))
