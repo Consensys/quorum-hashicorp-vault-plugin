@@ -24,6 +24,7 @@ func NewEthToKeysUseCase(ethUseCases usecases.ETHUseCases, keysUseCases usecases
 	return &ethToKeysUseCase{
 		ethUseCases:  ethUseCases,
 		keysUseCases: keysUseCases,
+		status:       map[string]*entities.MigrationStatus{},
 	}
 }
 
@@ -32,14 +33,23 @@ func (uc ethToKeysUseCase) WithStorage(storage logical.Storage) usecases.Ethereu
 	return &uc
 }
 
-func (uc ethToKeysUseCase) Status(namespace string) *entities.MigrationStatus {
-	return uc.status[namespace]
+func (uc ethToKeysUseCase) Status(ctx context.Context, namespace string) (*entities.MigrationStatus, error) {
+	logger := log.FromContext(ctx).With("namespace", namespace)
+
+	status := uc.status[namespace]
+	if status == nil {
+		errMessage := "migration could not be found"
+		logger.Warn(errMessage)
+		return nil, errors.NotFoundError(errMessage)
+	}
+
+	return status, nil
 }
 
 func (uc *ethToKeysUseCase) Execute(ctx context.Context, namespace string) error {
 	logger := log.FromContext(ctx).With("namespace", namespace)
 
-	addresses, err := uc.ethUseCases.ListAccounts().Execute(ctx, namespace)
+	addresses, err := uc.ethUseCases.ListAccounts().WithStorage(uc.storage).Execute(ctx, namespace)
 	if err != nil {
 		return err
 	}
@@ -51,8 +61,10 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, namespace string) error
 	uc.status[namespace] = status
 
 	go func() {
+		newCtx := log.Context(context.Background(), logger)
+
 		for _, address := range addresses {
-			account, der := uc.ethUseCases.GetAccount().WithStorage(uc.storage).Execute(ctx, address, namespace)
+			account, der := uc.ethUseCases.GetAccount().WithStorage(uc.storage).Execute(newCtx, address, namespace)
 			if der != nil {
 				status.Status = "failure"
 				status.Error = der
@@ -69,12 +81,12 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, namespace string) error
 
 			// The ID of the key is the address of the ETH account
 			_, der = uc.keysUseCases.CreateKey().WithStorage(uc.storage).Execute(
-				ctx,
+				newCtx,
 				namespace,
 				address,
 				entities.ECDSA,
 				entities.Secp256k1,
-				base64.StdEncoding.EncodeToString(privKey),
+				base64.URLEncoding.EncodeToString(privKey),
 				map[string]string{},
 			)
 			if der != nil {
@@ -85,8 +97,6 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, namespace string) error
 
 			status.N += 1
 		}
-
-		time.Sleep(time.Minute)
 
 		status.Status = "success"
 		status.EndTime = time.Now()

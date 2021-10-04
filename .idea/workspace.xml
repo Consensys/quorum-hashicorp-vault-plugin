@@ -5,14 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="396a09be-5b11-4ff8-8d34-bfb02587b76a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/service/formatters/migrations.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/service/migrations/eth-to-keys.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/service/migrations/migrations.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vault/builder/migrations.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vault/entities/migrations.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vault/use-cases/migrations.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vault/use-cases/migrations/eth_to_keys.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vault.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/vault.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/formatters/migrations.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/formatters/migrations.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/migrations/eth-to-keys.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/migrations/eth-to-keys.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/migrations/migrations.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/migrations/migrations.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vault/use-cases/migrations.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/vault/use-cases/migrations.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vault/use-cases/migrations/eth_to_keys.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/vault/use-cases/migrations/eth_to_keys.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

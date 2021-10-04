@@ -35,7 +35,7 @@ func (c *controller) Paths() []*framework.Path {
 
 func (c *controller) pathEthereumToKeys() *framework.Path {
 	return &framework.Path{
-		Pattern:      "ethereum-to-keys/migrate",
+		Pattern:      "migrations/ethereum-to-keys/migrate/?",
 		HelpSynopsis: "Migrates the current Ethereum accounts to the keys namespace",
 		Operations: map[logical.Operation]framework.OperationHandler{
 			logical.CreateOperation: c.NewEthereumToKeysOperation(),
@@ -46,7 +46,7 @@ func (c *controller) pathEthereumToKeys() *framework.Path {
 
 func (c *controller) pathEthereumToKeysStatus() *framework.Path {
 	return &framework.Path{
-		Pattern:      "ethereum-to-keys/status",
+		Pattern:      "migrations/ethereum-to-keys/status/?",
 		HelpSynopsis: "Checks the status of the migration",
 		Operations: map[logical.Operation]framework.OperationHandler{
 			logical.ReadOperation: c.NewEthereumToKeysStatusOperation(),

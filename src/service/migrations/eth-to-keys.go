@@ -64,7 +64,11 @@ func (c *controller) ethToKeysStatusHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
 		namespace := formatters.GetRequestNamespace(req)
 
-		status := c.useCases.EthereumToKeys().Status(namespace)
+		ctx = log.Context(ctx, c.logger)
+		status, err := c.useCases.EthereumToKeys().Status(ctx, namespace)
+		if err != nil {
+			return errors.ParseHTTPError(err)
+		}
 
 		return formatters.FormatMigrationStatusResponse(status), nil
 	}
