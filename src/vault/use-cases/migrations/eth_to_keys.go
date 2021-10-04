@@ -2,7 +2,9 @@ package migrations
 
 import (
 	"context"
-	"fmt"
+	"encoding/base64"
+	"encoding/hex"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/errors"
 	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/entities"
 	"time"
@@ -58,7 +60,13 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, namespace string) error
 				return
 			}
 
-			privKey := fmt.Sprintf("0x%s", account.PrivateKey)
+			// Private keys are stored in hex format without "0x" prefix, they must be transformed to base64
+			privKey, der := hex.DecodeString(account.PrivateKey)
+			if der != nil {
+				status.Status = "failure"
+				status.Error = errors.EncodingError("failed to decode private key")
+				return
+			}
 
 			// The ID of the key is the address of the ETH account
 			_, der = uc.keysUseCases.CreateKey().WithStorage(uc.storage).Execute(
@@ -67,7 +75,7 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, namespace string) error
 				address,
 				entities.ECDSA,
 				entities.Secp256k1,
-				privKey,
+				base64.StdEncoding.EncodeToString(privKey),
 				map[string]string{},
 			)
 			if der != nil {
