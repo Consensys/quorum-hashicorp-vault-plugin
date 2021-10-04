@@ -57,6 +57,7 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, namespace string) error
 	status := &entities.MigrationStatus{
 		Status:    "pending",
 		StartTime: time.Now(),
+		Total:     len(addresses),
 	}
 	uc.status[namespace] = status
 

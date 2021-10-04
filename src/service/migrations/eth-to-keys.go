@@ -13,8 +13,8 @@ import (
 func (c *controller) NewEthereumToKeysOperation() *framework.PathOperation {
 	return &framework.PathOperation{
 		Callback:    c.ethToKeysHandler(),
-		Summary:     "Migrates the current Ethereum accounts to the keys namespace",
-		Description: "Migrates the current Ethereum accounts to the keys namespace by copying the data from the ethereum/accounts namespace",
+		Summary:     "Migrates Ethereum accounts to the keys namespace",
+		Description: "Migrates Ethereum accounts to the keys namespace by copying the data from the ethereum/accounts namespace",
 		Examples: []framework.RequestExample{
 			{
 				Description: "Migrates the current Ethereum accounts to the keys namespace",
