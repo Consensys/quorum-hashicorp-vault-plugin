@@ -39,6 +39,11 @@ func (uc ethToKeysUseCase) Status(namespace string) *entities.MigrationStatus {
 func (uc *ethToKeysUseCase) Execute(ctx context.Context, namespace string) error {
 	logger := log.FromContext(ctx).With("namespace", namespace)
 
+	addresses, err := uc.ethUseCases.ListAccounts().Execute(ctx, namespace)
+	if err != nil {
+		return err
+	}
+
 	status := &entities.MigrationStatus{
 		Status:    "pending",
 		StartTime: time.Now(),
@@ -46,12 +51,6 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, namespace string) error
 	uc.status[namespace] = status
 
 	go func() {
-		addresses, err := uc.ethUseCases.ListAccounts().Execute(ctx, namespace)
-		if err != nil {
-			status.Error = err
-			return
-		}
-
 		for _, address := range addresses {
 			account, der := uc.ethUseCases.GetAccount().WithStorage(uc.storage).Execute(ctx, address, namespace)
 			if der != nil {
@@ -87,10 +86,12 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, namespace string) error
 			status.N += 1
 		}
 
+		time.Sleep(time.Minute)
+
 		status.Status = "success"
 		status.EndTime = time.Now()
 	}()
 
-	logger.Info("migration from ethereum to keys namespace initiated")
+	logger.With("total", len(addresses)).Info("migration from ethereum to keys namespace initiated")
 	return nil
 }
