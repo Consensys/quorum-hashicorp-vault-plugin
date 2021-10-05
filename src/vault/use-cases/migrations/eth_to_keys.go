@@ -7,6 +7,7 @@ import (
 	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/errors"
 	"github.com/consensys/quorum-hashicorp-vault-plugin/src/pkg/log"
 	"github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/entities"
+	"sync"
 	"time"
 
 	usecases "github.com/consensys/quorum-hashicorp-vault-plugin/src/vault/use-cases"
@@ -18,6 +19,7 @@ type ethToKeysUseCase struct {
 	ethUseCases  usecases.ETHUseCases
 	keysUseCases usecases.KeysUseCases
 	status       map[string]*entities.MigrationStatus
+	mux          sync.RWMutex
 }
 
 func NewEthToKeysUseCase(ethUseCases usecases.ETHUseCases, keysUseCases usecases.KeysUseCases) usecases.EthereumToKeysUseCase {
@@ -25,6 +27,7 @@ func NewEthToKeysUseCase(ethUseCases usecases.ETHUseCases, keysUseCases usecases
 		ethUseCases:  ethUseCases,
 		keysUseCases: keysUseCases,
 		status:       map[string]*entities.MigrationStatus{},
+		mux:          sync.RWMutex{},
 	}
 }
 
@@ -49,6 +52,12 @@ func (uc ethToKeysUseCase) Status(ctx context.Context, namespace string) (*entit
 func (uc *ethToKeysUseCase) Execute(ctx context.Context, namespace string) error {
 	logger := log.FromContext(ctx).With("namespace", namespace)
 
+	if uc.getStatus(namespace) != nil && uc.getStatus(namespace).Status == "pending" {
+		errMessage := "migration is currently running, please check its status"
+		logger.Warn(errMessage)
+		return errors.AlreadyExistsError(errMessage)
+	}
+
 	addresses, err := uc.ethUseCases.ListAccounts().WithStorage(uc.storage).Execute(ctx, namespace)
 	if err != nil {
 		return err
@@ -59,7 +68,7 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, namespace string) error
 		StartTime: time.Now(),
 		Total:     len(addresses),
 	}
-	uc.status[namespace] = status
+	uc.writeStatus(namespace, status)
 
 	go func() {
 		newCtx := log.Context(context.Background(), logger)
@@ -75,8 +84,10 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, namespace string) error
 			// Private keys are stored in hex format without "0x" prefix, they must be transformed to base64
 			privKey, der := hex.DecodeString(account.PrivateKey)
 			if der != nil {
+				errMessage := "failed to decode private key"
+				logger.With("error", err).Error(errMessage)
 				status.Status = "failure"
-				status.Error = errors.EncodingError("failed to decode private key")
+				status.Error = errors.EncodingError(errMessage)
 				return
 			}
 
@@ -105,4 +116,18 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, namespace string) error
 
 	logger.With("total", len(addresses)).Info("migration from ethereum to keys namespace initiated")
 	return nil
+}
+
+func (uc *ethToKeysUseCase) getStatus(namespace string) *entities.MigrationStatus {
+	uc.mux.RLock()
+	defer uc.mux.RUnlock()
+
+	return uc.status[namespace]
+}
+
+func (uc *ethToKeysUseCase) writeStatus(namespace string, status *entities.MigrationStatus) {
+	uc.mux.Lock()
+	defer uc.mux.Unlock()
+
+	uc.status[namespace] = status
 }
