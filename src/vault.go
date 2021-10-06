@@ -2,6 +2,7 @@ package src
 
 import (
 	"context"
+	"github.com/consensys/quorum-hashicorp-vault-plugin/src/service/migrations"
 
 	"github.com/consensys/quorum-hashicorp-vault-plugin/src/service/ethereum"
 
@@ -21,16 +22,25 @@ func NewVaultBackend(ctx context.Context, conf *logical.BackendConfig) (logical.
 				"ethereum/accounts/",
 				"zk-snarks/accounts/",
 				"keys/",
+				"migrations/",
 			},
 		},
 		Secrets:     []*framework.Secret{},
 		BackendType: logical.TypeLogical,
 	}
 
-	ethereumController := ethereum.NewController(builder.NewEthereumUseCases(), conf.Logger)
+	ethUseCases := builder.NewEthereumUseCases()
+	keysUsecases := builder.NewKeysUseCases()
+	ethereumController := ethereum.NewController(ethUseCases, conf.Logger)
 	zkSnarksController := zksnarks.NewController(builder.NewZkSnarksUseCases(), conf.Logger)
-	keysController := keys.NewController(builder.NewKeysUseCases(), conf.Logger)
-	vaultPlugin.Paths = framework.PathAppend(ethereumController.Paths(), zkSnarksController.Paths(), keysController.Paths())
+	keysController := keys.NewController(keysUsecases, conf.Logger)
+	migrationsController := migrations.NewController(builder.NewMigrationsUseCases(ethUseCases, keysUsecases), conf.Logger)
+	vaultPlugin.Paths = framework.PathAppend(
+		ethereumController.Paths(),
+		zkSnarksController.Paths(),
+		keysController.Paths(),
+		migrationsController.Paths(),
+	)
 
 	if err := vaultPlugin.Setup(ctx, conf); err != nil {
 		return nil, err

@@ -1,18 +1,40 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+__pycache__
+bin/
+vendor/
+.env
+env.sh
 
-# Test binary, built with `go test -c`
+# Test binary, build with `go test -c`
 *.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
+# Jetbrains files
+.DS_Store
+.idea
+*.iml
+.idea_modules/
+.run/
 
-# Dependency directories (remove the comment below to include it)
-# vendor/
-
-# Build folder
+# Build
 build/
+cmake-build-*/
 
-#Coverage
-coverage.txt
+# File-based project format
+*.iws
+*.ipr
 
-# Vendor
-vendor/
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+# Go packages and sources:
+.gocache
+
+# Visual Code Studio
+.vscode
+
+!/**/**/.gitkeep
