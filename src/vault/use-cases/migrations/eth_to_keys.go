@@ -15,7 +15,6 @@ import (
 )
 
 type ethToKeysUseCase struct {
-	storage      logical.Storage
 	ethUseCases  usecases.ETHUseCases
 	keysUseCases usecases.KeysUseCases
 	status       map[string]*entities.MigrationStatus
@@ -53,7 +52,7 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, storage logical.Storage
 		return errors.AlreadyExistsError(errMessage)
 	}
 
-	addresses, err := uc.ethUseCases.ListAccounts().WithStorage(uc.storage).Execute(ctx, namespace)
+	addresses, err := uc.ethUseCases.ListAccounts().WithStorage(storage).Execute(ctx, namespace)
 	if err != nil {
 		return err
 	}
@@ -69,7 +68,7 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, storage logical.Storage
 		newCtx := log.Context(context.Background(), logger)
 
 		for _, address := range addresses {
-			account, der := uc.ethUseCases.GetAccount().WithStorage(uc.storage).Execute(newCtx, address, namespace)
+			account, der := uc.ethUseCases.GetAccount().WithStorage(storage).Execute(newCtx, address, namespace)
 			if der != nil {
 				status.Status = "failure"
 				status.Error = der
@@ -87,7 +86,7 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, storage logical.Storage
 			}
 
 			// The ID of the key is the address of the ETH account
-			_, der = uc.keysUseCases.CreateKey().WithStorage(uc.storage).Execute(
+			_, der = uc.keysUseCases.CreateKey().WithStorage(storage).Execute(
 				newCtx,
 				namespace,
 				address,
