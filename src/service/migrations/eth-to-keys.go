@@ -51,7 +51,7 @@ func (c *controller) ethToKeysHandler() framework.OperationFunc {
 		namespace := formatters.GetRequestNamespace(req)
 
 		ctx = log.Context(ctx, c.logger)
-		err := c.useCases.EthereumToKeys().WithStorage(req.Storage).Execute(ctx, namespace)
+		err := c.useCases.EthereumToKeys().Execute(ctx, req.Storage, namespace)
 		if err != nil {
 			return errors.ParseHTTPError(err)
 		}

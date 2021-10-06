@@ -31,12 +31,7 @@ func NewEthToKeysUseCase(ethUseCases usecases.ETHUseCases, keysUseCases usecases
 	}
 }
 
-func (uc ethToKeysUseCase) WithStorage(storage logical.Storage) usecases.EthereumToKeysUseCase {
-	uc.storage = storage
-	return &uc
-}
-
-func (uc ethToKeysUseCase) Status(ctx context.Context, namespace string) (*entities.MigrationStatus, error) {
+func (uc *ethToKeysUseCase) Status(ctx context.Context, namespace string) (*entities.MigrationStatus, error) {
 	logger := log.FromContext(ctx).With("namespace", namespace)
 
 	status := uc.status[namespace]
@@ -49,7 +44,7 @@ func (uc ethToKeysUseCase) Status(ctx context.Context, namespace string) (*entit
 	return status, nil
 }
 
-func (uc *ethToKeysUseCase) Execute(ctx context.Context, namespace string) error {
+func (uc *ethToKeysUseCase) Execute(ctx context.Context, storage logical.Storage, namespace string) error {
 	logger := log.FromContext(ctx).With("namespace", namespace)
 
 	if uc.getStatus(namespace) != nil && uc.getStatus(namespace).Status == "pending" {

@@ -74,44 +74,30 @@ func (m *MockEthereumToKeysUseCase) EXPECT() *MockEthereumToKeysUseCaseMockRecor
 }
 
 // Execute mocks base method
-func (m *MockEthereumToKeysUseCase) Execute(ctx context.Context, namespace string) error {
+func (m *MockEthereumToKeysUseCase) Execute(ctx context.Context, storage logical.Storage, namespace string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Execute", ctx, namespace)
+	ret := m.ctrl.Call(m, "Execute", ctx, storage, namespace)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Execute indicates an expected call of Execute
-func (mr *MockEthereumToKeysUseCaseMockRecorder) Execute(ctx, namespace interface{}) *gomock.Call {
+func (mr *MockEthereumToKeysUseCaseMockRecorder) Execute(ctx, storage, namespace interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockEthereumToKeysUseCase)(nil).Execute), ctx, namespace)
-}
-
-// WithStorage mocks base method
-func (m *MockEthereumToKeysUseCase) WithStorage(storage logical.Storage) usecases.EthereumToKeysUseCase {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "WithStorage", storage)
-	ret0, _ := ret[0].(usecases.EthereumToKeysUseCase)
-	return ret0
-}
-
-// WithStorage indicates an expected call of WithStorage
-func (mr *MockEthereumToKeysUseCaseMockRecorder) WithStorage(storage interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WithStorage", reflect.TypeOf((*MockEthereumToKeysUseCase)(nil).WithStorage), storage)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockEthereumToKeysUseCase)(nil).Execute), ctx, storage, namespace)
 }
 
 // Status mocks base method
-func (m *MockEthereumToKeysUseCase) Status(namespace string) (*entities.MigrationStatus, error) {
+func (m *MockEthereumToKeysUseCase) Status(ctx context.Context, namespace string) (*entities.MigrationStatus, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Status", namespace)
+	ret := m.ctrl.Call(m, "Status", ctx, namespace)
 	ret0, _ := ret[0].(*entities.MigrationStatus)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Status indicates an expected call of Status
-func (mr *MockEthereumToKeysUseCaseMockRecorder) Status(namespace interface{}) *gomock.Call {
+func (mr *MockEthereumToKeysUseCaseMockRecorder) Status(ctx, namespace interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Status", reflect.TypeOf((*MockEthereumToKeysUseCase)(nil).Status), namespace)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Status", reflect.TypeOf((*MockEthereumToKeysUseCase)(nil).Status), ctx, namespace)
 }
