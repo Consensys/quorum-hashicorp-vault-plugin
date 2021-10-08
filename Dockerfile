@@ -32,8 +32,8 @@ RUN apk add --no-cache \
 # Expose the plugin directory as a volume
 VOLUME /vault/plugins
 
-COPY --from=builder /plugin/quorum-hashicorp-vault-plugin /vault/plugins/quorum-hashicorp-vault-plugin
 COPY --from=builder /plugin/LICENSE /
+COPY --from=builder /plugin/quorum-hashicorp-vault-plugin /vault/plugins/quorum-hashicorp-vault-plugin
 COPY --from=builder /plugin/scripts/vault-init.sh /usr/local/bin/vault-init.sh
 COPY --from=builder /plugin/scripts/vault-init-dev.sh /usr/local/bin/vault-init-dev.sh
 

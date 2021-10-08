@@ -7,8 +7,7 @@ x-container-common: &container-common
 services:
   vault:
     <<: *container-common
-#    image: docker.consensys.net/docker-private-dev/quorum-hashicorp-vault-plugin:develop
-    image: quorum-hashicorp-vault-plugin:latest
+    image: consensys/quorum-hashicorp-vault-plugin:latest
     tty: true
     restart: "no"
     cap_add:
@@ -40,7 +39,7 @@ services:
             ui = false
         EOF
 
-        ( sleep 2 ; vault-init-dev.sh ) &
+        ( sleep 2 ; vault-init.sh ) &
         vault server -config=/vault/config.hcl
     ports:
       - 8200:8200

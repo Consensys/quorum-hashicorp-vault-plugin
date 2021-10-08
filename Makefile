@@ -31,5 +31,5 @@ dev: gobuild
 down:
 	@docker-compose -f docker-compose.dev.yml down --volumes --timeout 0
 
-docker-build: ## Build Orchestrate Docker image
+docker-build:
 	@DOCKER_BUILDKIT=1 docker build -t quorum-hashicorp-vault-plugin .

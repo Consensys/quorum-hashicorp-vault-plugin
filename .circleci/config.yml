@@ -40,7 +40,7 @@ commands:
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin $DOCKER_REGISTRY
             echo $DOCKER_PASS_2 | docker login -u $DOCKER_USER_2 --password-stdin $DOCKER_REGISTRY_2
 
-  docker_build_dev:
+  docker_build_image:
     description: "Build Quorum Hashicorp Vault Plugin docker image"
     steps:
       - run:
@@ -58,7 +58,7 @@ commands:
             --label org.opencontainers.image.title="${CIRCLE_PROJECT_REPONAME}"
             --label org.opencontainers.image.description="This Quorum plugin enhances Hashicorp Vault Service with cryptographic operations under Vault engine."
             -q
-            -t ${DOCKER_REGISTRY_DEV_REPO}/quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7} .
+            -t quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7} .
 
 jobs:
   styleCheck:
@@ -116,13 +116,36 @@ jobs:
           version: 19.03.13
           docker_layer_caching: true
       - prepare_docker
-      - docker_build_dev
+      - docker_build_image
       - run:
           name: Deploy image in repository
           command: |
-            docker tag ${DOCKER_REGISTRY_DEV_REPO}/quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7} ${DOCKER_REGISTRY_DEV_REPO}/quorum-hashicorp-vault-plugin:develop
+            docker tag quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7} ${DOCKER_REGISTRY_DEV_REPO}/quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7}
+            docker push ${DOCKER_REGISTRY_DEV_REPO}/quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7}
+            
+            docker tag quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7} ${DOCKER_REGISTRY_DEV_REPO}/quorum-hashicorp-vault-plugin:develop
             docker push ${DOCKER_REGISTRY_DEV_REPO}/quorum-hashicorp-vault-plugin:develop
 
+  push-prod-image:
+    docker:
+      - image: cimg/base:2020.01
+    resource_class: large
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+      - prepare_docker
+      - docker_build_image
+      - run:
+          name: Deploy image in repository
+          command: |
+            docker tag quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7} ${DOCKER_REGISTRY_REPO_2}/quorum-hashicorp-vault-plugin:${CIRCLE_TAG}
+            docker push ${DOCKER_REGISTRY_REPO_2}/quorum-hashicorp-vault-plugin:${CIRCLE_TAG}
+
+            docker tag quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7} ${DOCKER_REGISTRY_REPO_2}/quorum-hashicorp-vault-plugin:latest
+            docker push ${DOCKER_REGISTRY_REPO_2}/quorum-hashicorp-vault-plugin:latest
+            
 workflows:
   version: 2
   default:
@@ -148,9 +171,7 @@ workflows:
       - push-dev-image:
           filters:
             branches:
-              only: docker_images
-            tags:
-              only: /^v.*/
+              only: main
           requires:
             - styleCheck
             - test
@@ -163,4 +184,11 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-      
+      - push-prod-image:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - publish-github-release
