@@ -26,8 +26,9 @@ echo "[PLUGIN] Unsealing vault..."
 curl -s --request POST --data '{"key": '${UNSEAL_KEY}'}' ${VAULT_ADDR}/v1/sys/unseal
 
 if [ "${PLUGIN_PATH}" != "/vault/plugins" ]; then
+  mkdir -p ${PLUGIN_PATH}
   echo "[PLUGIN] Copying plugin to expected folder"
-  cp -Rfpv $PLUGIN_FILE "${PLUGIN_PATH}/quorum-hashicorp-vault-plugin"
+  cp $PLUGIN_FILE "${PLUGIN_PATH}/quorum-hashicorp-vault-plugin"
 fi 
 
 echo "[PLUGIN] Registering Quorum Hashicorp Vault plugin..."

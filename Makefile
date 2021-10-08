@@ -32,4 +32,4 @@ down:
 	@docker-compose -f docker-compose.dev.yml down --volumes --timeout 0
 
 docker-build: ## Build Orchestrate Docker image
-	@DOCKER_BUILDKIT=1 docker build -t quorum-hashicorp-vault .
+	@DOCKER_BUILDKIT=1 docker build -t quorum-hashicorp-vault-plugin .

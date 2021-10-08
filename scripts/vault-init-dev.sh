@@ -4,8 +4,9 @@ PLUGIN_PATH=${PLUGIN_PATH-/vault/plugins}
 VAULT_DEV_ROOT_TOKEN_ID=${VAULT_DEV_ROOT_TOKEN_ID-DevVaultToken}
 
 if [ "${PLUGIN_PATH}" != "/vault/plugins" ]; then
+  mkdir -p ${PLUGIN_PATH}
   echo "[PLUGIN] Copying plugin to expected folder"
-  cp -Rfpv $PLUGIN_FILE "${PLUGIN_PATH}/quorum-hashicorp-vault-plugin"
+  cp $PLUGIN_FILE "${PLUGIN_PATH}/quorum-hashicorp-vault-plugin"
 fi 
 
 echo "[PLUGIN] Enabling Quorum Hashicorp Plugin engine..."
