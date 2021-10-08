@@ -39,7 +39,7 @@ services:
             ui = false
         EOF
 
-        ( sleep 2 ; vault-init.sh ) &
+        ( sleep 2 ; vault-init-dev.sh ) &
         vault server -config=/vault/config.hcl
     ports:
       - 8200:8200
