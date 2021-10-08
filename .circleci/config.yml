@@ -31,6 +31,34 @@ commands:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
+  prepare_docker:
+    description: "Docker login"
+    steps:
+      - run:
+          name: Docker login
+          command: |
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin $DOCKER_REGISTRY
+            echo $DOCKER_PASS_2 | docker login -u $DOCKER_USER_2 --password-stdin $DOCKER_REGISTRY_2
+
+  docker_build_dev:
+    description: "Build Quorum Hashicorp Vault Plugin docker image"
+    steps:
+      - run:
+          name: Build Quorum Hashicorp Vault Plugin
+          command: >-
+            DOCKER_BUILDKIT=1 docker build
+            --label org.opencontainers.image.created=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
+            --label org.opencontainers.image.url="https://consensys.net"
+            --label org.opencontainers.image.documentation="https://docs.quorum-key-manager.consensys.net/"
+            --label org.opencontainers.image.source="${CIRCLE_REPOSITORY_URL}"
+            --label org.opencontainers.image.version="${CIRCLE_TAG}"
+            --label org.opencontainers.image.revision="${CIRCLE_SHA1:0:7}"
+            --label org.opencontainers.image.vendor="ConsenSys Software Inc."
+            --label org.opencontainers.image.licenses="BUSL-1.1"
+            --label org.opencontainers.image.title="${CIRCLE_PROJECT_REPONAME}"
+            --label org.opencontainers.image.description="This Quorum plugin enhances Hashicorp Vault Service with cryptographic operations under Vault engine."
+            -q
+            -t ${DOCKER_REGISTRY_DEV_REPO}/quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7} .
 
 jobs:
   styleCheck:
@@ -78,6 +106,24 @@ jobs:
             VERSION="${CIRCLE_TAG}"
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
 
+  push-dev-image:
+    docker:
+      - image: cimg/base:2020.01
+    resource_class: large
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+      - prepare_docker
+      - docker_build_dev
+      - run:
+          name: Deploy image in repository
+          command: |
+            docker push ${DOCKER_REGISTRY_DEV_REPO}/quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7}
+            docker tag ${DOCKER_REGISTRY_DEV_REPO}/quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7} ${DOCKER_REGISTRY_DEV_REPO}/quorum-hashicorp-vault-plugin:develop
+            docker push ${DOCKER_REGISTRY_DEV_REPO}/quorum-hashicorp-vault-plugin:develop
+
 workflows:
   version: 2
   default:
@@ -100,6 +146,16 @@ workflows:
               only: /^v.*/
             branches:
               only: /.*/
+      - push-dev-image:
+          filters:
+            branches:
+              only: docker_images
+            tags:
+              only: /^v.*/
+          requires:
+            - styleCheck
+            - test
+            - build
       - publish-github-release:
           requires:
             - build
