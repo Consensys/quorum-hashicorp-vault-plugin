@@ -23,14 +23,22 @@ The Quorum plugin enhances Hashicorp Vault Service with cryptographic operations
 - Makefile
 - docker-compose
 
-### Development mode
+## Development mode
 
 To run our plugin in development mode you have to first build the plugin using:
 ```
-$> make dev
+$> docker-compose -f docker-compose.dev.yml up --build vault
 ```
 
-### Test using Curl
+## Production mode
+
+Running Quorum Hashicorp Vault Plugin plugin in production:
+```
+$> docker-compose -f docker-compose.yml up --build vault
+```
+
+## Testing
+
 Now you have your Vault running on port `:8200`. Open  a new terminal to run the following command to
 enable Orchestrate plugin:
 ```
@@ -50,12 +58,14 @@ alternatively you can list only `ethereum` endpoints by using:
 $> curl -H "X-Vault-Token: DevVaultToken" http://127.0.0.1:8200/v1/quorum/ethereum/accounts?help=1
 ```
 
-## Production mode
-
-Running Quorum Hashicorp Vault Plugin plugin in production:
-```
-$> make prod
-```
-
 ## Contributing
 [How to Contribute](CONTRIBUTING.md)
+
+## License
+
+Quorum Hashicorp Vault plugin is licensed under the BSL 1.1.
+
+Please refer to the [LICENSE file](LICENSE) for a detailed description of the license.
+
+Please contact [orchestrate@consensys.net](mailto:orchestrate@consensys.net) if you need to purchase a license for a production use-case.  
+

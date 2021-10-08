@@ -23,11 +23,13 @@ lint-ci: ## Check linting
 	@golangci-lint run
 
 prod: gobuild
-	@docker-compose -f docker-compose.yml up --build vault-init vault
+	@docker-compose -f docker-compose.yml up --build vault
 
 dev: gobuild
-	@docker-compose -f docker-compose.yml up --build vault-dev-init vault-dev
+	@docker-compose -f docker-compose.dev.yml up --build vault
 
 down:
-	@docker-compose -f docker-compose.yml down --volumes --timeout 0
+	@docker-compose -f docker-compose.dev.yml down --volumes --timeout 0
 
+docker-build: ## Build Orchestrate Docker image
+	@DOCKER_BUILDKIT=1 docker build -t quorum-hashicorp-vault .

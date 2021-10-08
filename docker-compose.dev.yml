@@ -1,0 +1,39 @@
+version: "3.7"
+
+x-container-common: &container-common
+  networks:
+    - vault
+
+services:
+  vault:
+    <<: *container-common
+    image: library/vault:1.8.4
+    restart: ${CONTAINER_RESTART-on-failure}
+    tty: true
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./build/bin/quorum-hashicorp-vault-plugin:/vault/plugins/quorum-hashicorp-vault-plugin
+      - ./scripts/vault-init-dev.sh:/usr/local/bin/vault-init.sh
+    environment:
+      VAULT_ADDR: http://vault:8200
+      VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_TOKEN-DevVaultToken}
+    entrypoint:
+      - sh
+      - -c
+      - |
+        apk add --no-cache curl
+        ( sleep 2 ; vault-init.sh ) &
+        vault server -dev -dev-plugin-dir=/vault/plugins/ -dev-listen-address="0.0.0.0:8200" -log-level=trace
+    ports:
+      - 8200:8200
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "--proxy", "off", "http://localhost:8200/v1/sys/health?standbyok=true" ]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+networks:
+  vault:
+    driver: bridge
