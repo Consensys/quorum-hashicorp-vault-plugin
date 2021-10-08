@@ -5,60 +5,50 @@ x-container-common: &container-common
     - vault
 
 services:
-  vault-dev:
-    <<: *container-common
-    image: library/vault:1.8.2
-    restart: ${CONTAINER_RESTART-on-failure}
-    tty: true
-    cap_add:
-      - IPC_LOCK
-    volumes:
-      - ./build/bin/quorum-hashicorp-vault-plugin:/vault/plugins/quorum-hashicorp-vault-plugin
-    environment:
-      VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_TOKEN-DevVaultToken}
-    entrypoint: vault server -dev -dev-plugin-dir=/vault/plugins/ -dev-listen-address="0.0.0.0:8200" -log-level=trace
-    ports:
-      - 8200:8200
-
-  vault-dev-init:
-    <<: *container-common
-    build: ./docker
-    environment:
-      VAULT_ADDR: http://vault-dev:8200
-      VAULT_TOKEN: ${VAULT_TOKEN-DevVaultToken}
-    restart: "no"
-    volumes:
-      - ./docker/init-dev.sh:/init.sh
-    depends_on:
-      - vault-dev
-    command: sh /init.sh
-
   vault:
     <<: *container-common
-    image: library/vault:1.8.2
+    image: consensys/quorum-hashicorp-vault-plugin:latest
     tty: true
+    restart: "no"
     cap_add:
       - IPC_LOCK
-    volumes:
-      - ./docker/config.hcl:/vault/config.hcl:ro
-      - ./build/bin/quorum-hashicorp-vault-plugin:/vault/plugins/quorum-hashicorp-vault-plugin
-    entrypoint: vault server -config=/vault/config.hcl
+    environment:
+      ROOT_TOKEN_PATH: /vault/.root
+      VAULT_ADDR: http://vault:8200
+      PLUGIN_MOUNT_PATH: quorum
+    entrypoint:
+      - sh
+      - -c
+      - |
+        cat <<EOF > /vault/config.hcl
+            backend "file" {
+              path = "/vault/file"
+            }
+
+            listener "tcp" {
+              address = "vault:8200"
+              tls_disable = true
+            }
+
+            default_lease_ttl = "15m"
+            max_lease_ttl = "30m"
+            api_addr = "http://vault:8200"
+            plugin_directory = "/vault/plugins"
+            log_level = "Debug"
+
+            ui = false
+        EOF
+
+        ( sleep 2 ; vault-init.sh ) &
+        vault server -config=/vault/config.hcl
     ports:
       - 8200:8200
-
-  vault-init:
-    <<: *container-common
-    build: ./docker
-    environment:
-      VAULT_ADDR: http://vault:8200
-      PLUGIN_FILE: /vault/plugins/quorum-hashicorp-vault-plugin
-    restart: "no"
-    volumes:
-      - ./build/bin/quorum-hashicorp-vault-plugin:/vault/plugins/quorum-hashicorp-vault-plugin
-      - ./docker/init-prod.sh:/init.sh
-    depends_on:
-      - vault
-    command: sh /init.sh
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "--proxy", "off", "http://localhost:8200/v1/sys/health?standbyok=true" ]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
 
 networks:
   vault:
