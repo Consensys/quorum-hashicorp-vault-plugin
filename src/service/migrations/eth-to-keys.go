@@ -51,6 +51,10 @@ func (c *controller) ethToKeysHandler() framework.OperationFunc {
 		sourceNamespace := data.Get(formatters.SourceNamespace).(string)
 		destinationNamespace := formatters.GetRequestNamespace(req)
 
+		if sourceNamespace == "" {
+			return logical.ErrorResponse("%s must be provided", formatters.SourceNamespace), nil
+		}
+
 		ctx = log.Context(ctx, c.logger)
 		err := c.useCases.EthereumToKeys().Execute(ctx, req.Storage, sourceNamespace, destinationNamespace)
 		if err != nil {
