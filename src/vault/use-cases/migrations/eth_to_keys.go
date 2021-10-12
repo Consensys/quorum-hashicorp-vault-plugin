@@ -21,6 +21,11 @@ type ethToKeysUseCase struct {
 	mux          sync.RWMutex
 }
 
+type migrationAccount struct {
+	address   string
+	namespace string
+}
+
 func NewEthToKeysUseCase(ethUseCases usecases.ETHUseCases, keysUseCases usecases.KeysUseCases) usecases.EthereumToKeysUseCase {
 	return &ethToKeysUseCase{
 		ethUseCases:  ethUseCases,
@@ -43,32 +48,51 @@ func (uc *ethToKeysUseCase) Status(ctx context.Context, namespace string) (*enti
 	return status, nil
 }
 
-func (uc *ethToKeysUseCase) Execute(ctx context.Context, storage logical.Storage, namespace string) error {
-	logger := log.FromContext(ctx).With("namespace", namespace)
+func (uc *ethToKeysUseCase) Execute(ctx context.Context, storage logical.Storage, sourceNamespace, destinationNamespace string) error {
+	logger := log.FromContext(ctx).With("source_namespace", sourceNamespace, "destination_namespace", destinationNamespace)
 
-	if uc.getStatus(namespace) != nil && uc.getStatus(namespace).Status == "pending" {
+	if uc.getStatus(destinationNamespace) != nil && uc.getStatus(destinationNamespace).Status == "pending" {
 		errMessage := "migration is currently running, please check its status"
 		logger.Warn(errMessage)
 		return errors.AlreadyExistsError(errMessage)
 	}
 
-	addresses, err := uc.ethUseCases.ListAccounts().WithStorage(storage).Execute(ctx, namespace)
-	if err != nil {
-		return err
+	namespaces := []string{sourceNamespace}
+	var err error
+	if sourceNamespace == "*" {
+		namespaces, err = uc.ethUseCases.ListNamespaces().WithStorage(storage).Execute(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	var accounts []migrationAccount
+	for _, namespace := range namespaces {
+		currAddresses, err := uc.ethUseCases.ListAccounts().WithStorage(storage).Execute(ctx, namespace)
+		if err != nil {
+			return err
+		}
+
+		for _, address := range currAddresses {
+			accounts = append(accounts, migrationAccount{
+				address:   address,
+				namespace: namespace,
+			})
+		}
 	}
 
 	status := &entities.MigrationStatus{
 		Status:    "pending",
 		StartTime: time.Now(),
-		Total:     len(addresses),
+		Total:     len(accounts),
 	}
-	uc.writeStatus(namespace, status)
+	uc.writeStatus(destinationNamespace, status)
 
 	go func() {
 		newCtx := log.Context(context.Background(), logger)
 
-		for _, address := range addresses {
-			account, der := uc.ethUseCases.GetAccount().WithStorage(storage).Execute(newCtx, address, namespace)
+		for _, acc := range accounts {
+			retrievedAccount, der := uc.ethUseCases.GetAccount().WithStorage(storage).Execute(newCtx, acc.address, acc.namespace)
 			if der != nil {
 				status.Status = "failure"
 				status.Error = der
@@ -76,7 +100,7 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, storage logical.Storage
 			}
 
 			// Private keys are stored in hex format without "0x" prefix, they must be transformed to base64
-			privKey, der := hex.DecodeString(account.PrivateKey)
+			privKey, der := hex.DecodeString(retrievedAccount.PrivateKey)
 			if der != nil {
 				errMessage := "failed to decode private key"
 				logger.With("error", err).Error(errMessage)
@@ -88,8 +112,8 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, storage logical.Storage
 			// The ID of the key is the address of the ETH account
 			_, der = uc.keysUseCases.CreateKey().WithStorage(storage).Execute(
 				newCtx,
-				namespace,
-				address,
+				destinationNamespace,
+				acc.address,
 				entities.ECDSA,
 				entities.Secp256k1,
 				base64.URLEncoding.EncodeToString(privKey),
@@ -108,7 +132,7 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, storage logical.Storage
 		status.EndTime = time.Now()
 	}()
 
-	logger.With("total", len(addresses)).Info("migration from ethereum to keys namespace initiated")
+	logger.With("total", len(accounts)).Info("migration from ethereum to keys namespace initiated")
 	return nil
 }
 

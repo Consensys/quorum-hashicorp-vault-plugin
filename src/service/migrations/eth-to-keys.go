@@ -48,10 +48,11 @@ func (c *controller) NewEthereumToKeysStatusOperation() *framework.PathOperation
 
 func (c *controller) ethToKeysHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
-		namespace := formatters.GetRequestNamespace(req)
+		sourceNamespace := data.Get(formatters.SourceNamespace).(string)
+		destinationNamespace := formatters.GetRequestNamespace(req)
 
 		ctx = log.Context(ctx, c.logger)
-		err := c.useCases.EthereumToKeys().Execute(ctx, req.Storage, namespace)
+		err := c.useCases.EthereumToKeys().Execute(ctx, req.Storage, sourceNamespace, destinationNamespace)
 		if err != nil {
 			return errors.ParseHTTPError(err)
 		}
