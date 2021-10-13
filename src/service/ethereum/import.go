@@ -41,7 +41,7 @@ func (c *controller) importHandler() framework.OperationFunc {
 		namespace := formatters.GetRequestNamespace(req)
 
 		if privateKeyString == "" {
-			return logical.ErrorResponse("privateKey must be provided"), nil
+			return logical.ErrorResponse("private_key must be provided"), nil
 		}
 
 		ctx = log.Context(ctx, c.logger)

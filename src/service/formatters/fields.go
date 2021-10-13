@@ -26,6 +26,7 @@ const (
 	VersionLabel             = "version"
 	CreatedAtLabel           = "created_at"
 	UpdatedAtLabel           = "updated_at"
+	SourceNamespace          = "source_namespace"
 
 	NamespaceHeader = "X-Vault-Namespace"
 )

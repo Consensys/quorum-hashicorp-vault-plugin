@@ -48,10 +48,15 @@ func (c *controller) NewEthereumToKeysStatusOperation() *framework.PathOperation
 
 func (c *controller) ethToKeysHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
-		namespace := formatters.GetRequestNamespace(req)
+		sourceNamespace := data.Get(formatters.SourceNamespace).(string)
+		destinationNamespace := formatters.GetRequestNamespace(req)
+
+		if sourceNamespace == "" {
+			return logical.ErrorResponse("%s must be provided", formatters.SourceNamespace), nil
+		}
 
 		ctx = log.Context(ctx, c.logger)
-		err := c.useCases.EthereumToKeys().Execute(ctx, req.Storage, namespace)
+		err := c.useCases.EthereumToKeys().Execute(ctx, req.Storage, sourceNamespace, destinationNamespace)
 		if err != nil {
 			return errors.ParseHTTPError(err)
 		}
@@ -62,10 +67,15 @@ func (c *controller) ethToKeysHandler() framework.OperationFunc {
 
 func (c *controller) ethToKeysStatusHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
-		namespace := formatters.GetRequestNamespace(req)
+		sourceNamespace := data.Get(formatters.SourceNamespace).(string)
+		destinationNamespace := formatters.GetRequestNamespace(req)
+
+		if sourceNamespace == "" {
+			return logical.ErrorResponse("%s must be provided", formatters.SourceNamespace), nil
+		}
 
 		ctx = log.Context(ctx, c.logger)
-		status, err := c.useCases.EthereumToKeys().Status(ctx, namespace)
+		status, err := c.useCases.EthereumToKeys().Status(ctx, sourceNamespace, destinationNamespace)
 		if err != nil {
 			return errors.ParseHTTPError(err)
 		}
