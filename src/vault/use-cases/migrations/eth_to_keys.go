@@ -35,10 +35,10 @@ func NewEthToKeysUseCase(ethUseCases usecases.ETHUseCases, keysUseCases usecases
 	}
 }
 
-func (uc *ethToKeysUseCase) Status(ctx context.Context, namespace string) (*entities.MigrationStatus, error) {
-	logger := log.FromContext(ctx).With("namespace", namespace)
+func (uc *ethToKeysUseCase) Status(ctx context.Context, sourceNamespace, destinationNamespace string) (*entities.MigrationStatus, error) {
+	logger := log.FromContext(ctx).With("source_namespace", sourceNamespace, "destination_namespace", destinationNamespace)
 
-	status := uc.status[namespace]
+	status := uc.status[sourceNamespace+destinationNamespace]
 	if status == nil {
 		errMessage := "migration could not be found"
 		logger.Warn(errMessage)
@@ -51,7 +51,7 @@ func (uc *ethToKeysUseCase) Status(ctx context.Context, namespace string) (*enti
 func (uc *ethToKeysUseCase) Execute(ctx context.Context, storage logical.Storage, sourceNamespace, destinationNamespace string) error {
 	logger := log.FromContext(ctx).With("source_namespace", sourceNamespace, "destination_namespace", destinationNamespace)
 
-	if uc.getStatus(destinationNamespace) != nil && uc.getStatus(destinationNamespace).Status == "pending" {
+	if uc.getStatus(sourceNamespace, destinationNamespace) != nil && uc.getStatus(sourceNamespace, destinationNamespace).Status == "pending" {
 		errMessage := "migration is currently running, please check its status"
 		logger.Warn(errMessage)
 		return errors.AlreadyExistsError(errMessage)
@@ -86,7 +86,7 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, storage logical.Storage
 		StartTime: time.Now(),
 		Total:     len(accounts),
 	}
-	uc.writeStatus(destinationNamespace, status)
+	uc.writeStatus(sourceNamespace, destinationNamespace, status)
 
 	go func() {
 		newCtx := log.Context(context.Background(), logger)
@@ -136,16 +136,16 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, storage logical.Storage
 	return nil
 }
 
-func (uc *ethToKeysUseCase) getStatus(namespace string) *entities.MigrationStatus {
+func (uc *ethToKeysUseCase) getStatus(sourceNamespace, destinationNamespace string) *entities.MigrationStatus {
 	uc.mux.RLock()
 	defer uc.mux.RUnlock()
 
-	return uc.status[namespace]
+	return uc.status[sourceNamespace+destinationNamespace]
 }
 
-func (uc *ethToKeysUseCase) writeStatus(namespace string, status *entities.MigrationStatus) {
+func (uc *ethToKeysUseCase) writeStatus(sourceNamespace, destinationNamespace string, status *entities.MigrationStatus) {
 	uc.mux.Lock()
 	defer uc.mux.Unlock()
 
-	uc.status[namespace] = status
+	uc.status[sourceNamespace+destinationNamespace] = status
 }

@@ -14,5 +14,5 @@ type MigrationsUseCases interface {
 
 type EthereumToKeysUseCase interface {
 	Execute(ctx context.Context, storage logical.Storage, sourceNamespace, destinationNamespace string) error
-	Status(ctx context.Context, namespace string) (*entities.MigrationStatus, error)
+	Status(ctx context.Context, sourceNamespace, destinationNamespace string) (*entities.MigrationStatus, error)
 }

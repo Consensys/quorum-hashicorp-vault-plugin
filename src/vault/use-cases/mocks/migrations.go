@@ -74,30 +74,30 @@ func (m *MockEthereumToKeysUseCase) EXPECT() *MockEthereumToKeysUseCaseMockRecor
 }
 
 // Execute mocks base method
-func (m *MockEthereumToKeysUseCase) Execute(ctx context.Context, storage logical.Storage, namespace string) error {
+func (m *MockEthereumToKeysUseCase) Execute(ctx context.Context, storage logical.Storage, sourceNamespace, destinationNamespace string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Execute", ctx, storage, namespace)
+	ret := m.ctrl.Call(m, "Execute", ctx, storage, sourceNamespace, destinationNamespace)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Execute indicates an expected call of Execute
-func (mr *MockEthereumToKeysUseCaseMockRecorder) Execute(ctx, storage, namespace interface{}) *gomock.Call {
+func (mr *MockEthereumToKeysUseCaseMockRecorder) Execute(ctx, storage, sourceNamespace, destinationNamespace interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockEthereumToKeysUseCase)(nil).Execute), ctx, storage, namespace)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockEthereumToKeysUseCase)(nil).Execute), ctx, storage, sourceNamespace, destinationNamespace)
 }
 
 // Status mocks base method
-func (m *MockEthereumToKeysUseCase) Status(ctx context.Context, namespace string) (*entities.MigrationStatus, error) {
+func (m *MockEthereumToKeysUseCase) Status(ctx context.Context, sourceNamespace, destinationNamespace string) (*entities.MigrationStatus, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Status", ctx, namespace)
+	ret := m.ctrl.Call(m, "Status", ctx, sourceNamespace, destinationNamespace)
 	ret0, _ := ret[0].(*entities.MigrationStatus)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Status indicates an expected call of Status
-func (mr *MockEthereumToKeysUseCaseMockRecorder) Status(ctx, namespace interface{}) *gomock.Call {
+func (mr *MockEthereumToKeysUseCaseMockRecorder) Status(ctx, sourceNamespace, destinationNamespace interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Status", reflect.TypeOf((*MockEthereumToKeysUseCase)(nil).Status), ctx, namespace)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Status", reflect.TypeOf((*MockEthereumToKeysUseCase)(nil).Status), ctx, sourceNamespace, destinationNamespace)
 }
