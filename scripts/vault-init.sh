@@ -16,6 +16,10 @@ if [ -n "$VAULT_CLIENT_CERT" ]; then
  VAULT_SSL_PARAMS="$VAULT_SSL_PARAMS --cert $VAULT_CLIENT_CERT"
 fi     
 
+if [ -n "$VAULT_CLIENT_KEY" ]; then
+ VAULT_SSL_PARAMS="$VAULT_SSL_PARAMS --key $VAULT_CLIENT_KEY"
+fi     
+
 echo "[PLUGIN] Initializing Vault: ${VAULT_ADDR}"
 
 curl -s --request POST ${VAULT_SSL_PARAMS} \
