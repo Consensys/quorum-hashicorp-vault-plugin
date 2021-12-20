@@ -57,6 +57,14 @@ curl -s --header "X-Vault-Token: ${ROOT_TOKEN}" --request POST ${VAULT_SSL_PARAM
   --data '{"type": "plugin", "plugin_name": "quorum-hashicorp-vault-plugin", "config": {"force_no_cache": true, "passthrough_request_headers": ["X-Vault-Namespace"]} }' \
   ${VAULT_ADDR}/v1/sys/mounts/${PLUGIN_MOUNT_PATH}
 
+if [ -n "$VAULT_KVV2_MOUNT_PATH" ]; then
+# Enable kv-v2 secret engine
+echo "[PLUGIN] Enabling kv-v2 Hashicorp Vault engine..."
+curl --header "X-Vault-Token: ${VAULT_TOKEN}" --request POST ${VAULT_SSL_PARAMS}\
+     --data '{"type": "kv-v2", "config": {"force_no_cache": true} }' \
+     ${VAULT_ADDR}/v1/sys/mounts/${VAULT_KVV2_MOUNT_PATH}
+fi
+
 if [ -n "$ROOT_TOKEN" ]; then 
   echo "[PLUGIN] Root token saved in ${ROOT_TOKEN_PATH}"
   echo "$ROOT_TOKEN" > ${ROOT_TOKEN_PATH}
