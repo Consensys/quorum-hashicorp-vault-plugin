@@ -55,7 +55,7 @@ func (c *controller) pathEthereumToKeys() *framework.Path {
 
 func (c *controller) pathEthereumToKeysStatus() *framework.Path {
 	return &framework.Path{
-		Pattern:      fmt.Sprintf("migrations/ethereum-to-keys/status/%s", framework.GenericNameRegex(formatters.SourceNamespace)),
+		Pattern:      fmt.Sprintf("migrations/ethereum-to-keys/status/%s", framework.OptionalParamRegex(formatters.SourceNamespace)),
 		HelpSynopsis: "Checks the status of the migration",
 		Fields: map[string]*framework.FieldSchema{
 			formatters.SourceNamespace: {

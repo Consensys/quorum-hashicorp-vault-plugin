@@ -103,7 +103,7 @@ func (uc *ethToKeysUseCase) Execute(ctx context.Context, storage logical.Storage
 			privKey, der := hex.DecodeString(retrievedAccount.PrivateKey)
 			if der != nil {
 				errMessage := "failed to decode private key"
-				logger.With("error", err).Error(errMessage)
+				logger.With("error", der).Error(errMessage)
 				status.Status = "failure"
 				status.Error = errors.EncodingError(errMessage)
 				return

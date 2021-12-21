@@ -51,10 +51,6 @@ func (c *controller) ethToKeysHandler() framework.OperationFunc {
 		sourceNamespace := data.Get(formatters.SourceNamespace).(string)
 		destinationNamespace := formatters.GetRequestNamespace(req)
 
-		if sourceNamespace == "" {
-			return logical.ErrorResponse("%s must be provided", formatters.SourceNamespace), nil
-		}
-
 		ctx = log.Context(ctx, c.logger)
 		err := c.useCases.EthereumToKeys().Execute(ctx, req.Storage, sourceNamespace, destinationNamespace)
 		if err != nil {
@@ -69,10 +65,6 @@ func (c *controller) ethToKeysStatusHandler() framework.OperationFunc {
 	return func(ctx context.Context, req *logical.Request, data *framework.FieldData) (*logical.Response, error) {
 		sourceNamespace := data.Get(formatters.SourceNamespace).(string)
 		destinationNamespace := formatters.GetRequestNamespace(req)
-
-		if sourceNamespace == "" {
-			return logical.ErrorResponse("%s must be provided", formatters.SourceNamespace), nil
-		}
 
 		ctx = log.Context(ctx, c.logger)
 		status, err := c.useCases.EthereumToKeys().Status(ctx, sourceNamespace, destinationNamespace)
