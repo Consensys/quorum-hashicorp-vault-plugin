@@ -152,8 +152,11 @@ services:
       ROLE_FILE_PATH: /vault/token/role
       VAULT_IS_READY: /vault/token/.ready
       CAPABILITIES: '[\"create\", \"read\", \"update\", \"delete\", \"list\"]'
-      APP_ROLE: key-manager
-      POLICIES: '["allow_secrets"]'
+      APP_ROLE_ID: key-manager
+      APP_ROLE_POLICIES: '["allow_keys", "allow_secrets"]'
+      POLICY_ID: allow_keys
+      KVV2_MOUNT_PATH: secret
+      KVV2_POLICY_ID: allow_secrets
     volumes:
       - token:/vault/token
       - ./scripts/vault-agent-init.sh:/usr/local/bin/init.sh
