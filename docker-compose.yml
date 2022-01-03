@@ -110,7 +110,7 @@ services:
         ( sleep 2 ; init.sh && cat > $${VAULT_IS_READY}) &
         vault server -config=/vault/config.hcl
     healthcheck:
-      test: [ "CMD", "wget", "--spider", "--proxy", "off", "http://localhost:8200/v1/sys/health?standbyok=true" ]
+      test: [ "CMD", "wget", "--spider", "--proxy", "off", "https://localhost:8200/v1/sys/health?standbyok=true" ]
       interval: 10s
       timeout: 3s
       retries: 10

@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-##  v1.1.4 (Unreleased)
+##  v1.1.4 (2022-01-03)
 - Support for optional SSL mode within init script
 - Support for optional kv-v2 engine within init script
 - Include vault-agent init script
