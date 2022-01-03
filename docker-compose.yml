@@ -1,6 +1,7 @@
 version: "3.7"
 
 x-container-common: &container-common
+  image: consensys/orchestrate:v21.12.0
   networks:
     - vault
 
@@ -16,12 +17,13 @@ services:
       ROOT_TOKEN_PATH: /vault/token/.root
       VAULT_ADDR: http://vault:8200
       PLUGIN_MOUNT_PATH: quorum
+      KVV2_MOUNT_PATH: secret
       VAULT_IS_READY: /vault/token/.ready
     ports:
       - 8200:8200
     volumes:
       - token:/vault/token
-      - ./scripts/vault-agent-init.sh:/usr/local/bin/agent-init.sh
+      - ./scripts/vault-init.sh:/usr/local/bin/init.sh
     entrypoint:
       - sh
       - -c
@@ -41,8 +43,6 @@ services:
             api_addr = "http://vault:8200"
             plugin_directory = "/vault/plugins"
             log_level = "Debug"
-
-            ui = false
         EOF
 
         ( sleep 2 ; init.sh && cat > $${VAULT_IS_READY}) &
@@ -54,139 +54,148 @@ services:
       retries: 10
       start_period: 5s
 
-    vault-ssl:
-      <<: *container-common
-      image: consensys/quorum-hashicorp-vault-plugin:latest
-      tty: true
-      restart: "no"
-      cap_add:
-        - IPC_LOCK
-      ports:
-        - 8200:8200
-      depends_on:
-        - generate-certs
-      volumes:
-        - token:/vault/token
-        - tls:/vault/tls
-        - ./scripts/vault-init.sh:/usr/local/bin/init.sh
-      environment:
-        ROOT_TOKEN_PATH: /vault/token/.root
-        VAULT_ADDR: https://vault:8200
-        PLUGIN_MOUNT_PATH: quorum
-        VAULT_IS_READY: /vault/token/.ready
-        VAULT_CACERT: ${VAULT_CACERT-/vault/tls/ca.crt}
-        VAULT_CLIENT_CERT: ${VAULT_CLIENT_CERT-/vault/tls/client.crt}
-        VAULT_CLIENT_KEY: ${VAULT_CLIENT_KEY-/vault/tls/client.key}
-      entrypoint:
-        - sh
-        - -c
-        - |
-          cat <<EOF > /vault/config.hcl
-              backend "file" {
-                path = "/vault/file"
-              }
-
-              listener "tcp" {
-                address = "vault:8200"
-                tls_disable = true
-              }
-
-              default_lease_ttl = "15m"
-              max_lease_ttl = "30m"
-              api_addr = "http://vault:8200"
-              plugin_directory = "/vault/plugins"
-              log_level = "Debug"
-
-              ui = false
-          EOF
-
-          ( sleep 2 ; init.sh && cat > $${VAULT_IS_READY}) &
-          vault server -config=/vault/config.hcl
-      healthcheck:
-        test: [ "CMD", "wget", "--spider", "--proxy", "off", "http://localhost:8200/v1/sys/health?standbyok=true" ]
-        interval: 10s
-        timeout: 3s
-        retries: 10
-        start_period: 5s
-
-    agent:
-      <<: *container-common
-      image: consensys/quorum-hashicorp-vault-plugin:v1.1.3
-      tty: true
-      depends_on:
-        - hashicorp
-      cap_add:
-        - IPC_LOCK
-      environment:
-        PLUGIN_MOUNT_PATH: quorum
-        ROOT_TOKEN_PATH: /vault/token/.root
-        VAULT_ADDR: http://vault:8200
-        SECRET_FILE_PATH: /vault/token/secret
-        ROLE_FILE_PATH: /vault/token/role
-        VAULT_IS_READY: /vault/token/.ready
-        CAPABILITIES: '[\"create\", \"read\", \"update\", \"delete\", \"list\"]'
-        APP_ROLE: key-manager
-        POLICIES: '["allow_secrets"]'
-      volumes:
-        - token:/vault/token
-        - ./scripts/vault-agent-init.sh:/usr/local/bin/init.sh
-      entrypoint:
-        - sh
-        - -c
-        - |
-
-          cat <<EOF > /vault/config.hcl
-            exit_after_auth = false
-
-            vault {
-              address = "http://vault:8200"
+  vault-ssl:
+    <<: *container-common
+    image: consensys/quorum-hashicorp-vault-plugin:latest
+    tty: true
+    container_name: vault
+    restart: "no"
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - 8200:8200
+    depends_on:
+      - generate-certs
+    volumes:
+      - token:/vault/token
+      - tls:/vault/tls
+      - ./scripts/vault-init.sh:/usr/local/bin/init.sh
+    environment:
+      ROOT_TOKEN_PATH: /vault/token/.root
+      VAULT_ADDR: https://vault:8200
+      PLUGIN_MOUNT_PATH: quorum
+      VAULT_IS_READY: /vault/token/.ready
+      VAULT_CACERT: ${VAULT_CACERT-/vault/tls/ca.crt}
+      VAULT_CLIENT_CERT: ${VAULT_CLIENT_CERT-/vault/tls/client.crt}
+      VAULT_CLIENT_KEY: ${VAULT_CLIENT_KEY-/vault/tls/client.key}
+      VAULT_SERVER_CERT: ${VAULT_SERVER_CERT-/vault/tls/tls.crt}
+      VAULT_SERVER_KEY: ${VAULT_SERVER_KEY-/vault/tls/tls.key}
+    entrypoint:
+      - sh
+      - -c
+      - |
+        cat <<EOF > /vault/config.hcl
+            backend "file" {
+              path = "/vault/file"
             }
 
-            auto_auth {
-              method "approle" {
-                config = {
-                  role_id_file_path = "/vault/token/role"
-                  secret_id_file_path = "/vault/token/secret"
-                  remove_secret_id_file_after_reading = false
-                }
-              }
+            listener "tcp" {
+              address = "vault:8200"
+              tls_disable = false
+              tls_client_ca_file = "$${VAULT_CACERT}"
+              tls_cert_file = "$${VAULT_SERVER_CERT}"
+              tls_key_file = "$${VAULT_SERVER_KEY}"
+            }
 
-              sink "file" {
-                config = {
-                  path = "/vault/token/.vault-token"
-                }
-              }
-          EOF
+            default_lease_ttl = "15m"
+            max_lease_ttl = "30m"
+            api_addr = "https://vault:8200"
+            plugin_directory = "/vault/plugins"
+            log_level = "Debug"
+        EOF
 
-          until [ -f ${VAULT_IS_READY} ]; do
-            echo "[AGENT] waiting for vault to be ready..."
-            sleep 1
-          done
+        until [ -f $${VAULT_SERVER_CERT} ]; do
+          echo "[INIT] waiting for $${VAULT_SERVER_CERT} to be ready..."
+          sleep 1
+        done
 
-          init.sh
-          vault agent -config=/vault/config.hcl
+        ( sleep 2 ; init.sh && cat > $${VAULT_IS_READY}) &
+        vault server -config=/vault/config.hcl
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "--proxy", "off", "http://localhost:8200/v1/sys/health?standbyok=true" ]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+      
+  generate-certs:
+    image: golang:1.16
+    tty: true
+    restart: "no"
+    volumes:
+      - tls:/vault/tls
+      - ./deps/cfssl:/config
+      - ./scripts/generate-pki.sh:/usr/local/bin/init.sh
+    environment:
+      CONF_DIR: /config
+      DEST_CERT_PATH: /vault/tls/
+    entrypoint:
+      - sh
+      - -c
+      - |
 
-    generate-certs:
-      <<: *container-common
-      image: golang:1.16
-      tty: true
-      restart: "no"
-      volumes:
-        - tls:/vault/tls
-        - .deps/cfssl:/config
-        - ./scripts/generate-pki.sh:/usr/local/bin/init.sh
-      environment:
-        CONF_DIR: /config
-        DEST_CERT_PATH: /vault/tls/
-      entrypoint:
-        - sh
-        - -c
-        - |
+        go get github.com/cloudflare/cfssl/cmd/cfssl
+        go get github.com/cloudflare/cfssl/cmd/cfssljson
 
-          go get github.com/cloudflare/cfssl/cmd/cfssl
-          go get github.com/cloudflare/cfssl/cmd/cfssljson
+        init.sh
 
-          init.sh
+#    agent:
+#      <<: *container-common
+#      image: consensys/quorum-hashicorp-vault-plugin:v1.1.3
+#      tty: true
+#      depends_on:
+#        - hashicorp
+#      cap_add:
+#        - IPC_LOCK
+#      environment:
+#        PLUGIN_MOUNT_PATH: quorum
+#        ROOT_TOKEN_PATH: /vault/token/.root
+#        VAULT_ADDR: http://vault:8200
+#        SECRET_FILE_PATH: /vault/token/secret
+#        ROLE_FILE_PATH: /vault/token/role
+#        VAULT_IS_READY: /vault/token/.ready
+#        CAPABILITIES: '[\"create\", \"read\", \"update\", \"delete\", \"list\"]'
+#        APP_ROLE: key-manager
+#        POLICIES: '["allow_secrets"]'
+#      volumes:
+#        - token:/vault/token
+#        - ./scripts/vault-agent-init.sh:/usr/local/bin/init.sh
+#      entrypoint:
+#        - sh
+#        - -c
+#        - |
+#
+#          cat <<EOF > /vault/config.hcl
+#            exit_after_auth = false
+#
+#            vault {
+#              address = "http://vault:8200"
+#            }
+#
+#            auto_auth {
+#              method "approle" {
+#                config = {
+#                  role_id_file_path = "/vault/token/role"
+#                  secret_id_file_path = "/vault/token/secret"
+#                  remove_secret_id_file_after_reading = false
+#                }
+#              }
+#
+#              sink "file" {
+#                config = {
+#                  path = "/vault/token/.vault-token"
+#                }
+#              }
+#          EOF
+#
+#          until [ -f ${VAULT_IS_READY} ]; do
+#            echo "[AGENT] waiting for vault to be ready..."
+#            sleep 1
+#          done
+#
+#          init.sh
+#          vault agent -config=/vault/config.hcl
+
 networks:
   vault:
     driver: bridge

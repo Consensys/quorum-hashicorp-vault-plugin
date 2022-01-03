@@ -2,8 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
-##  v1.1.3 (Unrelease)
-- Support for SSL mode on init script
+##  v1.1.4 (Unreleased)
+- Support for optional SSL mode within init script
+- Support for optional kv-v2 engine within init script
+- Include template vault-agent init script
+
+##  v1.1.3 (2021-12-22)
+### 🛠 Bug fixes
+- Allow empty namespace in migration script
 
 ##  v1.1.2 (2021-10-6)
 ### 🆕 Features

@@ -1,0 +1,19 @@
+{
+  "CN": "Tanuki Intermediate CA",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "FR",
+      "L": "Paris",
+      "ST": "Paris",
+      "O": "Consensys",
+      "OU": "Tanuki Team Intermediate CA"
+    }
+  ],
+  "ca": {
+    "expiry": "42720h"
+  }
+}
