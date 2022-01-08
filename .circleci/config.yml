@@ -1,6 +1,9 @@
 ---
 version: 2.1
 
+orbs:
+  codecov: codecov/codecov@3.2
+  
 executors:
   golang_executor:
     docker:
@@ -92,7 +95,12 @@ jobs:
       - prepare_golang
       - run:
           name: Unit tests
-          command: make test
+          command: make run-coverage
+      - codecov/upload:
+          file: ./build/coverage/coverage.out
+      - store_artifacts:
+          path: ./build/coverage/coverage.html
+          destination: coverage.html
 
   publish-github-release:
     executor: golang_executor

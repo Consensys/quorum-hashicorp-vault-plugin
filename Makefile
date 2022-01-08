@@ -4,8 +4,23 @@ DATE = $(shell date +'%s')
 
 .PHONY: build lint
 
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	OPEN = xdg-open
+endif
+ifeq ($(UNAME_S),Darwin)
+	OPEN = open
+endif
+
 test:
-	go test  ./... -cover -coverprofile=coverage.txt -covermode=atomic
+	@mkdir -p build/coverage
+	go test  ./... -cover -coverprofile=build/coverage/coverage.out -covermode=count
+
+run-coverage: test
+	@sh scripts/coverage.sh build/coverage/coverage.out build/coverage/coverage.html
+
+coverage: run-coverage
+	@$(OPEN) build/coverage/coverage.html 2>/dev/null
 
 gobuild:
 	@CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -a -o build/bin/quorum-hashicorp-vault-plugin

@@ -1,6 +1,9 @@
 [![Website](https://img.shields.io/website?label=documentation&url=https%3A%2F%2Fdocs.orchestrate.pegasys.tech%2F)](https://docs.orchestrate.pegasys.tech/)
 [![Website](https://img.shields.io/website?label=website&url=https%3A%2F%2Fpegasys.tech%2Forchestrate%2F)](https://pegasys.tech/orchestrate/)
+
+[![codecov](https://codecov.io/gh/ConsenSys/quorum-hashicorp-vault-plugin/branch/main/graph/badge.svg)](https://codecov.io/gh/ConsenSys/quorum-hashicorp-vault-plugin)
 [![CircleCI](https://img.shields.io/circleci/build/gh/ConsenSys/quorum-hashicorp-vault-plugin?token=8a52ab8f0640f5bee56991cd30d808f735749dbf)](https://circleci.com/gh/PegaSysEng/quorum-hashicorp-vault-plugin)
+
 
 ![](/img/QuorumLogo_Blue.png)
 
