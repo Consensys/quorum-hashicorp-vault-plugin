@@ -36,4 +36,6 @@ COPY --from=builder /plugin/LICENSE /
 COPY --from=builder /plugin/quorum-hashicorp-vault-plugin /vault/plugins/quorum-hashicorp-vault-plugin
 COPY --from=builder /plugin/scripts/* /usr/local/bin/
 
+RUN setcap cap_ipc_lock=+ep /vault/plugins/quorum-hashicorp-vault-plugin
+
 EXPOSE 8200
