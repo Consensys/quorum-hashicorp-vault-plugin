@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.1.5 (Unreleased)
+- Add setcap cmd on plugin file at container level
+- Align release artifact with docker image
+
 ##  v1.1.4 (2022-01-03)
 - Support for optional SSL mode within init script
 - Support for optional kv-v2 engine within init script

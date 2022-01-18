@@ -6,7 +6,6 @@ Dockerfile*
 docker-compose*
 .gitlab-ci.yml
 
-build/
 vendor/
 
 AUTHORS

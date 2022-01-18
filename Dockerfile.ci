@@ -1,0 +1,17 @@
+FROM library/vault:1.8.4
+
+RUN apk add --no-cache \
+    jq \
+    curl
+
+# Expose the plugin directory as a volume
+VOLUME /vault/plugins
+
+COPY LICENSE /LICENSE
+COPY ./build/bin/quorum-hashicorp-vault-plugin /vault/plugins/quorum-hashicorp-vault-plugin
+COPY ./build/bin/SHA256SUM /vault/plugins/SHA256SUM
+COPY ./scripts/* /usr/local/bin/
+
+RUN setcap cap_ipc_lock=+ep /vault/plugins/quorum-hashicorp-vault-plugin
+
+EXPOSE 8200
