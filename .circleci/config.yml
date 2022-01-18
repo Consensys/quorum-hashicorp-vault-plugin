@@ -184,7 +184,7 @@ workflows:
       - push-dev-image:
           filters:
             branches:
-              only: 12-plugin_checksum
+              only: main
           context:
             - dockerhub-quorumengineering-rw
             - cloudsmith-tanuki-rw
