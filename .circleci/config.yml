@@ -49,12 +49,12 @@ commands:
       - run:
           name: Build Quorum Hashicorp Vault Plugin
           command: >-
-            DOCKER_BUILDKIT=1 docker build
+            DOCKER_BUILDKIT=1 docker build -f Dockerfile.ci
             --label org.opencontainers.image.created=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
             --label org.opencontainers.image.url="https://consensys.net"
             --label org.opencontainers.image.documentation="https://docs.quorum-key-manager.consensys.net/"
             --label org.opencontainers.image.source="${CIRCLE_REPOSITORY_URL}"
-            --label org.opencontainers.image.version="${CIRCLE_TAG}"
+            --label org.opencontainers.image.version="${CIRCLE_TAG-branch}"
             --label org.opencontainers.image.revision="${CIRCLE_SHA1:0:7}"
             --label org.opencontainers.image.vendor="ConsenSys Software Inc."
             --label org.opencontainers.image.licenses="BUSL-1.1"
@@ -82,9 +82,9 @@ jobs:
       - run:
           name: Build
           command: |
-            CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -a -v -o build/bin/quorum-hashicorp-vault-plugin
-            upx build/bin/quorum-hashicorp-vault-plugin
-            sha256sum -b build/bin/quorum-hashicorp-vault-plugin | cut -d' ' -f1 > build/bin/SHA256SUM
+            CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -a -v -o ./build/bin/quorum-hashicorp-vault-plugin
+            upx ./build/bin/quorum-hashicorp-vault-plugin
+            sha256sum -b ./build/bin/quorum-hashicorp-vault-plugin | cut -d' ' -f1 > ./build/bin/SHA256SUM
       - persist_to_workspace:
           root: ~/project/build/bin
           paths:
@@ -120,6 +120,8 @@ jobs:
     resource_class: large
     steps:
       - checkout
+      - attach_workspace:
+          at: ./build/bin
       - setup_remote_docker:
           version: 19.03.13
           docker_layer_caching: true
@@ -140,6 +142,8 @@ jobs:
     resource_class: large
     steps:
       - checkout
+      - attach_workspace:
+          at: ./build/bin
       - setup_remote_docker:
           version: 19.03.13
           docker_layer_caching: true
@@ -179,7 +183,7 @@ workflows:
       - push-dev-image:
           filters:
             branches:
-              only: main
+              only: 12-plugin_checksum
           requires:
             - styleCheck
             - test
