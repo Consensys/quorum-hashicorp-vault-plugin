@@ -73,54 +73,6 @@ commands:
           command: docker buildx install
           name: Initialize Docker buildx
 
-  docker_build_image:
-    description: "Build Quorum Hashicorp Vault Plugin docker image"
-    parameters: # parameters are at the job level
-      docker-image-platform:
-        type: string
-        default: linux/amd64
-      docker-image-registry:
-        type: string
-      docker-image-tag:
-        type: string
-    steps:
-      - run:
-          name: Build Quorum Hashicorp Vault Plugin
-          command: |
-            export DOCKER_IMAGE_SIGN="<< parameters.docker-image-sign >>"
-            export DOCKER_IMAGE_PLATFORM="<< parameters.docker-image-platform >>"
-            export DOCKER_IMAGE_VERSION="<< parameters.docker-distroless-version >>"
-            export DOCKER_IMAGE_REF="<< parameters.docker-image-registry >>/<< parameters.docker-image-tag >>"
-
-            TARGETOS="$(echo "${DOCKER_IMAGE_PLATFORM}" | cut -d '/' -f 1)"
-            TARGETARCH="$(echo "${DOCKER_IMAGE_PLATFORM}" | cut -d '/' -f 2)"
-
-            if [ $TARGETOS != "linux" ]; then
-              echo "Targeted OS not supported $TARGETOS"
-              exit 1
-            fi
-
-            if [ $TARGETARCH == "amd64" ]; then
-              DOCKER_IMAGE_TAG="${DOCKER_IMAGE_REF}"
-            else
-              DOCKER_IMAGE_TAG="${DOCKER_IMAGE_REF}.${TARGETARCH}"
-            fi
-            
-            echo "Building image ${DOCKER_IMAGE_TAG} for {os:${TARGETOS}, arch:$TARGETARCH}..."
-            DOCKER_BUILDKIT=1 docker build -f Dockerfile.ci \
-            --label org.opencontainers.image.created=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
-            --label org.opencontainers.image.url="https://consensys.net" \
-            --label org.opencontainers.image.documentation="https://docs.quorum-key-manager.consensys.net/" \
-            --label org.opencontainers.image.source="${CIRCLE_REPOSITORY_URL}" \
-            --label org.opencontainers.image.version="${CIRCLE_TAG-branch}" \
-            --label org.opencontainers.image.revision="${CIRCLE_SHA1:0:7}" \
-            --label org.opencontainers.image.vendor="ConsenSys Software Inc." \
-            --label org.opencontainers.image.licenses="BUSL-1.1" \
-            --label org.opencontainers.image.title="${CIRCLE_PROJECT_REPONAME}" \
-            --label org.opencontainers.image.description="This Quorum plugin enhances Hashicorp Vault Service with cryptographic operations under Vault engine." \
-            --platform ${DOCKER_IMAGE_PLATFORM} \
-            --push -t quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7} .
-
 jobs:
   styleCheck:
     executor: golang_executor
@@ -172,10 +124,18 @@ jobs:
             VERSION="${CIRCLE_TAG}"
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
 
-  push-dev-image:
+  build-docker-image:
     docker:
-      - image: cimg/base:2020.01
+      - image: cimg/base:2021.12
     resource_class: xlarge
+    parameters: # parameters are at the job level
+      docker-image-platform:
+        type: string
+        default: linux/amd64
+      docker-image-registry:
+        type: string
+      docker-image-tag:
+        type: string
     steps:
       - checkout
       - attach_workspace:
@@ -185,7 +145,40 @@ jobs:
           docker_layer_caching: true
       - prepare_docker
       - prepare_docker_buildx
-      - docker_build_image
+      - run:
+          name: Build Quorum Hashicorp Vault Plugin
+          command: |
+            export DOCKER_IMAGE_PLATFORM="<< parameters.docker-image-platform >>"
+            export DOCKER_IMAGE_REF="<< parameters.docker-image-registry >>/<< parameters.docker-image-tag >>"
+
+            TARGETOS="$(echo "${DOCKER_IMAGE_PLATFORM}" | cut -d '/' -f 1)"
+            TARGETARCH="$(echo "${DOCKER_IMAGE_PLATFORM}" | cut -d '/' -f 2)"
+
+            if [ $TARGETOS != "linux" ]; then
+              echo "Targeted OS not supported $TARGETOS"
+              exit 1
+            fi
+
+            if [ $TARGETARCH == "amd64" ]; then
+              DOCKER_IMAGE_TAG="${DOCKER_IMAGE_REF}"
+            else
+              DOCKER_IMAGE_TAG="${DOCKER_IMAGE_REF}.${TARGETARCH}"
+            fi
+
+            echo "Building image ${DOCKER_IMAGE_TAG} for {os:${TARGETOS}, arch:$TARGETARCH}..."
+            DOCKER_BUILDKIT=1 docker build -f Dockerfile.ci \
+            --label org.opencontainers.image.created=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+            --label org.opencontainers.image.url="https://consensys.net" \
+            --label org.opencontainers.image.documentation="https://docs.quorum-key-manager.consensys.net/" \
+            --label org.opencontainers.image.source="${CIRCLE_REPOSITORY_URL}" \
+            --label org.opencontainers.image.version="${CIRCLE_TAG-branch}" \
+            --label org.opencontainers.image.revision="${CIRCLE_SHA1:0:7}" \
+            --label org.opencontainers.image.vendor="ConsenSys Software Inc." \
+            --label org.opencontainers.image.licenses="BUSL-1.1" \
+            --label org.opencontainers.image.title="${CIRCLE_PROJECT_REPONAME}" \
+            --label org.opencontainers.image.description="This Quorum plugin enhances Hashicorp Vault Service with cryptographic operations under Vault engine." \
+            --platform ${DOCKER_IMAGE_PLATFORM} \
+            --push -t ${DOCKER_IMAGE_TAG} .
 
   push-prod-image:
     docker:
@@ -224,7 +217,8 @@ workflows:
               only: /^v.*/
             branches:
               only: /.*/
-      - push-dev-image:
+      - build-docker-image:
+          name: push-dev-image
           filters:
             branches:
               only: arm64
@@ -247,7 +241,8 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - push-prod-image:
+      - build-docker-image:
+          name: push-prod-image
           filters:
             tags:
               only: /^v.*/
