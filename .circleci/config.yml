@@ -221,7 +221,7 @@ workflows:
           name: push-dev-image
           filters:
             branches:
-              only: arm64
+              only: main
           context:
             - dockerhub-quorumengineering-rw
             - cloudsmith-tanuki-rw
@@ -253,7 +253,8 @@ workflows:
             - cloudsmith-tanuki-rw
           matrix:
             parameters:
-              docker-image-tag: ["quorum-hashicorp-vault-plugin:${CIRCLE_TAG}", "quorum-hashicorp-vault-plugin:${latest}"]
+              docker-image-tag: ["quorum-hashicorp-vault-plugin:${CIRCLE_TAG}", "quorum-hashicorp-vault-plugin:latest"]
+              docker-image-platform: ["linux/amd64", "linux/arm64"]
           docker-image-registry: consensys
           requires:
             - publish-github-release
