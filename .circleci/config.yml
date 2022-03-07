@@ -75,15 +75,14 @@ commands:
 
   docker_build_image:
     description: "Build Quorum Hashicorp Vault Plugin docker image"
-    resource_class: xlarge
-      parameters: # parameters are at the job level
-        docker-image-platform:
-          type: string
-          default: linux/amd64
-        docker-image-registry:
-          type: string
-        docker-image-tag:
-          type: string
+    parameters: # parameters are at the job level
+      docker-image-platform:
+        type: string
+        default: linux/amd64
+      docker-image-registry:
+        type: string
+      docker-image-tag:
+        type: string
     steps:
       - run:
           name: Build Quorum Hashicorp Vault Plugin
@@ -176,7 +175,7 @@ jobs:
   push-dev-image:
     docker:
       - image: cimg/base:2020.01
-    resource_class: large
+    resource_class: xlarge
     steps:
       - checkout
       - attach_workspace:
@@ -191,7 +190,7 @@ jobs:
   push-prod-image:
     docker:
       - image: cimg/base:2020.01
-    resource_class: large
+    resource_class: xlarge
     steps:
       - checkout
       - attach_workspace:
