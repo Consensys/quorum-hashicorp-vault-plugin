@@ -3,6 +3,9 @@
 ############################
 FROM golang:1.16-buster AS builder
 
+ARG TARGETOS
+ARG TARGETARCH
+
 RUN apt-get update && \
 	apt-get install --no-install-recommends -y \
 	ca-certificates upx-ucl
@@ -16,7 +19,7 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -a -v -o quorum-hashicorp-vault-plugin
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-s -w" -a -v -o quorum-hashicorp-vault-plugin
 RUN upx quorum-hashicorp-vault-plugin
 RUN sha256sum -b quorum-hashicorp-vault-plugin | cut -d' ' -f1 > SHA256SUM
 

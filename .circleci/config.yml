@@ -99,6 +99,7 @@ jobs:
           root: ~/project/build/bin
           paths:
             - ./
+
   test:
     executor: golang_executor
     steps:
@@ -132,6 +133,9 @@ jobs:
       docker-image-platform:
         type: string
         default: linux/amd64
+      dockerfile:
+        type: string
+        default: Dockerfile
       docker-image-registry:
         type: string
       docker-image-tag:
@@ -150,6 +154,7 @@ jobs:
           command: |
             export DOCKER_IMAGE_PLATFORM="<< parameters.docker-image-platform >>"
             export DOCKER_IMAGE_REF="<< parameters.docker-image-registry >>/<< parameters.docker-image-tag >>"
+            export DOCKERFILE="<< parameters.dockerfile >>"
 
             TARGETOS="$(echo "${DOCKER_IMAGE_PLATFORM}" | cut -d '/' -f 1)"
             TARGETARCH="$(echo "${DOCKER_IMAGE_PLATFORM}" | cut -d '/' -f 2)"
@@ -166,7 +171,7 @@ jobs:
             fi
 
             echo "Building image ${DOCKER_IMAGE_TAG} for {os:${TARGETOS}, arch:$TARGETARCH}..."
-            DOCKER_BUILDKIT=1 docker build -f Dockerfile.ci \
+            DOCKER_BUILDKIT=1 docker build -f ${DOCKERFILE}\
             --label org.opencontainers.image.created=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
             --label org.opencontainers.image.url="https://consensys.net" \
             --label org.opencontainers.image.documentation="https://docs.quorum-key-manager.consensys.net/" \
@@ -254,7 +259,25 @@ workflows:
           matrix:
             parameters:
               docker-image-tag: ["quorum-hashicorp-vault-plugin:${CIRCLE_TAG}", "quorum-hashicorp-vault-plugin:latest"]
-              docker-image-platform: ["linux/amd64", "linux/arm64"]
+          docker-image-platform: linux/amd64
+          docker-image-registry: consensys
+          dockerfile: Dockerfile.ci
+          requires:
+            - publish-github-release
+      - build-docker-image:
+          name: push-prod-image-arm64
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          context:
+            - dockerhub-quorumengineering-rw
+            - cloudsmith-tanuki-rw
+          matrix:
+            parameters:
+              docker-image-tag: ["quorum-hashicorp-vault-plugin:${CIRCLE_TAG}", "quorum-hashicorp-vault-plugin:latest"]
+          docker-image-platform: linux/arm64
           docker-image-registry: consensys
           requires:
             - publish-github-release
