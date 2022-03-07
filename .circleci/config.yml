@@ -40,25 +40,38 @@ commands:
             echo "Login in docker.io"
             echo $DOCKER_PASSWORD_RW | docker login docker.io -u $DOCKER_USER_RW --password-stdin
 
-  docker_build_image:
-    description: "Build Quorum Hashicorp Vault Plugin docker image"
+  prepare_docker_buildx:
+    description: "Docker buildx setup"
+    parameters:
+      qemu-user-static-version:
+        default: 6.1.0-8
+        description: The version of qemu-user-static to use.
+        type: string
+      version:
+        default: 0.7.1
+        description: The version of buildx to install.
+        type: string
     steps:
       - run:
-          name: Build Quorum Hashicorp Vault Plugin
-          command: >-
-            DOCKER_BUILDKIT=1 docker build -f Dockerfile.ci
-            --label org.opencontainers.image.created=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
-            --label org.opencontainers.image.url="https://consensys.net"
-            --label org.opencontainers.image.documentation="https://docs.quorum-key-manager.consensys.net/"
-            --label org.opencontainers.image.source="${CIRCLE_REPOSITORY_URL}"
-            --label org.opencontainers.image.version="${CIRCLE_TAG-branch}"
-            --label org.opencontainers.image.revision="${CIRCLE_SHA1:0:7}"
-            --label org.opencontainers.image.vendor="ConsenSys Software Inc."
-            --label org.opencontainers.image.licenses="BUSL-1.1"
-            --label org.opencontainers.image.title="${CIRCLE_PROJECT_REPONAME}"
-            --label org.opencontainers.image.description="This Quorum plugin enhances Hashicorp Vault Service with cryptographic operations under Vault engine."
-            -q
-            -t quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7} .
+          name: Install Docker buildx
+          command: |
+            mkdir -p ~/.docker/cli-plugins
+            wget "https://github.com/docker/buildx/releases/download/v<< parameters.version >>/buildx-v<< parameters.version >>.linux-amd64" -O ~/.docker/cli-plugins/docker-buildx
+            chmod a+x ~/.docker/cli-plugins/docker-buildx
+      - run:
+          name: Start multiarch/qemu-user-static container
+          command: |
+            docker run --rm --privileged multiarch/qemu-user-static:<< parameters.qemu-user-static-version >> --reset -p yes
+      - run:
+          name: Create docker-multiarch builder
+          command: |
+            docker context create docker-multiarch
+            DOCKER_CONTEXT=$(docker buildx create --use docker-multiarch --platform linux/amd64,linux/arm64)
+            docker buildx inspect --builder ${DOCKER_CONTEXT} --bootstrap
+            docker buildx use ${DOCKER_CONTEXT}
+      - run:
+          command: docker buildx install
+          name: Initialize Docker buildx
 
 jobs:
   styleCheck:
@@ -111,10 +124,18 @@ jobs:
             VERSION="${CIRCLE_TAG}"
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
 
-  push-dev-image:
+  build-docker-image:
     docker:
-      - image: cimg/base:2020.01
-    resource_class: large
+      - image: cimg/base:2021.12
+    resource_class: xlarge
+    parameters: # parameters are at the job level
+      docker-image-platform:
+        type: string
+        default: linux/amd64
+      docker-image-registry:
+        type: string
+      docker-image-tag:
+        type: string
     steps:
       - checkout
       - attach_workspace:
@@ -123,22 +144,46 @@ jobs:
           version: 19.03.13
           docker_layer_caching: true
       - prepare_docker
-      - docker_build_image
+      - prepare_docker_buildx
       - run:
-          name: Deploy image in repository
+          name: Build Quorum Hashicorp Vault Plugin
           command: |
-            export DOCKER_IMAGE_REF=${CLOUDSMITH_DEV_REPO}/quorum-hashicorp-vault-plugin
+            export DOCKER_IMAGE_PLATFORM="<< parameters.docker-image-platform >>"
+            export DOCKER_IMAGE_REF="<< parameters.docker-image-registry >>/<< parameters.docker-image-tag >>"
 
-            docker tag quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7} ${DOCKER_IMAGE_REF}:${CIRCLE_SHA1:0:7}
-            docker push ${DOCKER_IMAGE_REF}:${CIRCLE_SHA1:0:7}
-            
-            docker tag quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7} ${DOCKER_IMAGE_REF}:develop
-            docker push ${DOCKER_IMAGE_REF}:develop
+            TARGETOS="$(echo "${DOCKER_IMAGE_PLATFORM}" | cut -d '/' -f 1)"
+            TARGETARCH="$(echo "${DOCKER_IMAGE_PLATFORM}" | cut -d '/' -f 2)"
+
+            if [ $TARGETOS != "linux" ]; then
+              echo "Targeted OS not supported $TARGETOS"
+              exit 1
+            fi
+
+            if [ $TARGETARCH == "amd64" ]; then
+              DOCKER_IMAGE_TAG="${DOCKER_IMAGE_REF}"
+            else
+              DOCKER_IMAGE_TAG="${DOCKER_IMAGE_REF}.${TARGETARCH}"
+            fi
+
+            echo "Building image ${DOCKER_IMAGE_TAG} for {os:${TARGETOS}, arch:$TARGETARCH}..."
+            DOCKER_BUILDKIT=1 docker build -f Dockerfile.ci \
+            --label org.opencontainers.image.created=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+            --label org.opencontainers.image.url="https://consensys.net" \
+            --label org.opencontainers.image.documentation="https://docs.quorum-key-manager.consensys.net/" \
+            --label org.opencontainers.image.source="${CIRCLE_REPOSITORY_URL}" \
+            --label org.opencontainers.image.version="${CIRCLE_TAG-branch}" \
+            --label org.opencontainers.image.revision="${CIRCLE_SHA1:0:7}" \
+            --label org.opencontainers.image.vendor="ConsenSys Software Inc." \
+            --label org.opencontainers.image.licenses="BUSL-1.1" \
+            --label org.opencontainers.image.title="${CIRCLE_PROJECT_REPONAME}" \
+            --label org.opencontainers.image.description="This Quorum plugin enhances Hashicorp Vault Service with cryptographic operations under Vault engine." \
+            --platform ${DOCKER_IMAGE_PLATFORM} \
+            --push -t ${DOCKER_IMAGE_TAG} .
 
   push-prod-image:
     docker:
       - image: cimg/base:2020.01
-    resource_class: large
+    resource_class: xlarge
     steps:
       - checkout
       - attach_workspace:
@@ -147,17 +192,8 @@ jobs:
           version: 19.03.13
           docker_layer_caching: true
       - prepare_docker
+      - prepare_docker_buildx
       - docker_build_image
-      - run:
-          name: Deploy image in repository
-          command: |
-            export DOCKER_IMAGE_REF=consensys/quorum-hashicorp-vault-plugin
-
-            docker tag quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7} ${DOCKER_IMAGE_REF}:${CIRCLE_TAG}
-            docker push ${DOCKER_IMAGE_REF}:${CIRCLE_TAG}
-
-            docker tag quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7} ${DOCKER_IMAGE_REF}:latest
-            docker push ${DOCKER_IMAGE_REF}:latest
             
 workflows:
   version: 2
@@ -181,13 +217,18 @@ workflows:
               only: /^v.*/
             branches:
               only: /.*/
-      - push-dev-image:
+      - build-docker-image:
+          name: push-dev-image
           filters:
             branches:
               only: main
           context:
             - dockerhub-quorumengineering-rw
             - cloudsmith-tanuki-rw
+          matrix:
+            parameters:
+              docker-image-tag: ["quorum-hashicorp-vault-plugin:${CIRCLE_SHA1:0:7}", "quorum-hashicorp-vault-plugin:develop"]
+          docker-image-registry: ${CLOUDSMITH_DEV_REPO}
           requires:
             - styleCheck
             - test
@@ -200,7 +241,8 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - push-prod-image:
+      - build-docker-image:
+          name: push-prod-image
           filters:
             tags:
               only: /^v.*/
@@ -209,5 +251,10 @@ workflows:
           context:
             - dockerhub-quorumengineering-rw
             - cloudsmith-tanuki-rw
+          matrix:
+            parameters:
+              docker-image-tag: ["quorum-hashicorp-vault-plugin:${CIRCLE_TAG}", "quorum-hashicorp-vault-plugin:latest"]
+              docker-image-platform: ["linux/amd64", "linux/arm64"]
+          docker-image-registry: consensys
           requires:
             - publish-github-release
