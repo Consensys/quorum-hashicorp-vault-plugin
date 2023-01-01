@@ -37,4 +37,4 @@ atlassian-ide-plugin.xml
 # Visual Code Studio
 .vscode
 
-!/**/**/.gitkeep
+!/**/**/.gitkeep.git/
