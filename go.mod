@@ -11,7 +11,7 @@ require (
 	github.com/hashicorp/vault/api v1.0.5-0.20200117231345-460d63e36490
 	github.com/hashicorp/vault/sdk v0.1.14-0.20200305172021-03a3749f220d
 	github.com/stretchr/testify v1.7.0
-	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
+	golang.org/x/crypto v0.1.0
 )
 
 replace github.com/Azure/go-autorest => github.com/Azure/go-autorest v12.4.1+incompatible
